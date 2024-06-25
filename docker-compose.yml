@@ -6,6 +6,6 @@ services:
     ports:
       - '5432:5432'
     environment:
-      POSTGRES_DB: login-service
+      POSTGRES_DB: ai-chatbot
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

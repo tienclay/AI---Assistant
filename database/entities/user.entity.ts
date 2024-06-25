@@ -1,6 +1,6 @@
 import { Column, Entity } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { UserStatus } from 'src/common/enums/user.enum';
+import { UserRole, UserStatus } from 'src/common/enums/user.enum';
 
 @Entity()
 export class User extends BaseEntity {
@@ -15,4 +15,7 @@ export class User extends BaseEntity {
 
   @Column({ type: 'enum', enum: UserStatus })
   status: UserStatus;
+
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.CLIENT })
+  role: UserRole;
 }
