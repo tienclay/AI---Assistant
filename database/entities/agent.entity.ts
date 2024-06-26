@@ -13,4 +13,8 @@ export class Agent extends BaseEntity {
   @OneToOne(() => User, (user) => user.id)
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  runId: string[];
+
+  prompt: string;
 }
