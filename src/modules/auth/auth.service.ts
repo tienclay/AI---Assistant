@@ -33,7 +33,7 @@ export class AuthService {
     const userPassword = user.password;
     const comparePassword = await bcrypt.compare(password, userPassword);
 
-    const userPayload = await this.getPlainUserPayload(user);
+    const userPayload = this.getPlainUserPayload(user);
 
     if (comparePassword) {
       return this.generateAccessToken(userPayload);
