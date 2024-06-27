@@ -5,19 +5,20 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { plainToInstance } from 'class-transformer';
 import { Request } from 'express';
 import { jwtConfig } from 'src/config/jwt.config';
-import { AuthPayloadDto } from './dto';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private readonly authService: AuthService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
-    console.log('token :>> ', token);
     if (!token) {
       throw new UnauthorizedException();
     }
@@ -25,13 +26,10 @@ export class AuthGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: jwtConfig.secret,
       });
-      console.log('payload :>> ', payload);
-
-      const userPayload = plainToInstance(AuthPayloadDto, payload);
 
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
-      request['user'] = userPayload;
+      request['user'] = await this.authService.getUserPayload(payload.email);
     } catch {
       throw new UnauthorizedException();
     }

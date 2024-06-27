@@ -3,11 +3,11 @@ import { ConfigModule, ConfigType } from '@nestjs/config';
 import { DatabaseConfig, configurations } from './config';
 import { AuthModule } from './modules/auth/auth.module';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { APP_FILTER } from '@nestjs/core';
 import { GlobalHandleExceptionFilter } from './common/infra-exception';
-import { RolesGuard } from './modules/auth/role.guard';
+import { AIModule } from './modules/ai/ai.module';
 
-const modules = [AuthModule];
+const modules = [AuthModule, AIModule];
 
 @Module({
   imports: [
