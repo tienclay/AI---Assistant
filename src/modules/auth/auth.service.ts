@@ -8,6 +8,7 @@ import { User } from 'database/entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { AuthPayloadDto } from './dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class AuthService {
@@ -18,15 +19,6 @@ export class AuthService {
     private userRepository: Repository<User>,
   ) {}
 
-  // async onModuleInit(): Promise<void> {
-  //   const _test = await this.login({
-  //     email: 'admin@gmail.com',
-  //     password: '12345678',
-  //   });
-
-  //   console.log('1111 :>> ', 1111);
-  // }
-
   async login(payload: LoginDto): Promise<IAccessToken> {
     const { email, password } = payload;
 
@@ -36,29 +28,37 @@ export class AuthService {
       .where('email = :email', { email })
       .getRawOne();
 
-    const userPayload = {
-      name: user.name,
-      email: user.email,
-      status: user.status,
-      role: user.role,
-    };
+    if (!user) throw new UnauthorizedException();
 
     const userPassword = user.password;
+    const comparePassword = await bcrypt.compare(password, userPassword);
 
-    console.log('userPassword :>> ', userPassword);
+    const userPayload = await this.getPlainUserPayload(user);
 
-    const authen = await bcrypt.compare(password, userPassword);
-    if (authen) {
-      console.log('1111 :>> ', 1111);
-      console.log('userPayload :>> ', userPayload);
-
-      return this.generateAccessTokem(userPayload);
+    if (comparePassword) {
+      return this.generateAccessToken(userPayload);
     }
     throw new UnauthorizedException();
   }
-  generateAccessTokem(userPayload: AuthPayloadDto): IAccessToken {
-    console.log('userPayload :>> ', userPayload);
 
+  getPlainUserPayload(user: User): AuthPayloadDto {
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      name: user.name,
+      status: user.status,
+    };
+  }
+
+  async getUserPayload(email: string): Promise<AuthPayloadDto> {
+    const user = await this.userRepository.findOneBy({
+      email,
+    });
+    return plainToInstance(AuthPayloadDto, user);
+  }
+
+  generateAccessToken(userPayload: AuthPayloadDto): IAccessToken {
     return {
       accessToken: this.jwtService.sign(userPayload),
     };
