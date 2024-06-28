@@ -1,13 +1,20 @@
 import { User } from 'database/entities/user.entity';
 import { UserRole, UserStatus } from 'src/common/enums/user.enum';
 import { hashPassword } from 'src/common/utils/hash-password.util';
-import { UserInputDto } from 'src/modules/user/dto';
 import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
 
+interface UserInterface {
+  name: string;
+  email: string;
+  password: string;
+  status: UserStatus;
+  role: UserRole;
+}
+
 export default class AdminSeed implements Seeder {
   private async createUser(appDataSource: DataSource): Promise<any> {
-    const mockAdminUser: UserInputDto = {
+    const mockAdminUser: UserInterface = {
       name: 'admin',
       email: 'admin@gmail.com',
       password: await hashPassword('12345678'),
@@ -15,7 +22,7 @@ export default class AdminSeed implements Seeder {
       role: UserRole.ADMIN,
     };
 
-    const mockClientUser: UserInputDto = {
+    const mockClientUser: UserInterface = {
       name: 'client',
       email: 'client@gmail.com',
       password: await hashPassword('12345678'),

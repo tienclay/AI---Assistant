@@ -14,7 +14,5 @@ export class Agent extends BaseEntity {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  runId: string[];
-
   prompt: string;
 }
