@@ -43,15 +43,19 @@ export class AIService {
 
     const agentName = await this.getAgentCollectionName(agent);
 
+    console.log('agentName :>> ', agentName);
+
     const loadKnowledgeInput: LoadKnowledgeInterface = {
       assistant: AiAssistantType.RAG_PDF,
       agent_collection_name: agentName,
-      urls,
+      urls: [urls],
     };
+
+    console.log('load :>> ', loadKnowledgeInput);
 
     await lastValueFrom(
       this.httpService.post(aiServiceUrl.loadKnowledge, {
-        body: loadKnowledgeInput,
+        ...loadKnowledgeInput,
       }),
     );
 
