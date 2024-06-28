@@ -6,8 +6,11 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { APP_FILTER } from '@nestjs/core';
 import { GlobalHandleExceptionFilter } from './common/infra-exception';
 import { AIModule } from './modules/ai/ai.module';
+import { UserModule } from './modules/user/user.module';
+import { AgentModule } from './modules/agent/agent.module';
+// import { AgentModule } from './modules/agent/agent.module';
 
-const modules = [AuthModule, AIModule];
+const modules = [AuthModule, UserModule, AIModule, AgentModule];
 
 @Module({
   imports: [
@@ -35,6 +38,7 @@ const modules = [AuthModule, AIModule];
       provide: APP_FILTER,
       useClass: GlobalHandleExceptionFilter,
     },
+
     // {
     //   provide: APP_GUARD,
     //   useClass: RolesGuard,
