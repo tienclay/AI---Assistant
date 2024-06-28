@@ -4,33 +4,49 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  UploadedFile,
-  UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { AIService } from './ai.service';
-import { UploadFilePipe } from 'src/common/pipe/upload-file.pipe';
-import { AiAssistantApiResponse, Roles } from 'src/common/decorators';
+import {
+  AiAssistantApiResponse,
+  CurrentUser,
+  Roles,
+} from 'src/common/decorators';
 import { UserRole } from 'src/common/enums/user.enum';
-import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UploadCvDto } from './dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { User } from '@entities';
+import { LoadKnowledgeDto } from './dto/load-knowledge.dto';
+import { AuthGuard } from '../auth/guard/auth.guard';
 
 @Controller()
 @ApiTags('AI-Service')
+@UseGuards(AuthGuard)
+@ApiBearerAuth('access-token')
 export class AIController {
   constructor(private readonly aiService: AIService) {}
 
-  @Post('knowledge')
+  // @Post('knowledge')
+  // @Roles(UserRole.CLIENT)
+  // @ApiConsumes('multipart/form-data')
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({ summary: 'Knowledge file' })
+  // @UseInterceptors(FileInterceptor('file'))
+  // @AiAssistantApiResponse(Boolean)
+  // loadKnowledge(
+  //   @Body() __: UploadCvDto,
+  //   @UploadedFile(new UploadFilePipe()) file: Express.Multer.File,
+  // ): Promise<boolean> {
+  //   return Promise.resolve(true);
+  // }
+
+  @Post('load-knowledge')
   @Roles(UserRole.CLIENT)
-  @ApiConsumes('multipart/form-data')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Knowledge file' })
-  @UseInterceptors(FileInterceptor('file'))
   @AiAssistantApiResponse(Boolean)
   loadKnowledge(
-    @Body() __: UploadCvDto,
-    @UploadedFile(new UploadFilePipe()) file: Express.Multer.File,
+    @CurrentUser() user: User,
+    @Body() dto: LoadKnowledgeDto,
   ): Promise<boolean> {
-    return Promise.resolve(true);
+    return this.aiService.loadKnowledge(user.id, dto.urls);
   }
 }
