@@ -1,0 +1,66 @@
+{
+  "client_name": "tien",
+  "contact_email": "tien@codelight.co",
+  "company_name": "Codelight",
+  "phone_number": "12345678",
+  "website": "https://codelight.co",
+  "objectives": [
+    "Customer support",
+    "Product inquiries",
+    "Technical support",
+    "Sales support",
+    "Other"
+  ],
+  "industry": "Tech-based startup lab, Web2 and Web3 technologies",
+  "description": "Exceptional solutions and products for Web2 and Web3 evolution and innovation",
+  "languages": [
+    "English",
+    "Vietnamese",
+    "Spanish",
+    "French",
+    "Chinese",
+    "Other"
+  ],
+  "tone": [
+    "Professional",
+    "Friendly",
+    "Humorous",
+    "Serious",
+    "Casual",
+    "Other"
+  ],
+  "features": [
+    "Automatically answer frequently asked questions",
+    "Help find products/services",
+    "Schedule appointments/transactions",
+    "Collect customer information",
+    "Provide technical support",
+    "Process orders",
+    "Track shipments",
+    "Other"
+  ],
+  "integration": [
+    "CRM",
+    "Order management system",
+    "Company website",
+    "Social media",
+    "Email marketing system",
+    "Payment gateway",
+    "Customer support system",
+    "Analytics tool",
+    "Other"
+  ],
+  "specific_questions": [
+    "How to order cleaning products?",
+    "How to contact customer support?"
+  ],
+  "interaction_scenarios": [
+    "Product usage guide",
+    "Service complaint handling process"
+  ],
+  "other_requirements": [
+    "Simple and user-friendly interface",
+    "Instant notifications when customer feedback is received"
+  ],
+  "additional_notes": "Focus on sustainability and eco-friendliness"
+}
