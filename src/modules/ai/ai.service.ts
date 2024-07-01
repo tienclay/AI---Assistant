@@ -26,22 +26,6 @@ export class AIService {
     private readonly agentRepository: Repository<Agent>,
   ) {}
 
-  async onModuleInit(): Promise<void> {
-    // const test = await this.createAgentRun(
-    //   '27416e60-de2f-4bd6-8efd-40d5d6a7dfb0',
-    //   'thanh',
-    // );
-    // const test = await this.sendMessage(
-    //   '2c56101e-5100-47ee-89f1-e55ebc3ca006',
-    //   {
-    //     message: 'Hello',
-    //     runId: '62779234-f1c3-4c45-ad51-1f5972590b7c',
-    //     userId: 'thanh',
-    //   },
-    // );
-    // console.log('test :>> ', test);
-  }
-
   /**
    * @description Create a new table in Ai Service
    * @param {string} tableName - The table name based on company name
