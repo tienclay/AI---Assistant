@@ -14,5 +14,6 @@ export class Agent extends BaseEntity {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
+  @Column('text', { nullable: true })
   prompt: string;
 }

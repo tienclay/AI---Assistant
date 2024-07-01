@@ -14,8 +14,7 @@ export class UploadFilePipe extends ParseFilePipe {
         new MaxFileSizeValidator({ maxSize: 5 * 1000 * 1000 }), // 5MB
         new FileTypeValidator({
           // allow mime type file pdf, doc, docx, rtf, html
-          fileType:
-            'application/pdf|application/msword|application/vnd.openxmlformats-officedocument.wordprocessingml.document|application/rtf|text/html',
+          fileType: 'application/pdf',
         }),
       ],
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,

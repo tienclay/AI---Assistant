@@ -1,20 +1,26 @@
-export interface FormData {
+import {
+  Features,
+  Integration,
+  Languages,
+  PrimaryObjective,
+  Tone,
+} from '../enums/prompt.enum';
+
+export interface PromptData {
   client_name: string;
   contact_email: string;
   phone_number: string;
   company_name: string;
   website: string;
-  objectives: string[];
+  objectives: PrimaryObjective[];
   industry: string;
   description: string;
-  languages: string[];
-  tone: string;
-  features: string[];
-  integration: string[];
+  languages: Languages[];
+  tone: Tone;
+  features: Features[];
+  integration: Integration[];
   specific_questions: string[];
   interaction_scenarios: string[];
   other_requirements: string[];
-  budget: string;
-  completion_time: string;
   additional_notes: string;
 }

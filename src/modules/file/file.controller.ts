@@ -16,11 +16,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  AiAssistantApiResponse,
-  CurrentUser,
-  Roles,
-} from 'src/common/decorators';
+import { AiAssistantApiResponse, Roles } from 'src/common/decorators';
 import { AuthGuard } from '../auth/guard/auth.guard';
 import { UserRole } from 'src/common/enums/user.enum';
 import { File } from 'database/entities/file.entity';
@@ -32,23 +28,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 @ApiTags('File')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
-  //   @UseGuards(AuthGuard)
-  //   @Roles(UserRole.CLIENT)
-  //   @ApiBearerAuth('access-token')
-  //   @AiAssistantApiResponse(File)
-  //   @ApiConsumes('multipart/form-data')
-  //   @UseInterceptors(FileInterceptor('file'))
-  //   @HttpCode(HttpStatus.OK)
-  //   @ApiOperation({ summary: 'Upload User File' })
-  //   @Post('id')
-  //   uploadFile(
-  //     @CurrentUser('id') userId: string,
-  //     @Body() data: UploadFileDto,
-  //     @UploadedFile(new UploadFilePipe())
-  //     file: Express.Multer.File,
-  //   ): Promise<UploadFileResponseDto> {
-  //     return this.fileService.upload(userId, data, file);
-  //   }
 
   @Post('upload/:id')
   @UseGuards(AuthGuard)

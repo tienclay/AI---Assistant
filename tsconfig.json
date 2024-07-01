@@ -17,11 +17,10 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": true,
     "paths": {
       "@entities": ["database/entities"],
-      "@enums": ["src/commmon/enums"],
+      "@enums": ["src/commmon/enums"]
     }
-      
-    
   }
 }
