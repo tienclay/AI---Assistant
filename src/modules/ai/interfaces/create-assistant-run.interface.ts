@@ -6,4 +6,6 @@ export interface CreateAssistantRunInterface {
   assistant: AiAssistantType;
 
   agent_collection_name: string;
+
+  prompt: string;
 }

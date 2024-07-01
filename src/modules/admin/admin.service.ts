@@ -10,7 +10,6 @@ import { Repository } from 'typeorm';
 import { UserInputDto, UserOutputDto } from './dto';
 import { hashPassword } from 'src/common/utils/hash-password.util';
 import { plainToInstance } from 'class-transformer';
-import { PromptData } from 'src/common/interfaces';
 import { PromptDto } from '../agent/dto/prompt-data.dto';
 import * as promptData from './json/enum-data.json';
 @Injectable()

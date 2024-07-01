@@ -6,6 +6,7 @@ import { lastValueFrom } from 'rxjs';
 import { Repository } from 'typeorm';
 import { aiServiceUrl } from './constants';
 import {
+  AgentInfo,
   AssistantChatInterface,
   CreateAssistantRunInterface,
   LoadKnowledgeInterface,
@@ -54,12 +55,14 @@ export class AIService {
       userId: clientId,
     });
 
-    const agentName = await this.getAgentCollectionNameByAgentId(agentId);
+    const agentInfo =
+      await this.getAgentCollectionNameAndPromptByAgentId(agentId);
 
     const loadKnowledgeInput: LoadKnowledgeInterface = {
       assistant: AiAssistantType.RAG_PDF,
-      agent_collection_name: agentName,
+      agent_collection_name: agentInfo.collectionName,
       urls,
+      prompt: agentInfo.prompt,
     };
 
     await lastValueFrom(
@@ -75,12 +78,14 @@ export class AIService {
     agentId: string,
     userId: string,
   ): Promise<CreateAssistantRunResponse> {
-    const collectionName = await this.getAgentCollectionNameByAgentId(agentId);
+    const agentInfo =
+      await this.getAgentCollectionNameAndPromptByAgentId(agentId);
 
     const createAssistantRun: CreateAssistantRunInterface = {
       user_id: userId,
-      agent_collection_name: collectionName,
+      agent_collection_name: agentInfo.collectionName,
       assistant: AiAssistantType.RAG_PDF,
+      prompt: agentInfo.prompt,
     };
 
     const res = await lastValueFrom(
@@ -100,15 +105,17 @@ export class AIService {
     agentId: string,
     dto: AssistantChatDto,
   ): Promise<AssistantChatResponse> {
-    const collectionName = await this.getAgentCollectionNameByAgentId(agentId);
+    const agentInfo =
+      await this.getAgentCollectionNameAndPromptByAgentId(agentId);
 
     const chatInput: AssistantChatInterface = {
       message: dto.message,
       stream: true,
       run_id: dto.runId,
       user_id: dto.userId,
-      agent_collection_name: collectionName,
+      agent_collection_name: agentInfo.collectionName,
       assistant: AiAssistantType.RAG_PDF,
+      prompt: agentInfo.prompt,
     };
 
     const res = await lastValueFrom(
@@ -120,15 +127,18 @@ export class AIService {
     return plainToInstance(AssistantChatResponse, res.data);
   }
 
-  private async getAgentCollectionNameByAgentId(
+  private async getAgentCollectionNameAndPromptByAgentId(
     agentId: string,
-  ): Promise<string> {
+  ): Promise<AgentInfo> {
     const agent = await this.agentRepository.findOneOrFail({
       where: {
         id: agentId,
       },
     });
 
-    return `${agent.companyName}:${agent.id}`;
+    return {
+      collectionName: `${agent.companyName}:${agent.id}`,
+      prompt: agent.prompt,
+    };
   }
 }

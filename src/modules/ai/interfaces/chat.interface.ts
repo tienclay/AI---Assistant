@@ -7,4 +7,5 @@ export interface AssistantChatInterface {
   user_id: string;
   agent_collection_name: string;
   assistant: AiAssistantType;
+  prompt: string;
 }
