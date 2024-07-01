@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Agent } from 'database/entities/agent.entity';
 import { Repository } from 'typeorm';
 import { CompanyAgentDto } from './dto';
-import { PromptData } from 'src/common/interfaces';
 import { Tone } from 'src/common/enums/prompt.enum';
 import { PromptDto } from './dto/prompt-data.dto';
 import { plainToInstance } from 'class-transformer';
@@ -15,7 +14,7 @@ export class AgentService {
     private readonly agentRepository: Repository<Agent>,
   ) {}
 
-  generatePrompt(formData: PromptData): string {
+  generatePrompt(formData: PromptDto): string {
     const {
       client_name,
       contact_email,
@@ -126,6 +125,11 @@ export class AgentService {
     const agent = this.agentRepository.create(createCompanyDto);
     return await this.agentRepository.save(agent);
   }
+
+  async getAgentByClientId(clientId: string): Promise<Agent[]> {
+    return this.agentRepository.find({ where: { userId: clientId } });
+  }
+
   async uploadPrompt(id: string, inputData: PromptDto): Promise<PromptDto> {
     try {
       // const prompt = this.generatePrompt(inputData);
@@ -137,10 +141,12 @@ export class AgentService {
       throw new NotFoundException('Not found agent');
     }
   }
+
   async getAllAgents(): Promise<CompanyAgentDto[]> {
     const agents = await this.agentRepository.find();
     return agents.map((agent) => plainToInstance(CompanyAgentDto, agent)); //
   }
+
   async getAgentById(id: string): Promise<CompanyAgentDto> {
     try {
       const agent = await this.agentRepository.findOneByOrFail({ id });

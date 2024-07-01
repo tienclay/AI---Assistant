@@ -3,34 +3,66 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
-  UploadedFile,
-  UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { AIService } from './ai.service';
-import { UploadFilePipe } from 'src/common/pipe/upload-file.pipe';
-import { AiAssistantApiResponse, Roles } from 'src/common/decorators';
+import {
+  AiAssistantApiResponse,
+  CurrentUser,
+  Roles,
+} from 'src/common/decorators';
 import { UserRole } from 'src/common/enums/user.enum';
-import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UploadCvDto } from './dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { User } from '@entities';
+import { LoadKnowledgeDto } from './dto/load-knowledge.dto';
+import { AuthGuard } from '../auth/guard/auth.guard';
+import {
+  AssistantChatDto,
+  AssistantChatResponse,
+  CreateAssistantRun,
+  CreateAssistantRunResponse,
+} from './dto';
 
 @Controller()
 @ApiTags('AI-Service')
 export class AIController {
   constructor(private readonly aiService: AIService) {}
 
-  @Post('knowledge')
+  @Post(':agentId/load-knowledge')
   @Roles(UserRole.CLIENT)
-  @ApiConsumes('multipart/form-data')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Knowledge file' })
-  @UseInterceptors(FileInterceptor('file'))
   @AiAssistantApiResponse(Boolean)
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('access-token')
   loadKnowledge(
-    @Body() __: UploadCvDto,
-    @UploadedFile(new UploadFilePipe()) file: Express.Multer.File,
+    @CurrentUser() user: User,
+    @Param('agentId') agentId: string,
+    @Body() dto: LoadKnowledgeDto,
   ): Promise<boolean> {
-    return Promise.resolve(true);
+    return this.aiService.loadKnowledge(user.id, agentId, dto.urls);
+  }
+
+  @Post(':agentId/create-run')
+  @Roles(UserRole.CLIENT)
+  @HttpCode(HttpStatus.OK)
+  @AiAssistantApiResponse(CreateAssistantRunResponse)
+  createAgentRun(
+    @Body() dto: CreateAssistantRun,
+    @Param('agentId') agentId: string,
+  ): Promise<CreateAssistantRunResponse> {
+    return this.aiService.createAgentRun(agentId, dto.userId);
+  }
+
+  @Post(':agentId/chat')
+  @Roles(UserRole.CLIENT)
+  @HttpCode(HttpStatus.OK)
+  @AiAssistantApiResponse(Boolean)
+  AgentAssistantChat(
+    @Body() dto: AssistantChatDto,
+    @Param('agentId') agentId: string,
+  ): Promise<AssistantChatResponse> {
+    return this.aiService.sendMessage(agentId, dto);
   }
 }
