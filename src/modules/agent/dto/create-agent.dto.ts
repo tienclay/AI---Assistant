@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 
-export class CreateCompanyAgentDto {
+export class CompanyAgentDto {
   @IsString()
   @ApiProperty({ example: 'Codelight' })
   companyName: string;
@@ -9,4 +9,9 @@ export class CreateCompanyAgentDto {
   @IsUUID()
   @ApiProperty()
   userId: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({})
+  prompt?: string;
 }

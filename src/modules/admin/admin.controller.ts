@@ -9,14 +9,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { UserService } from './user.service';
+import { UserService } from './admin.service';
 import { UserInputDto, UserOutputDto } from './dto';
 import { AuthGuard } from '../auth/guard/auth.guard';
 import { AiAssistantApiResponse, Roles } from 'src/common/decorators';
 import { UserRole } from 'src/common/enums/user.enum';
+import { PromptDto } from '../agent/dto/prompt-data.dto';
 
-@Controller('user')
-@ApiTags('User')
+@Controller('admin')
+@ApiTags('Admin')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -50,7 +51,14 @@ export class UserController {
   async getAllClient(): Promise<UserOutputDto[]> {
     return this.userService.getAllClient();
   }
-
+  @UseGuards(AuthGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth('access-token')
+  @AiAssistantApiResponse(PromptDto)
+  @Get('example-prompt')
+  getPrompt() {
+    return this.userService.getPrompt();
+  }
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
