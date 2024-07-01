@@ -15,4 +15,8 @@ export class AgentService {
     const agent = this.agentRepository.create(createCompanyDto);
     return await this.agentRepository.save(agent);
   }
+
+  async getAgentByClientId(clientId: string): Promise<Agent[]> {
+    return this.agentRepository.find({ where: { userId: clientId } });
+  }
 }
