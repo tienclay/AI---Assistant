@@ -18,7 +18,7 @@ export default class ParseCvAgent implements Seeder {
     });
 
     const agentRawInput: AgentInterface = {
-      companyName: 'CV Parser',
+      companyName: 'CV_Parser',
       userId: adminUser.id,
       prompt: parseCvPrompt,
     };
