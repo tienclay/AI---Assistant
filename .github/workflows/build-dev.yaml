@@ -55,11 +55,11 @@ jobs:
             docker pull ${{ env.IMAGE_REPO }}:latest
             cd /home/massbit/heydevs_dev/heydevs-environment && git pull
             docker-compose --env-file /home/massbit/heydevs_dev/heydevs-environment/.env-ai-chatbot-api \
-            -f /home/massbit/heydevs_dev/docker-compose.yml stop ${{ env.SVC_NAME }} || true
+            -f /home/massbit/heydevs_dev/docker-compose.ai-chatbot.yml stop ${{ env.SVC_NAME }} || true
             docker-compose --env-file /home/massbit/heydevs_dev/heydevs-environment/.env-ai-chatbot-api \
-            -f /home/massbit/heydevs_dev/docker-compose.yml rm -f ${{ env.SVC_NAME }} || true
+            -f /home/massbit/heydevs_dev/docker-compose.ai-chatbot.yml rm -f ${{ env.SVC_NAME }} || true
             docker-compose --env-file /home/massbit/heydevs_dev/heydevs-environment/.env-ai-chatbot-api \
-            -f /home/massbit/heydevs_dev/docker-compose.yml up -d ${{ env.SVC_NAME }}
+            -f /home/massbit/heydevs_dev/docker-compose.ai-chatbot.yml up -d ${{ env.SVC_NAME }}
           # aws eks update-kubeconfig --region ap-southeast-2 --name blox3-prod
           # kubectl apply -f deployment-$GITHUB_SHA.yaml
         # run: |
