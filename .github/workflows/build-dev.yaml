@@ -3,13 +3,13 @@ name: 'Dev Deployment'
 on:
   push:
     branches:
-    - dev
+      - dev
 
 env:
   NAME: blox3-v1-prod
   ZONE: asia-southeast1-a
   SVC_NAME: ai-chat-bot
-  IMAGE_REPO: ${{ vars.ECR_URL }}/ai-chat-bot-dev
+  IMAGE_REPO: ${{ vars.ECR_URL }}/ai-chatbot-api-dev
 
 jobs:
   build-deploy:
@@ -60,6 +60,6 @@ jobs:
             -f /home/massbit/heydevs_dev/docker-compose.yml rm -f ${{ env.SVC_NAME }} || true
             docker-compose --env-file /home/massbit/heydevs_dev/heydevs-environment/.env-ai-chatbot-api \
             -f /home/massbit/heydevs_dev/docker-compose.yml up -d ${{ env.SVC_NAME }}
-        # run: |
           # aws eks update-kubeconfig --region ap-southeast-2 --name blox3-prod
           # kubectl apply -f deployment-$GITHUB_SHA.yaml
+        # run: |
