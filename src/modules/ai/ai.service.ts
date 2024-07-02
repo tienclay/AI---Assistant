@@ -124,7 +124,11 @@ export class AIService {
       }),
     );
 
-    return plainToInstance(AssistantChatResponse, res.data);
+    console.log('res.data :>> ', res.data);
+
+    // save res.data to a json file
+
+    return plainToInstance(AssistantChatResponse, { data: res.data });
   }
 
   private async getAgentCollectionNameAndPromptByAgentId(

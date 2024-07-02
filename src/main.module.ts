@@ -9,9 +9,16 @@ import { AIModule } from './modules/ai/ai.module';
 import { UserModule } from './modules/admin/admin.module';
 import { AgentModule } from './modules/agent/agent.module';
 import { FileModule } from './modules/file/file.module';
-// import { AgentModule } from './modules/agent/agent.module';
+import { CvParserModule } from './modules/cv-parser/cv-parser.module';
 
-const modules = [AuthModule, UserModule, AIModule, AgentModule, FileModule];
+const modules = [
+  AuthModule,
+  UserModule,
+  AIModule,
+  AgentModule,
+  FileModule,
+  CvParserModule,
+];
 
 @Module({
   imports: [
