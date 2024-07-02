@@ -8,7 +8,7 @@ on:
 env:
   NAME: blox3-v1-prod
   ZONE: asia-southeast1-a
-  SVC_NAME: ai-chat-bot
+  SVC_NAME: ai-chatbot-api
   IMAGE_REPO: ${{ vars.ECR_URL }}/ai-chatbot-api-dev
 
 jobs:
