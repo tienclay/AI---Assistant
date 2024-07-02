@@ -1,9 +1,9 @@
 import { Agent } from '@entities';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { aiServiceUrl } from './constants';
 import {
   AgentInfo,
@@ -25,6 +25,8 @@ export class AIService {
     private httpService: HttpService,
     @InjectRepository(Agent)
     private readonly agentRepository: Repository<Agent>,
+    @InjectDataSource('cv-parser')
+    private readonly dataSource: DataSource,
   ) {}
 
   /**
@@ -129,6 +131,15 @@ export class AIService {
     // save res.data to a json file
 
     return plainToInstance(AssistantChatResponse, { data: res.data });
+  }
+
+  async clearRecordsInCollection(agentId: string): Promise<boolean> {
+    const agentInfo =
+      await this.getAgentCollectionNameAndPromptByAgentId(agentId);
+
+    await this.dataSource.query(`DELETE FROM ${agentInfo.collectionName}`);
+
+    return true;
   }
 
   private async getAgentCollectionNameAndPromptByAgentId(

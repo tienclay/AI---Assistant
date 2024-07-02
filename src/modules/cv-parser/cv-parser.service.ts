@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { AIService } from '../ai/ai.service';
 import { ParseCvResponseDto } from './dto/cv-parser-response.dto';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Agent } from '@entities';
 import { extractJSONObject } from 'src/common/utils/extract-json.util';
 import { plainToInstance } from 'class-transformer';
@@ -13,8 +13,6 @@ export class CvParserService {
     private readonly aiService: AIService,
     @InjectRepository(Agent)
     private readonly agentRepository: Repository<Agent>,
-    @InjectDataSource('cv-parser')
-    private readonly dataSource: DataSource,
   ) {}
 
   async uploadAndParseCv(url: string): Promise<any> {
@@ -26,8 +24,6 @@ export class CvParserService {
 
     const agentRun = await this.aiService.createAgentRun(agent.id, 'parse-cv');
 
-    console.log('agentRun :>> ', agentRun);
-
     const message = await this.aiService.sendMessage(agent.id, {
       message: 'Parse this Cv into Json for me',
       runId: agentRun.runId,
@@ -36,12 +32,15 @@ export class CvParserService {
 
     const jsonObj = extractJSONObject(message.data);
 
-    return plainToInstance(ParseCvResponseDto, {
+    const parseCvRes = plainToInstance(ParseCvResponseDto, {
       ...jsonObj['personalInformation'],
       workExperiences: jsonObj['WorkExperience'] || jsonObj['workExperience'],
       educations: jsonObj['Education'] || jsonObj['education'],
       skills: jsonObj['Skills'] || jsonObj['skills'],
       languages: jsonObj['Languages'] || jsonObj['languages'],
     });
+
+    await this.aiService.clearRecordsInCollection(agent.id);
+    return parseCvRes;
   }
 }

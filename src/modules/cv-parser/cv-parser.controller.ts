@@ -1,8 +1,9 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { CvParserService } from './cv-parser.service';
-import { ApiQuery } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 
 @Controller('cv-parser')
+@ApiTags('cv-parser')
 export class CvParserController {
   constructor(private readonly cvParserService: CvParserService) {}
 
