@@ -17,7 +17,7 @@ export class CvParserService {
 
   async uploadAndParseCv(url: string): Promise<any> {
     const agent = await this.agentRepository.findOneByOrFail({
-      companyName: 'CV Parser',
+      companyName: 'CV_Parser',
     });
 
     await this.aiService.loadKnowledge(agent.userId, agent.id, [url]);
@@ -33,8 +33,13 @@ export class CvParserService {
     const jsonObj = extractJSONObject(message.data);
 
     const parseCvRes = plainToInstance(ParseCvResponseDto, {
-      ...jsonObj['personalInformation'],
-      workExperiences: jsonObj['WorkExperience'] || jsonObj['workExperience'],
+      ...(jsonObj['personalInformation'] ||
+        jsonObj['personal_information'] ||
+        jsonObj['PersonalInformation']),
+      workExperiences:
+        jsonObj['WorkExperience'] ||
+        jsonObj['workExperience'] ||
+        jsonObj['work_experience'],
       educations: jsonObj['Education'] || jsonObj['education'],
       skills: jsonObj['Skills'] || jsonObj['skills'],
       languages: jsonObj['Languages'] || jsonObj['languages'],

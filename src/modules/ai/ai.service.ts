@@ -126,8 +126,6 @@ export class AIService {
       }),
     );
 
-    console.log('res.data :>> ', res.data);
-
     // save res.data to a json file
 
     return plainToInstance(AssistantChatResponse, { data: res.data });
@@ -137,7 +135,7 @@ export class AIService {
     const agentInfo =
       await this.getAgentCollectionNameAndPromptByAgentId(agentId);
 
-    await this.dataSource.query(`DELETE FROM ${agentInfo.collectionName}`);
+    await this.dataSource.query(`DELETE FROM ai."${agentInfo.collectionName}"`);
 
     return true;
   }
