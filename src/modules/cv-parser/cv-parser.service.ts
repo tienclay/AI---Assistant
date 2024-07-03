@@ -45,6 +45,8 @@ export class CvParserService {
       languages: jsonObj['Languages'] || jsonObj['languages'],
     });
 
+    console.log('parseCvRes :>> ', parseCvRes);
+
     await this.aiService.clearRecordsInCollection(agent.id);
     return parseCvRes;
   }

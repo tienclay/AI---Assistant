@@ -24,6 +24,12 @@ async function bootstrap() {
     new CoreTransformInterceptor(),
   );
 
+  app.enableCors({
+    allowedHeaders: '*',
+    origin: '*',
+    credentials: true,
+  });
+
   const document = SwaggerModule.createDocument(app, swaggerOption);
   SwaggerModule.setup('api', app, document);
 
