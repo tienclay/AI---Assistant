@@ -57,6 +57,5 @@ export class CvParserService {
     catch (error) {
       throw new AIAssistantntBadRequestException(error.message)
     }
-
   }
 }

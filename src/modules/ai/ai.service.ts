@@ -18,6 +18,8 @@ import {
   AssistantChatResponse,
   CreateAssistantRunResponse,
 } from './dto';
+import { AssistantHistoryDto } from './dto/history.dto';
+import { AgentHistory } from './interfaces/history.interface';
 
 @Injectable()
 export class AIService {
@@ -122,6 +124,32 @@ export class AIService {
 
     const res = await lastValueFrom(
       this.httpService.post(aiServiceUrl.sendMessage, {
+        ...chatInput,
+      }),
+    );
+
+    // save res.data to a json file
+
+    return plainToInstance(AssistantChatResponse, { data: res.data });
+  }
+
+  async sendHistory(
+    agentId: string,
+    dto: AssistantHistoryDto,
+  ): Promise<AssistantChatResponse> {
+    const agentInfo =
+      await this.getAgentCollectionNameAndPromptByAgentId(agentId);
+
+    const chatInput: AgentHistory = {
+      run_id: dto.runId,
+      user_id: dto.userId,
+      agent_collection_name: agentInfo.collectionName,
+      assistant: AiAssistantType.RAG_PDF,
+      prompt: agentInfo.prompt,
+    };
+
+    const res = await lastValueFrom(
+      this.httpService.post(aiServiceUrl.getAgentHistory, {
         ...chatInput,
       }),
     );

@@ -24,6 +24,7 @@ import {
   CreateAssistantRun,
   CreateAssistantRunResponse,
 } from './dto';
+import { AssistantHistoryDto } from './dto/history.dto';
 
 @Controller()
 @ApiTags('AI-Service')
@@ -64,5 +65,16 @@ export class AIController {
     @Param('agentId') agentId: string,
   ): Promise<AssistantChatResponse> {
     return this.aiService.sendMessage(agentId, dto);
+  }
+
+  @Post(':agentId/history')
+  @Roles(UserRole.CLIENT)
+  @HttpCode(HttpStatus.OK)
+  @AiAssistantApiResponse(Boolean)
+  AgentAssistantHistory(
+    @Body() dto: AssistantHistoryDto,
+    @Param('agentId') agentId: string,
+  ): Promise<AssistantChatResponse> {
+    return this.aiService.sendHistory(agentId, dto);
   }
 }
