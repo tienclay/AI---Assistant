@@ -1,0 +1,115 @@
+{
+    "PersonalInformation": {
+      "FirstName": "Phuong",
+      "LastName": "Nguyen",
+      "Gender": null,
+      "DateOfBirth": null,
+      "Email": "tienphuong1608@gmail.com",
+      "PhoneCode": "+84",
+      "Phone": "366075399",
+      "Title": "DevOps Engineer",
+      "Summary": "I have worked in software industry for 5 years with roles like web backend developer, software engineer, devops engineer that helps me gained lots of developing, operation skills and experiences to catch up quickly with new products and systems. I like both coding and designing infrastructure and I'm on the way to explore the magic of them.",
+      "TotalYearsOfExperience": 5,
+      "Location": "Ho Chi Minh City, Thu Duc city"
+    },
+    "WorkExperience": [
+      {
+        "CompanyName": "Secutix, ELCA VIETNAM",
+        "Position": "Devops Engineer",
+        "FromMonth": 6,
+        "FromYear": 2020,
+        "ToMonth": null,
+        "ToYear": null,
+        "Description": "Develop tools for deploying machines automatically: python script to build images (AMI and Vcenter template). Write ansible playbooks for configuration. Write terraform modules. Develop tools for managing clusters, machines on AWS and Vcenter. HTTP server to track node list and notify other consumers like rundeck, haproxy. Script to auto refresh nodes on consumers. Build Jenkins pipelines for deploying machines and building images. Make plans for upgrading images version like upgrading OS version, configuration changes. Share to other Cloud teams about new tools and new deployments (documents, presenting). Cooperate with DEV teams to setup infrastructure for new projects such as help or guide them package software, design Haproxy configuration (route paths, filters, forward headers, ...), deploy virtual machines, design Iptables (drop IPs, allow IPs, ...)"
+      },
+      {
+        "CompanyName": "Metadefender Core, OPSWAT VIETNAM",
+        "Position": "Backend Developer",
+        "FromMonth": 12,
+        "FromYear": 2018,
+        "ToMonth": 5,
+        "ToYear": 2020,
+        "Description": "Implement new features of cybersecurity web interface: scan, upload files, multi-threads, db queries, embed third-parties. Package product into msi, deb, rpm which includes installed/uninstall/upgraded scripts along with binaries of product. Build and improve containers for build codes and tests"
+      },
+      {
+        "CompanyName": "CBA/CoreMW, DEK TECHNOLOGIES VIETNAM",
+        "Position": "Software Engineer",
+        "FromMonth": 8,
+        "FromYear": 2016,
+        "ToMonth": 9,
+        "ToYear": 2018,
+        "Description": "Troubleshoot issues of opensaf services (CoreMW) like logs, scale-in/out, AMF,... Monitor, analyze test cases of CoreMW. Develop software management component which consumes model in yaml file and produce the order of installing softwares that bases on dependencies of them"
+      },
+      {
+        "CompanyName": "DEK TECHNOLOGIES VIETNAM",
+        "Position": "Internship",
+        "FromMonth": 2,
+        "FromYear": 2016,
+        "ToMonth": 3,
+        "ToYear": 2016,
+        "Description": "Join a Scrum team and play with bluetooth 4.0 and other embedded tools like 3D printing, wifi module, sensors"
+      },
+      {
+        "CompanyName": "RENESAS DESIGN VIETNAM",
+        "Position": "Internship",
+        "FromMonth": 6,
+        "FromYear": 2015,
+        "ToMonth": 8,
+        "ToYear": 2015,
+        "Description": "Write an application on Windows to receive and decode data from Microchip RL78 of Renesas. On RL78 also write firmware to make it can read value of 7-segs LED, sensors."
+      }
+    ],
+    "Education": [
+      {
+        "InstitutionName": "University of Science Vietnam National",
+        "Degree": "Bachelor in Electronics and Telecommunications",
+        "FromMonth": null,
+        "FromYear": 2012,
+        "ToMonth": null,
+        "ToYear": 2016
+      }
+    ],
+    "Skills": [
+      "Python",
+      "C/C++",
+      "Javascript",
+      "Bash Script",
+      "Flask",
+      "Qt",
+      "Vcenter",
+      "AWS (EC2, S3, Route 53, ECS, VPC, RDS, Lambda, CloudWatch)",
+      "Terraform",
+      "Ansible",
+      "Puppet",
+      "Haproxy",
+      "Nginx",
+      "Jenkins",
+      "Docker",
+      "Iptables",
+      "DHCP",
+      "DNS",
+      "ELK",
+      "Postgres",
+      "Sqlite",
+      "PCS",
+      "openSAF",
+      "Linux (debian, fedora)",
+      "Visual Studio Code",
+      "Maven",
+      "git",
+      "Bitbucket",
+      "Gitlab",
+      "Gerrit",
+      "Jira"
+    ],
+    "Languages": [
+      {
+        "Label": "English",
+        "Level": "WORKING_PROFICIENCY"
+      },
+      {
+        "Label": "Vietnamese",
+        "Level": "NATIVE_BILINGUAL"
+      }
+    ]
+  }
