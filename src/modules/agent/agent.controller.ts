@@ -12,13 +12,14 @@ import { CompanyAgentDto } from './dto';
 import { Agent } from 'database/entities/agent.entity';
 import { User } from '@entities';
 import { PromptDto } from './dto/prompt-data.dto';
+import { RolesGuard } from '../auth/guard/role.guard';
 
 @Controller('agent')
 @ApiTags('Agent')
 export class AgentController {
   constructor(private readonly agentService: AgentService) {}
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
   @AiAssistantApiResponse(Agent)

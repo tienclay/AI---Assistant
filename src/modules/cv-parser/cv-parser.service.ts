@@ -8,25 +8,26 @@ import { extractJSONObject } from 'src/common/utils/extract-json.util';
 import { plainToInstance } from 'class-transformer';
 import { AIAssistantntBadRequestException } from 'src/common/infra-exception';
 
-
-
 @Injectable()
 export class CvParserService {
   constructor(
     private readonly aiService: AIService,
     @InjectRepository(Agent)
     private readonly agentRepository: Repository<Agent>,
-  ) { }
+  ) {}
 
   async uploadAndParseCv(url: string): Promise<any> {
     const agent = await this.agentRepository.findOneByOrFail({
       companyName: 'CV_Parser',
     });
 
-    await this.aiService.loadKnowledge(agent.userId, agent.id, [url]);
+    await this.aiService.loadKnowledge(agent.userId, agent.id, [], [url]);
 
     try {
-      const agentRun = await this.aiService.createAgentRun(agent.id, 'parse-cv');
+      const agentRun = await this.aiService.createAgentRun(
+        agent.id,
+        'parse-cv',
+      );
 
       const message = await this.aiService.sendMessage(agent.id, {
         message: 'Parse this Cv into Json for me',
@@ -52,10 +53,8 @@ export class CvParserService {
 
       await this.aiService.clearRecordsInCollection(agent.id);
       return parseCvRes;
-    }
-
-    catch (error) {
-      throw new AIAssistantntBadRequestException(error.message)
+    } catch (error) {
+      throw new AIAssistantntBadRequestException(error.message);
     }
   }
 }

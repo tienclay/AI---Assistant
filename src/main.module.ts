@@ -46,11 +46,6 @@ const modules = [
       provide: APP_FILTER,
       useClass: GlobalHandleExceptionFilter,
     },
-
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: RolesGuard,
-    // },
   ],
 })
 export class AppModule {}

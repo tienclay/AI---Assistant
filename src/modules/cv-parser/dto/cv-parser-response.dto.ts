@@ -117,7 +117,7 @@ export class ParseCvResponseDto {
 
   @ApiProperty({ example: 1 })
   @Expose()
-  totalYearOfExperience: number | null;
+  totalYearsOfExperience: number | null;
 
   @ApiProperty({ example: 'Ho Chi Minh' })
   @Expose()

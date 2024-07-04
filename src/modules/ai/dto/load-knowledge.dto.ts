@@ -7,5 +7,13 @@ export class LoadKnowledgeDto {
     format: 'binary',
     description: 'file supported: pdf,doc,docx,rtf,html, size: < 5MB',
   })
-  urls: string[];
+  websiteUrls: string[];
+
+  @ApiProperty({
+    type: 'string',
+    isArray: true,
+    format: 'binary',
+    description: 'file supported: pdf,doc,docx,rtf,html, size: < 5MB',
+  })
+  pdfUrls: string[];
 }

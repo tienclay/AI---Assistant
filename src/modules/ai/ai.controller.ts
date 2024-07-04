@@ -42,7 +42,12 @@ export class AIController {
     @Param('agentId') agentId: string,
     @Body() dto: LoadKnowledgeDto,
   ): Promise<boolean> {
-    return this.aiService.loadKnowledge(user.id, agentId, dto.urls);
+    return this.aiService.loadKnowledge(
+      user.id,
+      agentId,
+      dto.websiteUrls,
+      dto.pdfUrls,
+    );
   }
 
   @Post(':agentId/create-run')
@@ -57,7 +62,6 @@ export class AIController {
   }
 
   @Post(':agentId/chat')
-  @Roles(UserRole.CLIENT)
   @HttpCode(HttpStatus.OK)
   @AiAssistantApiResponse(Boolean)
   AgentAssistantChat(
