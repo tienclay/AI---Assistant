@@ -1,77 +1,75 @@
 export const parseCvPrompt: string = `
 Resume Parsing Request
-Please enter your resume details in the provided structured format, ensuring accurate completion of each section for proper parsing. If any data is missing in a section, please leave it empty. The AI will provide a JSON object of type ParseCvResponseDto in response. If a section contains no data, please return null for that section.
 
-Personal Information
-First Name:
-Last Name:
-Gender (MALE, FEMALE, OTHERS):
-Date of Birth (YYYY-MM-DD):
-Email:
-Phone Code (e.g., +1):
-Phone:
-Title (Current Job Title):
-Summary (Brief Professional Summary):
-Total Years of Experience:
-Location (City, Country):
+Please provide your resume details in the structured format below, ensuring accurate completion of each section. If any data is missing, please leave the corresponding field empty. The AI will generate a JSON object of type ParseCvResponseDto as a response. If a section contains no data, please return null for that section.
 
-Work Experience
-Please list your work experiences in the following format. Repeat for each job if you have multiple experiences.
+Personal Information:
+
+firstName (string):
+lastName (string):
+gender (string) [MALE, FEMALE, OTHERS]:
+dateOfBirth (string) [YYYY-MM-DD]:
+email (string):
+phoneCode (string) [e.g., +1]:
+phone (string):
+title (string) [Current Job Title]:
+summary (string) [Brief Professional Summary]:
+totalExperience (string) [Total Year of Experience]:
+location (string) [City, Country]:
+Work Experience:
+Please provide details for each work experience in the following format. Repeat the section for each job if you have multiple experiences.
 
 Work Experience #1:
 
-Company Name:
-Position:
-From Month (1-12):
-From Year (YYYY):
-To Month (1-12):
-To Year (YYYY):
-Description:
+companyName (string):
+position (string):
+fromMonth (integer) [1-12]:
+fromYear (integer) [YYYY]:
+toMonth (integer) [1-12]:
+toYear (integer) [YYYY]:
+description (string):
 Work Experience #2:
 
-Company Name:
-Position:
-From Month (1-12):
-From Year (YYYY):
-To Month (1-12):
-To Year (YYYY):
-Description:
-Education
-Please list your educational qualifications in the following format. Repeat for each degree if you have multiple qualifications.
+companyName (string):
+position (string):
+fromMonth (integer) [1-12]:
+fromYear (integer) [YYYY]:
+toMonth (integer) [1-12]:
+toYear (integer) [YYYY]:
+description (string):
+Education:
+Please provide details for each educational qualification in the following format. Repeat the section for each degree if you have multiple qualifications.
 
 Education #1:
 
-Institution Name:
-Degree:
-From Month (1-12):
-From Year (YYYY):
-To Month (1-12):
-To Year (YYYY):
+institutionName (string):
+degree (string):
+fromMonth (integer) [1-12]:
+fromYear (integer) [YYYY]:
+toMonth (integer) [1-12]:
+toYear (integer) [YYYY]:
 Education #2:
 
-Institution Name:
-Degree:
-From Month (1-12):
-From Year (YYYY):
-To Month (1-12):
-To Year (YYYY):
-Skills
+institutionName (string):
+degree (string):
+fromMonth (integer) [1-12]:
+fromYear (integer) [YYYY]:
+toMonth (integer) [1-12]:
+toYear (integer) [YYYY]:
+Skills:
 Please list your skills as a comma-separated list.
 
-Skills: (e.g., JavaScript, TypeScript, Python)
-
-Languages
-Please list the languages you speak and your proficiency level (e.g., Beginner, Intermediate, Advanced, Native). Repeat for each language.
+skills (string) [e.g., JavaScript, TypeScript, Python]
+Languages:
+Please list the languages you speak and your proficiency level. Repeat the section for each language.
 
 Language #1:
 
-Label:
-Level (BASIC, CONVERSATIONAL, WORKING_PROFICIENCY, FLUENT, NATIVE_BILINGUAL):
+label (string):
+level (string) [BASIC, CONVERSATIONAL, WORKING_PROFICIENCY, FLUENT, NATIVE_BILINGUAL]:
 Language #2:
 
-Label:
-Level (BASIC, CONVERSATIONAL, WORKING_PROFICIENCY, FLUENT, NATIVE_BILINGUAL):
-
-
-
+label (string):
+level (string) [BASIC, CONVERSATIONAL, WORKING_PROFICIENCY, FLUENT, NATIVE_BILINGUAL]:
+Please ensure that the response adheres to this interface exactly, including camel case naming conventions.
 `;

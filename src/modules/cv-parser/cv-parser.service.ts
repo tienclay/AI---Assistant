@@ -6,6 +6,9 @@ import { Repository } from 'typeorm';
 import { Agent } from '@entities';
 import { extractJSONObject } from 'src/common/utils/extract-json.util';
 import { plainToInstance } from 'class-transformer';
+import { AIAssistantntBadRequestException } from 'src/common/infra-exception';
+
+
 
 @Injectable()
 export class CvParserService {
@@ -13,7 +16,7 @@ export class CvParserService {
     private readonly aiService: AIService,
     @InjectRepository(Agent)
     private readonly agentRepository: Repository<Agent>,
-  ) {}
+  ) { }
 
   async uploadAndParseCv(url: string): Promise<any> {
     const agent = await this.agentRepository.findOneByOrFail({
@@ -22,30 +25,38 @@ export class CvParserService {
 
     await this.aiService.loadKnowledge(agent.userId, agent.id, [url]);
 
-    const agentRun = await this.aiService.createAgentRun(agent.id, 'parse-cv');
+    try {
+      const agentRun = await this.aiService.createAgentRun(agent.id, 'parse-cv');
 
-    const message = await this.aiService.sendMessage(agent.id, {
-      message: 'Parse this Cv into Json for me',
-      runId: agentRun.runId,
-      userId: agentRun.userId,
-    });
+      const message = await this.aiService.sendMessage(agent.id, {
+        message: 'Parse this Cv into Json for me',
+        runId: agentRun.runId,
+        userId: agentRun.userId,
+      });
 
-    const jsonObj = extractJSONObject(message.data);
+      const jsonObj = extractJSONObject(message.data);
 
-    const parseCvRes = plainToInstance(ParseCvResponseDto, {
-      ...(jsonObj['personalInformation'] ||
-        jsonObj['personal_information'] ||
-        jsonObj['PersonalInformation']),
-      workExperiences:
-        jsonObj['WorkExperience'] ||
-        jsonObj['workExperience'] ||
-        jsonObj['work_experience'],
-      educations: jsonObj['Education'] || jsonObj['education'],
-      skills: jsonObj['Skills'] || jsonObj['skills'],
-      languages: jsonObj['Languages'] || jsonObj['languages'],
-    });
+      const parseCvRes = plainToInstance(ParseCvResponseDto, {
+        ...jsonObj,
+        // ...(jsonObj['personalInformation'] ||
+        //   jsonObj['personal_information'] ||
+        //   jsonObj['PersonalInformation']),
+        workExperiences:
+          jsonObj['WorkExperience'] ||
+          jsonObj['workExperience'] ||
+          jsonObj['work_experience'],
+        educations: jsonObj['Education'] || jsonObj['education'],
+        skills: jsonObj['Skills'] || jsonObj['skills'],
+        languages: jsonObj['Languages'] || jsonObj['languages'],
+      });
 
-    await this.aiService.clearRecordsInCollection(agent.id);
-    return parseCvRes;
+      await this.aiService.clearRecordsInCollection(agent.id);
+      return parseCvRes;
+    }
+
+    catch (error) {
+      throw new AIAssistantntBadRequestException(error.message)
+    }
+
   }
 }
