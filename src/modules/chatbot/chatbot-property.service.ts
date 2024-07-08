@@ -6,8 +6,10 @@ import {
   ChatbotPersonaDto,
   ChatbotPromptDto,
 } from './dto/chatbot-property.dto';
-import { Persona } from '@entities';
+import { Knowledge, Persona } from '@entities';
 import { AIAssistantBadRequestException } from 'src/common/infra-exception';
+import { ChatbotKnowledgeDto } from './dto';
+import { ChatbotService } from './chatbot.service';
 
 @Injectable()
 export class ChatbotPropertyService {
@@ -107,5 +109,43 @@ export class ChatbotPropertyService {
       where: { chatbotId },
       relations: ['persona', 'prompt', 'knowledge'],
     });
+  }
+
+  async loadChatbotKnowledge(
+    chatbotId: string,
+    userId: string,
+    knowledgeDto: ChatbotKnowledgeDto,
+  ): Promise<boolean> {
+    const property = await this.chatbotPropertyRepository.findOne({
+      where: { chatbotId },
+    });
+
+    if (property.knowledgeId) {
+      throw new Error('This chatbot already has knowledge');
+    }
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const knowledge = await queryRunner.manager.save(Knowledge, {
+        ...knowledgeDto,
+        chatbotId,
+      });
+
+      await queryRunner.manager.update(ChatbotProperty, property.id, {
+        knowledgeId: knowledge.id,
+      });
+
+      await queryRunner.commitTransaction();
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new AIAssistantBadRequestException(error.message);
+    } finally {
+      await queryRunner.release();
+    }
+
+    return true;
   }
 }
