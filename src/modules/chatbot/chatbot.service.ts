@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Chatbot } from '@entities';
 import { Repository } from 'typeorm';
 import { AIAssistantForbiddenException } from 'src/common/infra-exception';
+import { ChatbotKnowledgeDto } from './dto';
 
 @Injectable()
 export class ChatbotService {

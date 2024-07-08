@@ -37,6 +37,8 @@ export class CvParserService {
 
       const jsonObj = extractJSONObject(message.data);
 
+      const skills = jsonObj['Skills'] || jsonObj['skills'];
+
       const parseCvRes = plainToInstance(ParseCvResponseDto, {
         ...jsonObj,
         // ...(jsonObj['personalInformation'] ||
@@ -47,7 +49,9 @@ export class CvParserService {
           jsonObj['workExperience'] ||
           jsonObj['work_experience'],
         educations: jsonObj['Education'] || jsonObj['education'],
-        skills: jsonObj['Skills'] || jsonObj['skills'],
+        skills: Array.isArray(skills)
+          ? skills
+          : skills.replace(', ', ',').split(','),
         languages: jsonObj['Languages'] || jsonObj['languages'],
       });
 
