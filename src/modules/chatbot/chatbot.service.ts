@@ -1,26 +1,66 @@
 import { Injectable } from '@nestjs/common';
 import { CreateChatbotDto } from './dto/create-chatbot.dto';
 import { UpdateChatbotDto } from './dto/update-chatbot.dto';
+import { ChatbotPropertyService } from './chatbot-property.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Chatbot } from '@entities';
+import { Repository } from 'typeorm';
+import { AIAssistantForbiddenException } from 'src/common/infra-exception';
 
 @Injectable()
 export class ChatbotService {
-  create(createChatbotDto: CreateChatbotDto) {
-    return 'This action adds a new chatbot';
+  constructor(
+    @InjectRepository(Chatbot)
+    private readonly chatbotRepository: Repository<Chatbot>,
+    private readonly chatbotPropertyService: ChatbotPropertyService,
+  ) {}
+
+  createChatbot(userId: string, dto: CreateChatbotDto): Promise<Chatbot> {
+    const chatbotInput = this.chatbotRepository.create({
+      ...dto,
+      createdById: userId,
+    });
+    return this.chatbotRepository.save(chatbotInput);
   }
 
-  findAll() {
-    return `This action returns all chatbot`;
+  getAllCompanyChatbot(userId: string): Promise<Chatbot[]> {
+    return this.chatbotRepository.find({ where: { createdById: userId } });
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} chatbot`;
+  async getChatbotWithUserId(id: string, userId: string): Promise<Chatbot> {
+    const chatbot = await this.chatbotRepository.findOne({
+      where: { id },
+    });
+
+    if (chatbot.createdById !== userId) {
+      throw new AIAssistantForbiddenException(
+        'You are not allowed to access this chatbot',
+      );
+    }
+    return chatbot;
   }
 
-  update(id: string, updateChatbotDto: UpdateChatbotDto) {
-    return `This action updates a #${id} chatbot`;
+  async update(
+    id: string,
+    userId: string,
+    updateChatbotDto: UpdateChatbotDto,
+  ): Promise<boolean> {
+    // check if user id is owner of this chatbot or not
+    await this.getChatbotWithUserId(id, userId);
+
+    const updated = await this.chatbotRepository.update(id, updateChatbotDto);
+
+    if (updated.affected === 0) {
+      return false;
+    }
+
+    return true;
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} chatbot`;
+  async remove(id: string, userId: string): Promise<void> {
+    await this.chatbotRepository.softDelete({
+      id,
+      createdById: userId,
+    });
   }
 }

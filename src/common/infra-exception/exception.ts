@@ -34,14 +34,14 @@ type DataError = {
   [key: string]: { [key: string]: string } | null;
 };
 
-export class AIAssistantntBadRequestException extends Exception {
+export class AIAssistantBadRequestException extends Exception {
   constructor(message: string, data?: unknown) {
     super(HttpStatus.BAD_REQUEST, message, data);
   }
 
   static fromValidationErrors(
     errors: ValidationError[],
-  ): AIAssistantntBadRequestException {
+  ): AIAssistantBadRequestException {
     const data: DataError = {};
     const parseErrors = (
       errs: ValidationError[],
@@ -62,23 +62,23 @@ export class AIAssistantntBadRequestException extends Exception {
     };
     parseErrors(errors, data);
 
-    return new AIAssistantntBadRequestException('Validation failed', data);
+    return new AIAssistantBadRequestException('Validation failed', data);
   }
 }
 
-export class AIAssistantntUnauthorizedException extends Exception {
+export class AIAssistantUnauthorizedException extends Exception {
   constructor(message: string, data?: unknown) {
     super(HttpStatus.UNAUTHORIZED, message, data);
   }
 }
 
-export class AIAssistantntForbiddenException extends Exception {
+export class AIAssistantForbiddenException extends Exception {
   constructor(message: string, data?: unknown) {
     super(HttpStatus.FORBIDDEN, message, data);
   }
 }
 
-export class AIAssistantntNotFoundException extends Exception {
+export class AIAssistantNotFoundException extends Exception {
   constructor(message: string, data?: unknown) {
     super(HttpStatus.NOT_FOUND, message, data);
   }
