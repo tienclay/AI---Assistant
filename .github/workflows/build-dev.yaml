@@ -49,6 +49,7 @@ jobs:
           username: ${{vars.SSH_USER}}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            cd /home/massbit/heydevs_dev/ai-chatbot-api
             git checkout dev
             git pull
             npm run build
