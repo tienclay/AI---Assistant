@@ -50,7 +50,24 @@ export class ChatbotService {
 
     const updated = await this.chatbotRepository.update(id, updateChatbotDto);
 
-    if (updated.affected === 0) {
+    let propertyUpdate = false;
+    if (updateChatbotDto.persona) {
+      await this.chatbotPropertyService.addingPersona(
+        id,
+        updateChatbotDto.persona,
+      );
+      propertyUpdate = true;
+    }
+
+    if (updateChatbotDto.prompt) {
+      await this.chatbotPropertyService.addingPrompt(
+        id,
+        updateChatbotDto.prompt,
+      );
+      propertyUpdate = true;
+    }
+
+    if (updated.affected === 0 && !propertyUpdate) {
       return false;
     }
 
