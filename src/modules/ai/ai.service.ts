@@ -52,7 +52,8 @@ export class AIService {
   async loadKnowledge(
     clientId: string,
     agentId: string,
-    urls: string[],
+    websiteUrls?: string[],
+    pdfUrls?: string[],
   ): Promise<boolean> {
     await this.agentRepository.findOneByOrFail({
       id: agentId,
@@ -65,7 +66,8 @@ export class AIService {
     const loadKnowledgeInput: LoadKnowledgeInterface = {
       assistant: AiAssistantType.RAG_PDF,
       agent_collection_name: agentInfo.collectionName,
-      urls,
+      website_urls: websiteUrls,
+      pdf_urls: pdfUrls,
       prompt: agentInfo.prompt,
     };
 

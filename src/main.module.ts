@@ -10,6 +10,9 @@ import { UserModule } from './modules/admin/admin.module';
 import { AgentModule } from './modules/agent/agent.module';
 import { FileModule } from './modules/file/file.module';
 import { CvParserModule } from './modules/cv-parser/cv-parser.module';
+import { ChatbotModule } from './modules/chatbot/chatbot.module';
+import { ConversationModule } from './modules/conversation/conversation.module';
+import { NamingStrategy } from 'database/typeorm/naming.strategy';
 
 const modules = [
   AuthModule,
@@ -40,17 +43,16 @@ const modules = [
     }),
 
     ...modules,
+
+    ChatbotModule,
+
+    ConversationModule,
   ],
   providers: [
     {
       provide: APP_FILTER,
       useClass: GlobalHandleExceptionFilter,
     },
-
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: RolesGuard,
-    // },
   ],
 })
 export class AppModule {}

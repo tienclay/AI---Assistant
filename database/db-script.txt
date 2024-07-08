@@ -1,0 +1,96 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+
+Table users {
+  id uuid [primary key]
+  fistName varchar
+  lastName varchar 
+  email varchar 
+  password varchar
+  role enum // admin, agent, user
+  created_at timestamp
+}
+
+Table participants {
+  id uuid [primary key]
+  name varchar
+}
+
+Table chatbot {
+  id uuid [primary key]
+  title varchar
+  description varchar
+  createdById uuid
+  suggestion any
+}
+
+
+Table conversation {
+  id uuid [primary key]
+  chatbotId uuid 
+  title varchar 
+  participantId varchar
+  lastMessageId uuid
+}
+
+
+Table message {
+  id uuid [primary key]
+  content varchar
+  messageSender enum // BOT AGENT
+  participantId uuid 
+}
+
+Table ChatbotProperty {
+  id uuid [primary key]
+  chatbotId uuid
+  promptId uuid
+  personaId uuid
+  knowledgeId uuid
+}
+
+
+Table Knowledge {
+  id uuid [primary key]
+  plainText varchar
+  linkIds uuid[]
+  fileIds uuid[]
+}
+
+Table File {
+  id uuid [primary key]
+  key varchar
+  type enum // image, video, audio, attachment
+  originalName varchar
+}
+
+
+
+Table prompt {
+  id uuid [primary key]
+  chatbotId uuid [primary key]
+  title varchar
+  description varchar
+}
+
+Table persona {
+  id uuid [primary key]
+  chatbotId uuid [primary key]
+  title varchar
+  description varchar
+}
+
+
+Ref: chatbot.createdById - users.id
+Ref: chatbot.id < conversation.chatbotId 
+Ref: conversation.lastMessageId < message.id
+Ref: chatbot.id - ChatbotProperty.chatbotId
+Ref: persona.id - ChatbotProperty.personaId
+Ref: prompt.id - ChatbotProperty.promptId
+Ref: ChatbotProperty.knowledgeId - Knowledge.id
+Ref: Knowledge.fileIds < File.id
+Ref: conversation.participantId - participants.id
+Ref: message.participantId - participants.id
+
+
