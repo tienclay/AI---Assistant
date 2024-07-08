@@ -18,9 +18,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard, RolesGuard } from '../auth/guard';
-import { CurrentUser, Roles } from 'src/common/decorators';
+import {
+  AiAssistantApiResponse,
+  CurrentUser,
+  Roles,
+} from 'src/common/decorators';
 import { UserRole } from 'src/common/enums';
 import { User } from '@entities';
+import { ChatbotResponse } from './dto/chatbot-response.dto';
 
 @Controller('chatbot')
 @ApiTags('Chatbot')
@@ -29,41 +34,53 @@ export class ChatbotController {
 
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.CLIENT)
   @ApiOperation({ summary: 'Create a new chat bot' })
   @ApiBearerAuth('access-token')
-  create(@Body() createChatbotDto: CreateChatbotDto) {
-    return this.chatbotService.create(createChatbotDto);
+  @AiAssistantApiResponse(ChatbotResponse)
+  createCompanyChatbot(
+    @Body() createChatbotDto: CreateChatbotDto,
+    @CurrentUser() user: User,
+  ) {
+    return this.chatbotService.createChatbot(user.id, createChatbotDto);
   }
 
   @Get()
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Create a new chat bot' })
+  @Roles(UserRole.CLIENT)
+  @ApiOperation({ summary: 'Get all user client chat bot' })
   @ApiBearerAuth('access-token')
-  findAll(@CurrentUser() user: User) {
-    return this.chatbotService.findAll();
+  @AiAssistantApiResponse(ChatbotResponse)
+  getAllCompanyChatbot(@CurrentUser() user: User) {
+    return this.chatbotService.getAllCompanyChatbot(user.id);
   }
 
   @Get(':id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.CLIENT)
   @ApiOperation({ summary: 'Get a chat bot' })
   @ApiBearerAuth('access-token')
-  findOne(@Param('id') id: string) {
-    return this.chatbotService.findOne(id);
+  getChatbot(@Param('id') id: string, @CurrentUser() user: User) {
+    return this.chatbotService.getChatbotWithUserId(id, user.id);
   }
 
   @Patch(':id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Get a chat bot' })
-  update(@Param('id') id: string, @Body() updateChatbotDto: UpdateChatbotDto) {
-    return this.chatbotService.update(id, updateChatbotDto);
+  @Roles(UserRole.CLIENT)
+  @ApiOperation({ summary: 'Update a chat bot' })
+  update(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+    @Body() updateChatbotDto: UpdateChatbotDto,
+  ) {
+    return this.chatbotService.update(id, user.id, updateChatbotDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.chatbotService.remove(id);
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.CLIENT)
+  @ApiOperation({ summary: 'Delete a chat bot' })
+  remove(@Param('id') id: string, @CurrentUser() user: User) {
+    return this.chatbotService.remove(id, user.id);
   }
 }

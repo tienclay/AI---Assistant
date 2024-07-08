@@ -12,6 +12,8 @@ export class ConversationService {
     return `This action returns all conversation`;
   }
 
+  getParticipantConversation(participantId: string) {}
+
   findOne(id: number) {
     return `This action returns a #${id} conversation`;
   }

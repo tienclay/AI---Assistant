@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { Agent } from '@entities';
 import { extractJSONObject } from 'src/common/utils/extract-json.util';
 import { plainToInstance } from 'class-transformer';
-import { AIAssistantntBadRequestException } from 'src/common/infra-exception';
+import { AIAssistantBadRequestException } from 'src/common/infra-exception';
 
 @Injectable()
 export class CvParserService {
@@ -54,7 +54,7 @@ export class CvParserService {
       await this.aiService.clearRecordsInCollection(agent.id);
       return parseCvRes;
     } catch (error) {
-      throw new AIAssistantntBadRequestException(error.message);
+      throw new AIAssistantBadRequestException(error.message);
     }
   }
 }

@@ -1,15 +1,14 @@
+import { User } from '@entities';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
-import { Column } from 'typeorm';
+import { AuthPayloadDto } from 'src/modules/auth/dto';
 
-export class CreateChatbotDto {
-  @IsString()
-  @Column({ type: 'varchar' })
+export class ChatbotResponse {
   @ApiProperty({ example: 'Codelight' })
   title: string;
 
-  @IsString()
-  @Column({ type: 'varchar' })
   @ApiProperty({ example: 'This assistant will help you with your queries' })
   description: string;
+
+  @ApiProperty()
+  creator: AuthPayloadDto; // Assuming you have a User entity defined
 }

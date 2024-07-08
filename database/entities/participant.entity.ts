@@ -3,6 +3,6 @@ import { BaseEntity } from './base.entity';
 
 @Entity()
 export class Participant extends BaseEntity {
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   name: string;
 }
