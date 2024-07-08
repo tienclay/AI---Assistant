@@ -48,19 +48,22 @@ export class ChatbotController {
   @Get(':id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Create a new chat bot' })
+  @ApiOperation({ summary: 'Get a chat bot' })
   @ApiBearerAuth('access-token')
   findOne(@Param('id') id: string) {
     return this.chatbotService.findOne(id);
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Get a chat bot' })
   update(@Param('id') id: string, @Body() updateChatbotDto: UpdateChatbotDto) {
-    return this.chatbotService.update(+id, updateChatbotDto);
+    return this.chatbotService.update(id, updateChatbotDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.chatbotService.remove(+id);
+    return this.chatbotService.remove(id);
   }
 }

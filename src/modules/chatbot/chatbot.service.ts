@@ -16,11 +16,11 @@ export class ChatbotService {
     return `This action returns a #${id} chatbot`;
   }
 
-  update(id: number, updateChatbotDto: UpdateChatbotDto) {
+  update(id: string, updateChatbotDto: UpdateChatbotDto) {
     return `This action updates a #${id} chatbot`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} chatbot`;
   }
 }
