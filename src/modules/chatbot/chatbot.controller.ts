@@ -27,15 +27,11 @@ import { UserRole } from 'src/common/enums';
 import { User } from '@entities';
 import { ChatbotResponse } from './dto/chatbot-response.dto';
 import { ChatbotKnowledgeDto } from './dto';
-import { ChatbotPropertyService } from './chatbot-property.service';
 
 @Controller('chatbot')
 @ApiTags('Chatbot')
 export class ChatbotController {
-  constructor(
-    private readonly chatbotService: ChatbotService,
-    private readonly chatbotPropertyService: ChatbotPropertyService,
-  ) {}
+  constructor(private readonly chatbotService: ChatbotService) {}
 
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
@@ -69,35 +65,35 @@ export class ChatbotController {
     return this.chatbotService.getChatbotWithUserId(id, user.id);
   }
 
-  @Patch(':id')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.CLIENT)
-  @ApiOperation({ summary: 'Update a chat bot' })
-  update(
-    @Param('id') id: string,
-    @CurrentUser() user: User,
-    @Body() updateChatbotDto: UpdateChatbotDto,
-  ) {
-    return this.chatbotService.update(id, user.id, updateChatbotDto);
-  }
+  // @Patch(':id')
+  // @UseGuards(AuthGuard, RolesGuard)
+  // @Roles(UserRole.CLIENT)
+  // @ApiOperation({ summary: 'Update a chat bot' })
+  // update(
+  //   @Param('id') id: string,
+  //   @CurrentUser() user: User,
+  //   @Body() updateChatbotDto: UpdateChatbotDto,
+  // ) {
+  //   return this.chatbotService.update(id, user.id, updateChatbotDto);
+  // }
 
-  @Patch(':id/load-knowledge')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.CLIENT)
-  @ApiOperation({ summary: 'Update a chat bot' })
-  loadChatbotKnowledge(
-    @Param('id') id: string,
-    @CurrentUser() user: User,
-    @Body() dto: ChatbotKnowledgeDto,
-  ) {
-    return this.chatbotPropertyService.loadChatbotKnowledge(id, user.id, dto);
-  }
+  // @Patch(':id/load-knowledge')
+  // @UseGuards(AuthGuard, RolesGuard)
+  // @Roles(UserRole.CLIENT)
+  // @ApiOperation({ summary: 'Update a chat bot' })
+  // loadChatbotKnowledge(
+  //   @Param('id') id: string,
+  //   @CurrentUser() user: User,
+  //   @Body() dto: ChatbotKnowledgeDto,
+  // ) {
+  //   return this.chatbotPropertyService.loadChatbotKnowledge(id, user.id, dto);
+  // }
 
-  @Delete(':id')
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.CLIENT)
-  @ApiOperation({ summary: 'Delete a chat bot' })
-  remove(@Param('id') id: string, @CurrentUser() user: User) {
-    return this.chatbotService.remove(id, user.id);
-  }
+  // @Delete(':id')
+  // @UseGuards(AuthGuard, RolesGuard)
+  // @Roles(UserRole.CLIENT)
+  // @ApiOperation({ summary: 'Delete a chat bot' })
+  // remove(@Param('id') id: string, @CurrentUser() user: User) {
+  //   return this.chatbotService.remove(id, user.id);
+  // }
 }

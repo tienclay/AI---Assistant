@@ -29,7 +29,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
-  @Post('upload/:id')
+  @Post('upload/:agent_id')
   @UseGuards(AuthGuard)
   @Roles(UserRole.CLIENT)
   @ApiBearerAuth('access-token')
@@ -39,7 +39,7 @@ export class FileController {
   @UseInterceptors(FileInterceptor('file'))
   @AiAssistantApiResponse(File)
   uploadUserImage(
-    @Param('id') id: string,
+    @Param('agent_id') id: string,
     @Body() data: UploadFileDto,
     @UploadedFile(new UploadFilePipe())
     file: Express.Multer.File,

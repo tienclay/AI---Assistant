@@ -35,25 +35,24 @@ export class CvParserService {
         userId: agentRun.userId,
       });
 
+      console.log('message.data :>> ', message.data);
+
       const jsonObj = extractJSONObject(message.data);
 
-      const skills = jsonObj['Skills'] || jsonObj['skills'];
+      const skills = jsonObj['skills'];
 
       const parseCvRes = plainToInstance(ParseCvResponseDto, {
-        ...jsonObj,
-        // ...(jsonObj['personalInformation'] ||
-        //   jsonObj['personal_information'] ||
-        //   jsonObj['PersonalInformation']),
+        ...jsonObj['personalInformation'],
         workExperiences:
-          jsonObj['WorkExperience'] ||
-          jsonObj['workExperience'] ||
-          jsonObj['work_experience'],
-        educations: jsonObj['Education'] || jsonObj['education'],
+          // jsonObj['WorkExperience'] ||
+          jsonObj['workExperience'],
+        // jsonObj['work_experience'],
+        educations: jsonObj['education'],
         skills: (Array.isArray(skills)
           ? skills
           : skills.replace(', ', ',').split(',')
         ).map((skill) => skill.trim()),
-        languages: jsonObj['Languages'] || jsonObj['languages'],
+        languages: jsonObj['languages'],
       });
 
       await this.aiService.clearRecordsInCollection(agent.id);
