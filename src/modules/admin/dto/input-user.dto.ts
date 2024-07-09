@@ -15,3 +15,14 @@ export class UserInputDto {
   @ApiProperty({ example: '12345678' })
   password?: string;
 }
+
+export class UserUpdateDto {
+  @IsString()
+  @ApiProperty({ example: 'Thanh' })
+  name: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ example: '12345678' })
+  password?: string;
+}

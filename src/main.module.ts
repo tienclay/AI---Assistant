@@ -44,9 +44,9 @@ const modules = [
 
     ...modules,
 
-    ChatbotModule,
+    // ChatbotModule,
 
-    ConversationModule,
+    // ConversationModule,
   ],
   providers: [
     {

@@ -16,4 +16,10 @@ export class Chatbot extends BaseEntity {
   @JoinColumn({ name: 'created_by_id' })
   @ManyToOne(() => User, (user) => user.id)
   creator: User;
+
+  @Column('text', { nullable: true })
+  prompt: string;
+
+  @Column('text', { nullable: true })
+  instruction: string;
 }

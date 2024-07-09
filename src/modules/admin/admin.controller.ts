@@ -21,11 +21,6 @@ import { PromptDto } from '../agent/dto/prompt-data.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  createCompanyAgent() {
-    // create user profile
-    // create agent
-  }
-
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
@@ -34,6 +29,7 @@ export class UserController {
   async create(@Body() userInputDto: UserInputDto): Promise<UserOutputDto> {
     return this.userService.createUser(userInputDto);
   }
+
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
@@ -51,6 +47,7 @@ export class UserController {
   async getAllClient(): Promise<UserOutputDto[]> {
     return this.userService.getAllClient();
   }
+
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
@@ -59,6 +56,7 @@ export class UserController {
   getPrompt() {
     return this.userService.getPrompt();
   }
+
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
@@ -76,6 +74,7 @@ export class UserController {
   update(@Param('id') id: string, @Body() updateUserDto: UserInputDto) {
     return this.userService.update(id, updateUserDto);
   }
+
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
