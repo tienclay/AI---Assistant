@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'database/entities/user.entity';
 import { Repository } from 'typeorm';
-import { UserInputDto, UserOutputDto } from './dto';
+import { UserInputDto, UserOutputDto, UserUpdateDto } from './dto';
 import { hashPassword } from 'src/common/utils/hash-password.util';
 import { plainToInstance } from 'class-transformer';
 import { PromptDto } from '../agent/dto/prompt-data.dto';
@@ -33,20 +33,22 @@ export class UserService {
       throw new BadRequestException('User already exists');
     }
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
   async getAllClient(): Promise<UserOutputDto[]> {
-    return this.userRepository.find({
+    const client = await this.userRepository.find({
       where: {
         role: UserRole.CLIENT,
       },
     });
+
+    return plainToInstance(UserOutputDto, client);
   }
 
   async findAll(): Promise<UserOutputDto[]> {
     const users = await this.userRepository.find();
     return users.map((user) => plainToInstance(UserOutputDto, user));
   }
+
   async remove(id: string) {
     try {
       await this.userRepository.update({ id }, { status: UserStatus.INACTIVE });
@@ -55,14 +57,22 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
   }
-  async update(id: string, updateUserDto: UserInputDto) {
+
+  async update(id: string, updateUserDto: UserUpdateDto) {
     try {
-      await this.userRepository.update({ id }, updateUserDto);
+      await this.userRepository.update(
+        { id },
+        {
+          ...updateUserDto,
+          password: await hashPassword(updateUserDto.password),
+        },
+      );
       return plainToInstance(UserOutputDto, updateUserDto);
     } catch (error) {
       throw new NotFoundException('User not found');
     }
   }
+
   async findOne(id: string): Promise<UserOutputDto> {
     try {
       const user = await this.userRepository.findOneByOrFail({ id });

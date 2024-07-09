@@ -9,7 +9,6 @@ import {
 import { Knowledge, Persona } from '@entities';
 import { AIAssistantBadRequestException } from 'src/common/infra-exception';
 import { ChatbotKnowledgeDto } from './dto';
-import { ChatbotService } from './chatbot.service';
 
 @Injectable()
 export class ChatbotPropertyService {

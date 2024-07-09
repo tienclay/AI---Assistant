@@ -13,9 +13,6 @@ export class UserOutputDto {
   email: string;
 
   @Expose()
-  password: string;
-
-  @Expose()
   status: UserStatus;
 
   @Expose()
