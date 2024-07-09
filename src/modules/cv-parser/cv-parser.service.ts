@@ -49,9 +49,10 @@ export class CvParserService {
           jsonObj['workExperience'] ||
           jsonObj['work_experience'],
         educations: jsonObj['Education'] || jsonObj['education'],
-        skills: Array.isArray(skills)
+        skills: (Array.isArray(skills)
           ? skills
-          : skills.replace(', ', ',').split(','),
+          : skills.replace(', ', ',').split(',')
+        ).map((skill) => skill.trim()),
         languages: jsonObj['Languages'] || jsonObj['languages'],
       });
 
