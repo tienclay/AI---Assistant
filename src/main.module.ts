@@ -13,6 +13,7 @@ import { CvParserModule } from './modules/cv-parser/cv-parser.module';
 import { ChatbotModule } from './modules/chatbot/chatbot.module';
 import { ConversationModule } from './modules/conversation/conversation.module';
 import { NamingStrategy } from 'database/typeorm/naming.strategy';
+import { AIChatbotModule } from './modules/ai-chatbot/ai.module';
 
 const modules = [
   AuthModule,
@@ -21,6 +22,7 @@ const modules = [
   AgentModule,
   FileModule,
   CvParserModule,
+  AIChatbotModule,
 ];
 
 @Module({
