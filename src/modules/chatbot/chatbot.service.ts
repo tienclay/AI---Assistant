@@ -28,9 +28,16 @@ export class ChatbotService {
   }
 
   async getChatbotWithUserId(id: string, userId: string): Promise<Chatbot> {
-    const chatbot = await this.chatbotRepository.findOne({
-      where: { id },
-    });
+    const chatbot = await this.chatbotRepository
+      .createQueryBuilder('chatbot')
+      .leftJoinAndMapOne(
+        'chatbot.knowledge',
+        Knowledge,
+        'knowledge',
+        'knowledge.chatbot_id = chatbot.id',
+      )
+      .where('chatbot.id = :chatbotId', { chatbotId: id })
+      .getOne();
 
     if (chatbot.createdById !== userId) {
       throw new AIAssistantForbiddenException(
@@ -66,9 +73,9 @@ export class ChatbotService {
     const curChatbotKnowledge = await this.knowledgeRepository.findOne({
       where: { chatbotId },
     });
-    if (curChatbotKnowledge) {
-      await this.knowledgeRepository.update(curChatbotKnowledge.id, dto);
-    }
+
+    await this.knowledgeRepository.delete(curChatbotKnowledge.id);
+
     await this.knowledgeRepository.save({
       ...dto,
       chatbotId,
