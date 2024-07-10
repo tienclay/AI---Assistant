@@ -5,9 +5,9 @@ import { BaseEntity } from './base.entity';
 @Entity()
 export class Chatbot extends BaseEntity {
   @Column({ type: 'varchar' })
-  title: string;
+  name: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   description: string;
 
   @Column({ type: 'uuid' })
