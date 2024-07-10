@@ -56,6 +56,19 @@ export class ChatbotController {
     return this.chatbotService.getAllCompanyChatbot(user.id);
   }
 
+  @Patch(':id/load-knowledge')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.CLIENT)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Update a chat bot' })
+  loadChatbotKnowledge(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+    @Body() dto: ChatbotKnowledgeDto,
+  ) {
+    return this.chatbotService.loadChatbotKnowledge(id, user.id, dto);
+  }
+
   @Get(':id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.CLIENT)
@@ -67,6 +80,7 @@ export class ChatbotController {
 
   @Patch(':id')
   @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @Roles(UserRole.CLIENT)
   @ApiOperation({ summary: 'Update a chat bot' })
   update(
@@ -77,22 +91,11 @@ export class ChatbotController {
     return this.chatbotService.update(id, user.id, updateChatbotDto);
   }
 
-  // @Patch(':id/load-knowledge')
-  // @UseGuards(AuthGuard, RolesGuard)
-  // @Roles(UserRole.CLIENT)
-  // @ApiOperation({ summary: 'Update a chat bot' })
-  // loadChatbotKnowledge(
-  //   @Param('id') id: string,
-  //   @CurrentUser() user: User,
-  //   @Body() dto: ChatbotKnowledgeDto,
-  // ) {
-  //   return this.chatbotPropertyService.loadChatbotKnowledge(id, user.id, dto);
+  @Delete(':id')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.CLIENT)
+  @ApiOperation({ summary: 'Delete a chat bot' })
+  remove(@Param('id') id: string, @CurrentUser() user: User) {
+    return this.chatbotService.remove(id, user.id);
+  }
 }
-
-// @Delete(':id')
-// @UseGuards(AuthGuard, RolesGuard)
-// @Roles(UserRole.CLIENT)
-// @ApiOperation({ summary: 'Delete a chat bot' })
-// remove(@Param('id') id: string, @CurrentUser() user: User) {
-//   return this.chatbotService.remove(id, user.id);
-// }

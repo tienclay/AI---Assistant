@@ -1,16 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { CreateChatbotDto } from './dto/create-chatbot.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Chatbot } from '@entities';
+import { Chatbot, Knowledge } from '@entities';
 import { Repository } from 'typeorm';
 import { AIAssistantForbiddenException } from 'src/common/infra-exception';
-import { UpdateChatbotDto } from './dto';
+import { ChatbotKnowledgeDto, UpdateChatbotDto } from './dto';
 
 @Injectable()
 export class ChatbotService {
   constructor(
     @InjectRepository(Chatbot)
     private readonly chatbotRepository: Repository<Chatbot>,
+    @InjectRepository(Knowledge)
+    private readonly knowledgeRepository: Repository<Knowledge>,
   ) {}
 
   createChatbot(userId: string, dto: CreateChatbotDto): Promise<Chatbot> {
@@ -55,10 +57,41 @@ export class ChatbotService {
     return true;
   }
 
-  // async remove(id: string, userId: string): Promise<void> {
-  //   await this.chatbotRepository.softDelete({
-  //     id,
-  //     createdById: userId,
-  //   });
-  // }
+  async loadChatbotKnowledge(
+    chatbotId: string,
+    userId: string,
+    dto: ChatbotKnowledgeDto,
+  ) {
+    await this.getChatbotWithUserId(chatbotId, userId);
+    const curChatbotKnowledge = await this.knowledgeRepository.findOne({
+      where: { chatbotId },
+    });
+    if (curChatbotKnowledge) {
+      await this.knowledgeRepository.update(curChatbotKnowledge.id, dto);
+    }
+    await this.knowledgeRepository.save({
+      ...dto,
+      chatbotId,
+    });
+
+    const chatbotKnowledge = await this.chatbotRepository
+      .createQueryBuilder('chatbot')
+      .leftJoinAndMapOne(
+        'chatbot.knowledge',
+        Knowledge,
+        'knowledge',
+        'knowledge.chatbot_id = chatbot.id',
+      )
+      .where('chatbot.id = :chatbotId', { chatbotId })
+      .getOne();
+
+    return chatbotKnowledge;
+  }
+
+  async remove(id: string, userId: string): Promise<void> {
+    await this.chatbotRepository.softDelete({
+      id,
+      createdById: userId,
+    });
+  }
 }

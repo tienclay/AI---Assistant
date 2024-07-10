@@ -35,8 +35,6 @@ export class CvParserService {
         userId: agentRun.userId,
       });
 
-      console.log('message.data :>> ', message.data);
-
       const jsonObj = extractJSONObject(message.data);
 
       const skills = jsonObj['skills'];
