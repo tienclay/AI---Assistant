@@ -4,8 +4,11 @@ import { ChatbotPersonaDto, ChatbotPromptDto } from './chatbot-property.dto';
 
 export class UpdateChatbotDto extends PartialType(CreateChatbotDto) {
   @ApiProperty()
-  persona: ChatbotPersonaDto;
+  persona: string;
 
   @ApiProperty()
-  prompt: ChatbotPromptDto;
+  prompt: string;
+
+  @ApiProperty()
+  instruction: string;
 }

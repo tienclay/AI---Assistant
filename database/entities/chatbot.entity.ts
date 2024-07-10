@@ -22,4 +22,7 @@ export class Chatbot extends BaseEntity {
 
   @Column('text', { nullable: true })
   instruction: string;
+
+  @Column('text', { nullable: true })
+  persona: string;
 }

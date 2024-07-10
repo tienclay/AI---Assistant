@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Chatbot } from '@entities';
 import { Repository } from 'typeorm';
 import { AIAssistantForbiddenException } from 'src/common/infra-exception';
+import { UpdateChatbotDto } from './dto';
 
 @Injectable()
 export class ChatbotService {
@@ -37,39 +38,22 @@ export class ChatbotService {
     return chatbot;
   }
 
-  // async update(
-  //   id: string,
-  //   userId: string,
-  //   updateChatbotDto: UpdateChatbotDto,
-  // ): Promise<boolean> {
-  //   // check if user id is owner of this chatbot or not
-  //   await this.getChatbotWithUserId(id, userId);
+  async update(
+    id: string,
+    userId: string,
+    updateChatbotDto: UpdateChatbotDto,
+  ): Promise<boolean> {
+    // check if user id is owner of this chatbot or not
+    await this.getChatbotWithUserId(id, userId);
 
-  //   const updated = await this.chatbotRepository.update(id, updateChatbotDto);
+    const updated = await this.chatbotRepository.update(id, updateChatbotDto);
 
-  //   let propertyUpdate = false;
-  //   if (updateChatbotDto.persona) {
-  //     await this.chatbotPropertyService.addingPersona(
-  //       id,
-  //       updateChatbotDto.persona,
-  //     );
-  //     propertyUpdate = true;
-  //   }
+    if (updated.affected === 0) {
+      return false;
+    }
 
-  //   if (updateChatbotDto.prompt) {
-  //     await this.chatbotPropertyService.addingPrompt(
-  //       id,
-  //       updateChatbotDto.prompt,
-  //     );
-  //     propertyUpdate = true;
-  //   }
-
-  //   if (updated.affected === 0 && !propertyUpdate) {
-  //     return false;
-  //   }
-
-  //   return true;
-  // }
+    return true;
+  }
 
   // async remove(id: string, userId: string): Promise<void> {
   //   await this.chatbotRepository.softDelete({
