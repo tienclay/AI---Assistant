@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
+import { Instruction, Persona } from 'src/common/enums';
 import { Column } from 'typeorm';
 
 export class CreateChatbotDto {
@@ -15,9 +16,10 @@ export class CreateChatbotDto {
   description: string;
 
   @ApiProperty()
-  @IsString()
+  @IsArray()
   @IsOptional()
-  persona: string;
+  @IsEnum(Persona, { each: true })
+  persona: Persona[];
 
   @ApiProperty()
   @IsString()
@@ -25,7 +27,8 @@ export class CreateChatbotDto {
   prompt: string;
 
   @ApiProperty()
-  @IsString()
+  @IsArray()
   @IsOptional()
-  instruction: string;
+  @IsEnum(Instruction, { each: true })
+  instruction: Instruction[];
 }

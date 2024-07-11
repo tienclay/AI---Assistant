@@ -1,13 +1,14 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateChatbotDto } from './create-chatbot.dto';
 import { ChatbotPersonaDto, ChatbotPromptDto } from './chatbot-property.dto';
-import { IsOptional, IsString } from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
+import { Instruction, Persona } from 'src/common/enums';
 
 export class UpdateChatbotDto extends PartialType(CreateChatbotDto) {
   @ApiProperty()
-  @IsString()
+  @IsArray()
   @IsOptional()
-  persona: string;
+  persona: Persona[];
 
   @ApiProperty()
   @IsString()
@@ -15,7 +16,7 @@ export class UpdateChatbotDto extends PartialType(CreateChatbotDto) {
   prompt: string;
 
   @ApiProperty()
-  @IsString()
+  @IsArray()
   @IsOptional()
-  instruction: string;
+  instruction: Instruction[];
 }

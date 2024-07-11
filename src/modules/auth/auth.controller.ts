@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
+
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from './guard/auth.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { AuthPayloadDto, AuthToken } from './dto';
+import { AuthPayloadDto, AuthToken, LoginPasswordDto } from './dto';
 import { AiAssistantApiResponse } from 'src/common/decorators';
 
 @Controller('auth')
@@ -14,7 +14,7 @@ export class AuthController {
 
   @Post('login')
   @AiAssistantApiResponse(AuthToken)
-  async login(@Body() loginDto: LoginDto): Promise<AuthToken> {
+  async login(@Body() loginDto: LoginPasswordDto): Promise<AuthToken> {
     return this.authService.login(loginDto);
   }
 

@@ -1,5 +1,5 @@
 import { IAccessToken } from './../../common/interfaces/jwt.interface';
-import { LoginDto } from './dto/login.dto';
+import { LoginPasswordDto } from './dto/login.dto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../admin/admin.service';
 import { JwtService } from '@nestjs/jwt';
@@ -20,7 +20,7 @@ export class AuthService {
     private userRepository: Repository<User>,
   ) {}
 
-  async login(payload: LoginDto): Promise<IAccessToken> {
+  async login(payload: LoginPasswordDto): Promise<IAccessToken> {
     const { email, password } = payload;
 
     const user = await this.userRepository

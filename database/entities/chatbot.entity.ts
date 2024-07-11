@@ -1,6 +1,7 @@
 import { Entity, Column, JoinColumn, ManyToOne } from 'typeorm';
 import { User } from './user.entity';
 import { BaseEntity } from './base.entity';
+import { Instruction, Persona } from 'src/common/enums';
 
 @Entity()
 export class Chatbot extends BaseEntity {
@@ -20,9 +21,9 @@ export class Chatbot extends BaseEntity {
   @Column('text', { nullable: true })
   prompt: string;
 
-  @Column('text', { nullable: true })
-  instruction: string;
+  @Column({ type: 'simple-array', nullable: true })
+  instruction: Instruction[];
 
-  @Column('text', { nullable: true })
-  persona: string;
+  @Column({ type: 'simple-array', nullable: true })
+  persona: Persona[];
 }
