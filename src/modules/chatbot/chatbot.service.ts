@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { AIAssistantForbiddenException } from 'src/common/infra-exception';
 import { ChatbotKnowledgeDto, UpdateChatbotDto } from './dto';
 import { AIService } from '../ai-chatbot/ai.service';
+import { CreateAssistantRunResponse } from '../ai-chatbot/dto';
 
 @Injectable()
 export class ChatbotService {
@@ -99,7 +100,7 @@ export class ChatbotService {
   async loadChatbotKnowledgeToAi(
     chatbotId: string,
     userId: string,
-  ): Promise<boolean> {
+  ): Promise<CreateAssistantRunResponse> {
     await this.getChatbotWithUserId(chatbotId, userId);
     const chatbotKnowledge = await this.knowledgeRepository.findOne({
       where: { chatbotId },
@@ -112,7 +113,8 @@ export class ChatbotService {
       chatbotKnowledge.websiteUrls || [],
       chatbotKnowledge.pdfUrls || [],
     );
-    return true;
+
+    return this.aiService.createAgentRun(chatbotId, userId);
   }
 
   async remove(id: string, userId: string): Promise<void> {

@@ -27,6 +27,7 @@ import { UserRole } from 'src/common/enums';
 import { User } from '@entities';
 import { ChatbotResponse } from './dto/chatbot-response.dto';
 import { ChatbotKnowledgeDto } from './dto';
+import { CreateAssistantRunResponse } from '../ai-chatbot/dto';
 
 @Controller('chatbot')
 @ApiTags('Chatbot')
@@ -77,7 +78,7 @@ export class ChatbotController {
   loadChatbotKnowledgeToAi(
     @Param('id') id: string,
     @CurrentUser() user: User,
-  ): Promise<boolean> {
+  ): Promise<CreateAssistantRunResponse> {
     return this.chatbotService.loadChatbotKnowledgeToAi(id, user.id);
   }
 

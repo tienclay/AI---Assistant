@@ -1,5 +1,4 @@
 import { User } from '@entities';
-
 import { InjectQueue } from '@nestjs/bull';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
@@ -29,13 +28,6 @@ export class NovuService extends Novu {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {
     super(config.novuApiKey, { backendUrl: config.novuServerUrl });
-  }
-
-  async onModuleInit(): Promise<void> {
-    await this.sendOtpToSubscriber({
-      email: 'bolocih280@atebin.com',
-      otp: '1234',
-    });
   }
 
   async getUserPayloadByEmail(email: string): Promise<AuthPayload> {
