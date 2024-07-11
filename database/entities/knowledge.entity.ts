@@ -6,7 +6,7 @@ export class Knowledge extends BaseEntity {
   @Column({ type: 'uuid' })
   chatbotId: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   plainText: string;
 
   @Column({ type: 'varchar', array: true, nullable: true })
