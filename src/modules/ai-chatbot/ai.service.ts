@@ -189,8 +189,8 @@ export class AIService {
     return {
       collectionName: `${chatbot.name}:${chatbot.id}`,
       prompt: chatbot.prompt,
-      persona: splitParagraphIntoArray(chatbot.persona),
-      instruction: splitParagraphIntoArray(chatbot.instruction),
+      persona: chatbot.persona,
+      instruction: chatbot.instruction,
     };
   }
 }
