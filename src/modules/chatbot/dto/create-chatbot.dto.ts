@@ -13,4 +13,19 @@ export class CreateChatbotDto {
   @IsOptional()
   @ApiProperty({ example: 'This assistant will help you with your queries' })
   description: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  persona: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  prompt: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  instruction: string;
 }
