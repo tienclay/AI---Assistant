@@ -5,7 +5,8 @@ import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
 
 interface UserInterface {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   status: UserStatus;
@@ -15,7 +16,8 @@ interface UserInterface {
 export default class AdminSeed implements Seeder {
   private async createUser(appDataSource: DataSource): Promise<any> {
     const mockAdminUser: UserInterface = {
-      name: 'admin',
+      firstName: 'admin',
+      lastName: 'admin',
       email: 'admin@gmail.com',
       password: await hashPassword('12345678'),
       status: UserStatus.ACTIVE,
@@ -23,7 +25,8 @@ export default class AdminSeed implements Seeder {
     };
 
     const mockClientUser: UserInterface = {
-      name: 'client',
+      firstName: 'client',
+      lastName: 'client',
       email: 'client@gmail.com',
       password: await hashPassword('12345678'),
       status: UserStatus.ACTIVE,

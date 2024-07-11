@@ -10,8 +10,11 @@ import {
 import { ConversationService } from './conversation.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { ResponseConversationDto } from './dto/response-conversation.dto';
 
 @Controller('conversation')
+@ApiTags('Conversation')
 export class ConversationController {
   constructor(private readonly conversationService: ConversationService) {}
 

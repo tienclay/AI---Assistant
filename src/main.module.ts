@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
-import { DatabaseConfig, configurations } from './config';
+import { DatabaseConfig, LogConfig, configurations } from './config';
 import { AuthModule } from './modules/auth/auth.module';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { APP_FILTER } from '@nestjs/core';
@@ -14,15 +14,23 @@ import { ChatbotModule } from './modules/chatbot/chatbot.module';
 import { ConversationModule } from './modules/conversation/conversation.module';
 import { NamingStrategy } from 'database/typeorm/naming.strategy';
 import { AIChatbotModule } from './modules/ai-chatbot/ai.module';
+import { OtpCacheModule } from './modules/otp-cache/otp-cache.module';
+import { RedisModule } from '@nestjs-modules/ioredis';
+import { NovuModule } from './modules/novu/novu.module';
+import { AuthEmailModule } from './modules/auth/auth-email/auth-email.module';
+import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
 
 const modules = [
   AuthModule,
-  UserModule,
   AIModule,
   AgentModule,
   FileModule,
   CvParserModule,
   AIChatbotModule,
+  ConversationModule,
+  ChatbotModule,
+  OtpCacheModule,
+  AuthEmailModule,
 ];
 
 @Module({
@@ -42,6 +50,19 @@ const modules = [
         }
         return config as TypeOrmModuleOptions;
       },
+    }),
+    WinstonModule.forRootAsync({
+      inject: [LogConfig.KEY],
+      useFactory: (config: ConfigType<typeof LogConfig>) => {
+        if (!config) {
+          throw new Error('Cannot start app without winston config');
+        }
+        return config as WinstonModuleOptions;
+      },
+    }),
+    RedisModule.forRoot({
+      type: 'single',
+      url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
     }),
 
     ...modules,

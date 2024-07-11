@@ -11,5 +11,5 @@ export class ResponseConversationDto {
   @Expose()
   participantId: string;
   @Expose()
-  lastMessageId: string;
+  lastMessageId?: string | null;
 }

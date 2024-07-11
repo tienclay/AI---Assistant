@@ -1,8 +1,9 @@
-import { UserRole, UserStatus } from '../enums/user.enum';
+import { UserRole } from '../enums/user.enum';
 
 export interface AuthPayload {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  status: UserStatus;
+  id: string;
   role: UserRole;
 }
