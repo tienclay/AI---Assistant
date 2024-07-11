@@ -20,7 +20,6 @@ import {
 } from './dto';
 import { AssistantHistoryDto } from './dto/history.dto';
 import { AgentHistory } from './interfaces/history.interface';
-import { splitParagraphIntoArray } from 'src/common/utils/convert-array.util';
 
 @Injectable()
 export class AIService {
@@ -110,7 +109,7 @@ export class AIService {
     );
 
     return plainToInstance(CreateAssistantRunResponse, {
-      runId: res.data.run_id,
+      conversationId: res.data.run_id,
       userId: res.data.user_id,
       chatHistory: res.data.chat_history,
     });
@@ -130,7 +129,11 @@ export class AIService {
       user_id: dto.userId,
       agent_collection_name: chatbotInfo.collectionName,
       assistant: AiAssistantType.RAG_PDF,
-      prompt: chatbotInfo.prompt,
+      property: {
+        prompt: chatbotInfo.prompt,
+        instructions: chatbotInfo.persona,
+        extra_instructions: [],
+      },
     };
 
     const res = await lastValueFrom(
@@ -156,7 +159,11 @@ export class AIService {
       user_id: dto.userId,
       agent_collection_name: chatbotInfo.collectionName,
       assistant: AiAssistantType.RAG_PDF,
-      prompt: chatbotInfo.prompt,
+      property: {
+        prompt: chatbotInfo.prompt,
+        instructions: chatbotInfo.persona,
+        extra_instructions: [],
+      },
     };
 
     const res = await lastValueFrom(

@@ -17,15 +17,18 @@ export class ConversationService {
     private readonly messageRepository: Repository<Message>,
     private readonly aiService: AIService,
   ) {}
-  async create(createConversationDto: CreateConversationDto) {
-    const chatbotId = createConversationDto.chatbotId;
-    const userId = createConversationDto.participantId;
-    const assistantRun = await this.aiService.createAgentRun(chatbotId, userId);
+  async create(dto: CreateConversationDto) {
+    const [chatbotId, userId] = [dto.chatbotId, dto.participantId];
+
+    const assistantRun = await this.aiService.createAgentRun(
+      dto.chatbotId,
+      dto.participantId,
+    );
     const conversation = this.conversationRepository.create({
-      id: assistantRun.runId,
+      id: assistantRun.conversationId,
       chatbotId,
       participantId: userId,
-      title: createConversationDto.title,
+      title: dto.title,
     });
     const saveConversation =
       await this.conversationRepository.save(conversation);

@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { ChatbotService } from './chatbot.service';
 import { CreateChatbotDto } from './dto/create-chatbot.dto';
@@ -31,11 +33,20 @@ import {
 } from './dto/chatbot-response.dto';
 import { ChatbotKnowledgeDto } from './dto';
 import { CreateAssistantRunResponse } from '../ai-chatbot/dto';
+import {
+  AssistantChatDto,
+  AssistantChatHistoryDto,
+  AssistantChatResponse,
+} from './dto/chat.dto';
+import { AIService } from '../ai-chatbot/ai.service';
 
 @Controller('chatbot')
 @ApiTags('Chatbot')
 export class ChatbotController {
-  constructor(private readonly chatbotService: ChatbotService) {}
+  constructor(
+    private readonly chatbotService: ChatbotService,
+    private readonly aiService: AIService,
+  ) {}
 
   @Post()
   @UseGuards(AuthGuard, RolesGuard)
@@ -120,5 +131,25 @@ export class ChatbotController {
   @ApiOperation({ summary: 'Delete a chat bot' })
   remove(@Param('id') id: string, @CurrentUser() user: User) {
     return this.chatbotService.remove(id, user.id);
+  }
+
+  @Post(':id/chat')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Send a message chat' })
+  conversationChat(
+    @Param('id') id: string,
+    @Body() dto: AssistantChatDto,
+  ): Promise<AssistantChatResponse> {
+    return this.aiService.sendMessage(id, dto);
+  }
+
+  @Post(':id/history')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Send a message chat history' })
+  conversationChatHistory(
+    @Param('id') id: string,
+    @Body() dto: AssistantChatHistoryDto,
+  ): Promise<AssistantChatResponse> {
+    return this.aiService.sendHistory(id, dto);
   }
 }
