@@ -33,7 +33,7 @@ import { Agent, Chatbot } from '@entities';
   ],
 
   providers: [AIService],
-  controllers: [AIController],
+  // controllers: [AIController],
   exports: [AIService],
 })
 export class AIChatbotModule {}

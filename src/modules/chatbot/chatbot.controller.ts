@@ -89,7 +89,6 @@ export class ChatbotController {
     @Param('id') id: string,
     @CurrentUser() user: User,
   ): Promise<CreateAssistantRunResponse> {
-    console.log('1111 :>> ', 1111);
     return this.chatbotService.loadChatbotKnowledgeToAi(id, user.id);
   }
 

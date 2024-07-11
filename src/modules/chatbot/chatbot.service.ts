@@ -111,7 +111,6 @@ export class ChatbotService {
     const chatbotKnowledge = await this.knowledgeRepository.findOne({
       where: { chatbotId },
     });
-    console.log('0000 :>> ', 213);
     // call AI service to load knowledge
     await this.aiService.loadKnowledge(
       userId,
@@ -119,12 +118,8 @@ export class ChatbotService {
       chatbotKnowledge.websiteUrls || [],
       chatbotKnowledge.pdfUrls || [],
     );
-    console.log('111 :>> ', 111);
-    const test = this.aiService.createAgentRun(chatbotId, userId);
-    console.log('222 :>> ', 222);
-    console.log('test :>> ', test);
 
-    return test;
+    return this.aiService.createAgentRun(chatbotId, userId);
   }
 
   async remove(id: string, userId: string): Promise<void> {
