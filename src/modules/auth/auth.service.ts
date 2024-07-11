@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { AuthPayloadDto } from './dto';
 import { plainToInstance } from 'class-transformer';
+import { AuthPayload } from 'src/common/interfaces';
 
 @Injectable()
 export class AuthService {
@@ -46,7 +47,8 @@ export class AuthService {
       id: user.id,
       email: user.email,
       role: user.role,
-      name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
       status: user.status,
     };
   }
@@ -58,7 +60,7 @@ export class AuthService {
     return plainToInstance(AuthPayloadDto, user);
   }
 
-  generateAccessToken(userPayload: AuthPayloadDto): IAccessToken {
+  generateAccessToken(userPayload: AuthPayload): IAccessToken {
     return {
       accessToken: this.jwtService.sign(userPayload),
     };

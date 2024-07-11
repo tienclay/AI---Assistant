@@ -10,7 +10,11 @@ export class AuthPayloadDto {
 
   @Expose()
   @ApiProperty({ example: 'Thanh Vo' })
-  name: string;
+  firstName: string;
+
+  @Expose()
+  @ApiProperty({ example: 'Thanh Vo' })
+  lastName: string;
 
   @Expose()
   @ApiProperty({ example: 'admin@gmail.com' })

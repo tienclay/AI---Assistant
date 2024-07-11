@@ -1,17 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CreateConversationDto {
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ example: '' })
   chatbotId: string;
 
   @IsString()
-  @ApiProperty()
-  @IsOptional()
-  title: string;
+  @ApiProperty({ example: '' })
+  title: string | null;
 
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ example: '' })
   participantId: string;
 }

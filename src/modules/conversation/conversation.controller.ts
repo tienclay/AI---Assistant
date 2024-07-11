@@ -6,15 +6,11 @@ import {
   Patch,
   Param,
   Delete,
-  HttpCode,
-  HttpStatus,
 } from '@nestjs/common';
 import { ConversationService } from './conversation.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { AiAssistantApiResponse } from 'src/common/decorators';
-import { ChatDto } from './dto/chat.dto';
 
 @Controller('conversation')
 @ApiTags('Conversation')

@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AIService } from '../ai-chatbot/ai.service';
+import { plainToInstance } from 'class-transformer';
+import { ResponseConversationDto } from './dto/response-conversation.dto';
 import { Conversation, Message } from '@entities';
 import { Repository } from 'typeorm';
 
@@ -12,13 +15,21 @@ export class ConversationService {
     private readonly conversationRepository: Repository<Conversation>,
     @InjectRepository(Message)
     private readonly messageRepository: Repository<Message>,
+    private readonly aiService: AIService,
   ) {}
-
-  create(createConversationDto: CreateConversationDto): Promise<Conversation> {
-    const conversationInput = this.conversationRepository.create(
-      createConversationDto,
-    );
-    return this.conversationRepository.save(conversationInput);
+  async create(createConversationDto: CreateConversationDto) {
+    const chatbotId = createConversationDto.chatbotId;
+    const userId = createConversationDto.participantId;
+    const assistantRun = await this.aiService.createAgentRun(chatbotId, userId);
+    const conversation = this.conversationRepository.create({
+      id: assistantRun.runId,
+      chatbotId,
+      participantId: userId,
+      title: createConversationDto.title,
+    });
+    const saveConversation =
+      await this.conversationRepository.save(conversation);
+    return plainToInstance(ResponseConversationDto, saveConversation);
   }
 
   getAllConversationByChatbotId(chatbotId: string): Promise<Conversation[]> {
