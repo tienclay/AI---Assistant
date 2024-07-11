@@ -182,7 +182,7 @@ export class AIService {
     });
 
     return {
-      collectionName: `${chatbot.title}:${chatbot.id}`,
+      collectionName: `${chatbot.name}:${chatbot.id}`,
       prompt: chatbot.prompt,
     };
   }

@@ -1,16 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString, IsUrl, ValidateNested } from 'class-validator';
 
 export class ChatbotKnowledgeDto {
   @IsString()
   @ApiProperty()
+  @IsOptional()
   plainText: string;
 
-  @IsString({ each: true })
+  @IsUrl({}, { each: true })
   @ApiProperty()
+  @IsOptional()
   websiteUrls: string[];
 
-  @IsString({ each: true })
+  @IsUrl({}, { each: true })
   @ApiProperty()
+  @IsOptional()
   pdfUrls: string[];
 }

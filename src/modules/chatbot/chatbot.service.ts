@@ -1,15 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { CreateChatbotDto } from './dto/create-chatbot.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Chatbot } from '@entities';
+import { Chatbot, Knowledge } from '@entities';
 import { Repository } from 'typeorm';
 import { AIAssistantForbiddenException } from 'src/common/infra-exception';
+import { ChatbotKnowledgeDto, UpdateChatbotDto } from './dto';
 
 @Injectable()
 export class ChatbotService {
   constructor(
     @InjectRepository(Chatbot)
     private readonly chatbotRepository: Repository<Chatbot>,
+    @InjectRepository(Knowledge)
+    private readonly knowledgeRepository: Repository<Knowledge>,
   ) {}
 
   createChatbot(userId: string, dto: CreateChatbotDto): Promise<Chatbot> {
@@ -25,9 +28,16 @@ export class ChatbotService {
   }
 
   async getChatbotWithUserId(id: string, userId: string): Promise<Chatbot> {
-    const chatbot = await this.chatbotRepository.findOne({
-      where: { id },
-    });
+    const chatbot = await this.chatbotRepository
+      .createQueryBuilder('chatbot')
+      .leftJoinAndMapOne(
+        'chatbot.knowledge',
+        Knowledge,
+        'knowledge',
+        'knowledge.chatbot_id = chatbot.id',
+      )
+      .where('chatbot.id = :chatbotId', { chatbotId: id })
+      .getOne();
 
     if (chatbot.createdById !== userId) {
       throw new AIAssistantForbiddenException(
@@ -37,44 +47,58 @@ export class ChatbotService {
     return chatbot;
   }
 
-  // async update(
-  //   id: string,
-  //   userId: string,
-  //   updateChatbotDto: UpdateChatbotDto,
-  // ): Promise<boolean> {
-  //   // check if user id is owner of this chatbot or not
-  //   await this.getChatbotWithUserId(id, userId);
+  async update(
+    id: string,
+    userId: string,
+    updateChatbotDto: UpdateChatbotDto,
+  ): Promise<boolean> {
+    // check if user id is owner of this chatbot or not
+    await this.getChatbotWithUserId(id, userId);
 
-  //   const updated = await this.chatbotRepository.update(id, updateChatbotDto);
+    const updated = await this.chatbotRepository.update(id, updateChatbotDto);
 
-  //   let propertyUpdate = false;
-  //   if (updateChatbotDto.persona) {
-  //     await this.chatbotPropertyService.addingPersona(
-  //       id,
-  //       updateChatbotDto.persona,
-  //     );
-  //     propertyUpdate = true;
-  //   }
+    if (updated.affected === 0) {
+      return false;
+    }
 
-  //   if (updateChatbotDto.prompt) {
-  //     await this.chatbotPropertyService.addingPrompt(
-  //       id,
-  //       updateChatbotDto.prompt,
-  //     );
-  //     propertyUpdate = true;
-  //   }
+    return true;
+  }
 
-  //   if (updated.affected === 0 && !propertyUpdate) {
-  //     return false;
-  //   }
+  async loadChatbotKnowledge(
+    chatbotId: string,
+    userId: string,
+    dto: ChatbotKnowledgeDto,
+  ) {
+    await this.getChatbotWithUserId(chatbotId, userId);
+    const curChatbotKnowledge = await this.knowledgeRepository.findOne({
+      where: { chatbotId },
+    });
 
-  //   return true;
-  // }
+    await this.knowledgeRepository.delete(curChatbotKnowledge.id);
 
-  // async remove(id: string, userId: string): Promise<void> {
-  //   await this.chatbotRepository.softDelete({
-  //     id,
-  //     createdById: userId,
-  //   });
-  // }
+    await this.knowledgeRepository.save({
+      ...dto,
+      chatbotId,
+    });
+
+    const chatbotKnowledge = await this.chatbotRepository
+      .createQueryBuilder('chatbot')
+      .leftJoinAndMapOne(
+        'chatbot.knowledge',
+        Knowledge,
+        'knowledge',
+        'knowledge.chatbot_id = chatbot.id',
+      )
+      .where('chatbot.id = :chatbotId', { chatbotId })
+      .getOne();
+
+    return chatbotKnowledge;
+  }
+
+  async remove(id: string, userId: string): Promise<void> {
+    await this.chatbotRepository.softDelete({
+      id,
+      createdById: userId,
+    });
+  }
 }
