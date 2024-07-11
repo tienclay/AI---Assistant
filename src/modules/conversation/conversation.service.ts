@@ -1,19 +1,20 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Conversation } from '@entities';
-import { Repository } from 'typeorm';
 import { AIService } from '../ai-chatbot/ai.service';
-import { UserInputDto } from '../admin/dto';
 import { plainToInstance } from 'class-transformer';
 import { ResponseConversationDto } from './dto/response-conversation.dto';
+import { Conversation, Message } from '@entities';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ConversationService {
   constructor(
     @InjectRepository(Conversation)
     private readonly conversationRepository: Repository<Conversation>,
+    @InjectRepository(Message)
+    private readonly messageRepository: Repository<Message>,
     private readonly aiService: AIService,
   ) {}
   async create(createConversationDto: CreateConversationDto) {
@@ -31,14 +32,16 @@ export class ConversationService {
     return plainToInstance(ResponseConversationDto, saveConversation);
   }
 
-  findAll() {
-    return `This action returns all conversation`;
+  getAllConversationByChatbotId(chatbotId: string): Promise<Conversation[]> {
+    return this.conversationRepository.find({ where: { chatbotId } });
   }
 
-  getParticipantConversation(participantId: string) {}
+  getParticipantConversation(participantId: string): Promise<Conversation[]> {
+    return this.conversationRepository.find({ where: { participantId } });
+  }
 
-  findOne(id: number) {
-    return `This action returns a #${id} conversation`;
+  getAllMessageInConversation(conversationId: string): Promise<Message[]> {
+    return this.messageRepository.find({ where: { conversationId } });
   }
 
   update(id: number, updateConversationDto: UpdateConversationDto) {

@@ -5,6 +5,7 @@ import { Chatbot, Knowledge } from '@entities';
 import { Repository } from 'typeorm';
 import { AIAssistantForbiddenException } from 'src/common/infra-exception';
 import { ChatbotKnowledgeDto, UpdateChatbotDto } from './dto';
+import { AIService } from '../ai-chatbot/ai.service';
 
 @Injectable()
 export class ChatbotService {
@@ -13,6 +14,7 @@ export class ChatbotService {
     private readonly chatbotRepository: Repository<Chatbot>,
     @InjectRepository(Knowledge)
     private readonly knowledgeRepository: Repository<Knowledge>,
+    private readonly aiService: AIService,
   ) {}
 
   createChatbot(userId: string, dto: CreateChatbotDto): Promise<Chatbot> {
@@ -73,9 +75,8 @@ export class ChatbotService {
     const curChatbotKnowledge = await this.knowledgeRepository.findOne({
       where: { chatbotId },
     });
-
-    await this.knowledgeRepository.delete(curChatbotKnowledge.id);
-
+    if (curChatbotKnowledge)
+      await this.knowledgeRepository.delete(curChatbotKnowledge.id);
     await this.knowledgeRepository.save({
       ...dto,
       chatbotId,
@@ -93,6 +94,25 @@ export class ChatbotService {
       .getOne();
 
     return chatbotKnowledge;
+  }
+
+  async loadChatbotKnowledgeToAi(
+    chatbotId: string,
+    userId: string,
+  ): Promise<boolean> {
+    await this.getChatbotWithUserId(chatbotId, userId);
+    const chatbotKnowledge = await this.knowledgeRepository.findOne({
+      where: { chatbotId },
+    });
+
+    // call AI service to load knowledge
+    await this.aiService.loadKnowledge(
+      userId,
+      chatbotId,
+      chatbotKnowledge.websiteUrls || [],
+      chatbotKnowledge.pdfUrls || [],
+    );
+    return true;
   }
 
   async remove(id: string, userId: string): Promise<void> {

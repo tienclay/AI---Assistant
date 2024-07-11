@@ -26,12 +26,12 @@ const modules = [
   AgentModule,
   FileModule,
   CvParserModule,
-
   AIChatbotModule,
   ConversationModule,
   ChatbotModule,
   OtpCacheModule,
   AuthEmailModule,
+  ChatbotModule,
 ];
 
 @Module({
@@ -67,8 +67,6 @@ const modules = [
     }),
 
     ...modules,
-
-    // ,
 
     // ConversationModule,
   ],

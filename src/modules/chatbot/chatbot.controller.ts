@@ -69,6 +69,18 @@ export class ChatbotController {
     return this.chatbotService.loadChatbotKnowledge(id, user.id, dto);
   }
 
+  @Post(':id/load-knowledge')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.CLIENT)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Update a chat bot' })
+  loadChatbotKnowledgeToAi(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+  ): Promise<boolean> {
+    return this.chatbotService.loadChatbotKnowledgeToAi(id, user.id);
+  }
+
   @Get(':id')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.CLIENT)

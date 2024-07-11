@@ -11,7 +11,6 @@ import { ConversationService } from './conversation.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { ResponseConversationDto } from './dto/response-conversation.dto';
 
 @Controller('conversation')
 @ApiTags('Conversation')
@@ -23,14 +22,19 @@ export class ConversationController {
     return this.conversationService.create(createConversationDto);
   }
 
+  // @Post('chat')
+  // @HttpCode(HttpStatus.OK)
+  // @AiAssistantApiResponse(Boolean)
+  // AgentAssistantChat(
+  //   @Body() dto: ChatDto,
+  //   @Param('agentId') agentId: string,
+  // ): Promise<AssistantChatResponse> {
+  //   return this.aiService.sendMessage(agentId, dto);
+  // }
+
   @Get()
   getParticipantConversation(@Param('participantId') participantId: string) {
     return this.conversationService.getParticipantConversation(participantId);
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.conversationService.findOne(+id);
   }
 
   @Patch(':id')

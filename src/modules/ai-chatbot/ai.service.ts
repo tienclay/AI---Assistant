@@ -20,6 +20,7 @@ import {
 } from './dto';
 import { AssistantHistoryDto } from './dto/history.dto';
 import { AgentHistory } from './interfaces/history.interface';
+import { splitParagraphIntoArray } from 'src/common/utils/convert-array.util';
 
 @Injectable()
 export class AIService {
@@ -68,7 +69,11 @@ export class AIService {
       agent_collection_name: chatbotInfo.collectionName,
       website_urls: websiteUrls,
       pdf_urls: pdfUrls,
-      prompt: chatbotInfo.prompt,
+      property: {
+        prompt: chatbotInfo.prompt,
+        instructions: chatbotInfo.persona,
+        extra_instructions: [],
+      },
     };
 
     await lastValueFrom(
@@ -184,6 +189,8 @@ export class AIService {
     return {
       collectionName: `${chatbot.name}:${chatbot.id}`,
       prompt: chatbot.prompt,
+      persona: splitParagraphIntoArray(chatbot.persona),
+      instruction: splitParagraphIntoArray(chatbot.instruction),
     };
   }
 }

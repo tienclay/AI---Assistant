@@ -19,7 +19,7 @@ export class Conversation extends BaseEntity {
   @JoinColumn({ name: 'chatbot_id' })
   chatbot: Chatbot;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   title: string;
 
   @Column({ type: 'varchar' })
