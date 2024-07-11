@@ -1,5 +1,13 @@
 import { AiAssistantType } from 'src/common/enums';
 
+interface KnowledgeProperty {
+  prompt?: string;
+  description?: string;
+  instructions?: string[];
+  extra_instructions?: string[];
+  expected_output?: string[];
+}
+
 export interface CreateAssistantRunInterface {
   user_id: string;
 
@@ -7,5 +15,5 @@ export interface CreateAssistantRunInterface {
 
   agent_collection_name: string;
 
-  prompt: string;
+  property: KnowledgeProperty;
 }

@@ -26,7 +26,7 @@ const modules = [
   AgentModule,
   FileModule,
   CvParserModule,
-  AIChatbotModule,
+  // AIChatbotModule,
   ConversationModule,
   ChatbotModule,
   OtpCacheModule,

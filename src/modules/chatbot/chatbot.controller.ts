@@ -25,7 +25,10 @@ import {
 } from 'src/common/decorators';
 import { UserRole } from 'src/common/enums';
 import { User } from '@entities';
-import { ChatbotResponse } from './dto/chatbot-response.dto';
+import {
+  ChatbotResponse,
+  ChatbotSampleProperty,
+} from './dto/chatbot-response.dto';
 import { ChatbotKnowledgeDto } from './dto';
 import { CreateAssistantRunResponse } from '../ai-chatbot/dto';
 
@@ -57,6 +60,13 @@ export class ChatbotController {
     return this.chatbotService.getAllCompanyChatbot(user.id);
   }
 
+  @Get('sample-property')
+  @ApiOperation({ summary: 'Get all chat bot sample properties' })
+  @AiAssistantApiResponse(ChatbotSampleProperty)
+  getChatbotProperty() {
+    return this.chatbotService.getSampleProperty();
+  }
+
   @Patch(':id/load-knowledge')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.CLIENT)
@@ -79,6 +89,7 @@ export class ChatbotController {
     @Param('id') id: string,
     @CurrentUser() user: User,
   ): Promise<CreateAssistantRunResponse> {
+    console.log('1111 :>> ', 1111);
     return this.chatbotService.loadChatbotKnowledgeToAi(id, user.id);
   }
 

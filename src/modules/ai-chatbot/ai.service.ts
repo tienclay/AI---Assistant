@@ -96,7 +96,11 @@ export class AIService {
       user_id: userId,
       agent_collection_name: chatbotInfo.collectionName,
       assistant: AiAssistantType.RAG_PDF,
-      prompt: chatbotInfo.prompt,
+      property: {
+        prompt: chatbotInfo.prompt,
+        instructions: chatbotInfo.persona,
+        extra_instructions: [],
+      },
     };
 
     const res = await lastValueFrom(

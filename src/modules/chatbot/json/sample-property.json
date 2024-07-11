@@ -1,0 +1,31 @@
+{
+  "instructions": [
+    "Provide customer support",
+    "Handle billing support",
+    "Manage account support",
+    "Offer technical support",
+    "Resolve software issues",
+    "Fix hardware issues",
+    "Answer product inquiries",
+    "Check product availability",
+    "Explain product features",
+    "Provide sales support",
+    "Process new orders",
+    "Update order status",
+    "Handle returns and exchanges",
+    "Provide shipping information",
+    "Handle other requests"
+  ],
+
+  "persona": [
+    "friendly",
+    "formal",
+    "casual",
+    "professional",
+    "humorous",
+    "sympathetic",
+    "encouraging",
+    "neutral",
+    "direct"
+  ]
+}
