@@ -23,7 +23,6 @@ const modules = [
   FileModule,
   CvParserModule,
   ChatbotModule,
-  ConversationModule,
 ];
 
 @Module({
