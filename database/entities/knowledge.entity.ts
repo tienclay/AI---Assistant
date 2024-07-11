@@ -3,15 +3,15 @@ import { BaseEntity } from './base.entity';
 
 @Entity()
 export class Knowledge extends BaseEntity {
-  @Column()
+  @Column({ type: 'uuid' })
   chatbotId: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   plainText: string;
 
-  @Column({ type: 'uuid', array: true, nullable: true })
-  linkUrls: string[];
+  @Column({ type: 'varchar', array: true, nullable: true })
+  websiteUrls: string[];
 
-  @Column({ type: 'uuid', array: true, nullable: true })
-  fileUrls: string[];
+  @Column({ type: 'varchar', array: true, nullable: true })
+  pdfUrls: string[];
 }

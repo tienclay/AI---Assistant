@@ -40,14 +40,8 @@ export class AIController {
   loadKnowledge(
     @CurrentUser() user: User,
     @Param('chatbotId') chatbotId: string,
-    @Body() dto: LoadKnowledgeDto,
   ): Promise<boolean> {
-    return this.aiService.loadKnowledge(
-      user.id,
-      chatbotId,
-      dto.websiteUrls,
-      dto.pdfUrls,
-    );
+    return this.aiService.loadKnowledge(user.id, chatbotId);
   }
 
   @Post(':chatbotId/create-run')
