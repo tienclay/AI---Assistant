@@ -21,9 +21,9 @@ export class Chatbot extends BaseEntity {
   @Column('text', { nullable: true })
   prompt: string;
 
-  @Column({ type: 'simple-array', nullable: true })
-  instruction: Instruction[];
+  @Column({ type: 'varchar', nullable: true, array: true })
+  instruction: string[];
 
-  @Column({ type: 'simple-array', nullable: true })
-  persona: Persona[];
+  @Column({ type: 'varchar', nullable: true, array: true })
+  persona: string[];
 }

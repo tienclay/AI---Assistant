@@ -48,10 +48,7 @@ export class CvParserService {
 
       const parseCvRes = plainToInstance(ParseCvResponseDto, {
         ...jsonObj,
-        workExperiences:
-          // jsonObj['WorkExperience'] ||
-          jsonObj['workExperience'],
-        // jsonObj['work_experience'],
+        workExperiences: jsonObj['workExperience'],
         educations: jsonObj['education'],
         skills: (Array.isArray(skills)
           ? skills

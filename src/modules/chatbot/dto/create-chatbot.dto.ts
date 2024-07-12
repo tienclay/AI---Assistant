@@ -18,8 +18,7 @@ export class CreateChatbotDto {
   @ApiProperty()
   @IsArray()
   @IsOptional()
-  @IsEnum(Persona, { each: true })
-  persona: Persona[];
+  persona: string[];
 
   @ApiProperty()
   @IsString()
@@ -29,6 +28,5 @@ export class CreateChatbotDto {
   @ApiProperty()
   @IsArray()
   @IsOptional()
-  @IsEnum(Instruction, { each: true })
-  instruction: Instruction[];
+  instruction: string[];
 }

@@ -122,6 +122,8 @@ export class AIService {
     const chatbotInfo =
       await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
 
+    console.log('chatbotInfo :>> ', chatbotInfo);
+
     const chatInput: AssistantChatInterface = {
       message: dto.message,
       stream: true,
@@ -131,8 +133,8 @@ export class AIService {
       assistant: AiAssistantType.RAG_PDF,
       property: {
         prompt: chatbotInfo.prompt,
-        instructions: chatbotInfo.persona,
-        extra_instructions: [],
+        instructions: chatbotInfo.instruction,
+        extra_instructions: chatbotInfo.persona,
       },
     };
 
