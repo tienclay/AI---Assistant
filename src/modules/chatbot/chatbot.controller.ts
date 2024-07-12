@@ -32,7 +32,10 @@ import {
   ChatbotSampleProperty,
 } from './dto/chatbot-response.dto';
 import { ChatbotKnowledgeDto } from './dto';
-import { CreateAssistantRunResponse } from '../ai-chatbot/dto';
+import {
+  CreateAssistantRun,
+  CreateAssistantRunResponse,
+} from '../ai-chatbot/dto';
 import {
   AssistantChatDto,
   AssistantChatHistoryDto,
@@ -151,5 +154,16 @@ export class ChatbotController {
     @Body() dto: AssistantChatHistoryDto,
   ): Promise<AssistantChatResponse> {
     return this.aiService.sendHistory(id, dto);
+  }
+
+  @Post(':id/create-run')
+  @Roles(UserRole.CLIENT)
+  @HttpCode(HttpStatus.OK)
+  @AiAssistantApiResponse(CreateAssistantRunResponse)
+  createAgentRun(
+    @Body() dto: CreateAssistantRun,
+    @Param('id') chatbotId: string,
+  ): Promise<CreateAssistantRunResponse> {
+    return this.aiService.createAgentRun(chatbotId, dto.userId);
   }
 }
