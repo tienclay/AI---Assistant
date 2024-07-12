@@ -10,7 +10,7 @@ export class ChatDto {
   @IsNotEmpty()
   @IsString()
   @ApiProperty()
-  conversationId: string;
+  runId: string;
 
   @IsNotEmpty()
   @IsString()

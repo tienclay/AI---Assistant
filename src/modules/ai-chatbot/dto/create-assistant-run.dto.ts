@@ -11,7 +11,7 @@ export class CreateAssistantRun {
 export class CreateAssistantRunResponse {
   @ApiProperty()
   @Expose()
-  conversationId: string;
+  run_id: string;
 
   @ApiProperty()
   @Expose()
