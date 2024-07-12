@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { AIService } from '../ai/ai.service';
+import { AIService } from '../ai-chatbot/ai.service';
 import { ParseCvResponseDto } from './dto/cv-parser-response.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Agent } from '@entities';
+import { Agent, Chatbot } from '@entities';
 import { extractJSONObject } from 'src/common/utils/extract-json.util';
 import { plainToInstance } from 'class-transformer';
 import { AIAssistantBadRequestException } from 'src/common/infra-exception';
@@ -14,22 +14,29 @@ export class CvParserService {
     private readonly aiService: AIService,
     @InjectRepository(Agent)
     private readonly agentRepository: Repository<Agent>,
+    @InjectRepository(Chatbot)
+    private readonly chatbotRepository: Repository<Chatbot>,
   ) {}
 
   async uploadAndParseCv(url: string): Promise<any> {
-    const agent = await this.agentRepository.findOneByOrFail({
-      companyName: 'CV_Parser',
+    const chatbot = await this.chatbotRepository.findOneByOrFail({
+      name: 'CV_Parser',
     });
 
-    await this.aiService.loadKnowledge(agent.userId, agent.id, [], [url]);
+    await this.aiService.loadKnowledge(
+      chatbot.createdById,
+      chatbot.id,
+      [],
+      [url],
+    );
 
     try {
       const agentRun = await this.aiService.createAgentRun(
-        agent.id,
+        chatbot.id,
         'parse-cv',
       );
 
-      const message = await this.aiService.sendMessage(agent.id, {
+      const message = await this.aiService.sendAiParseCvMessage(chatbot.id, {
         message: 'Parse this Cv into Json for me',
         runId: agentRun.runId,
         userId: agentRun.userId,
@@ -40,7 +47,7 @@ export class CvParserService {
       const skills = jsonObj['skills'];
 
       const parseCvRes = plainToInstance(ParseCvResponseDto, {
-        ...jsonObj['personalInformation'],
+        ...jsonObj,
         workExperiences:
           // jsonObj['WorkExperience'] ||
           jsonObj['workExperience'],
@@ -53,7 +60,7 @@ export class CvParserService {
         languages: jsonObj['languages'],
       });
 
-      await this.aiService.clearRecordsInCollection(agent.id);
+      await this.aiService.clearRecordsInCollection(chatbot.id);
       return parseCvRes;
     } catch (error) {
       throw new AIAssistantBadRequestException(error.message);

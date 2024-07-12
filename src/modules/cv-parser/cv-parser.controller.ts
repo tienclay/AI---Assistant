@@ -10,12 +10,6 @@ export class CvParserController {
   @Get()
   @ApiQuery({ name: 'url', required: true })
   async parseCv(@Query('url') url: string): Promise<any> {
-    console.time('cv-parser');
-
-    const test = await this.cvParserService.uploadAndParseCv(url);
-
-    console.timeEnd('cv-parser');
-
-    return test;
+    return this.cvParserService.uploadAndParseCv(url);
   }
 }

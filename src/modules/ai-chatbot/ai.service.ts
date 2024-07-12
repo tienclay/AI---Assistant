@@ -142,7 +142,76 @@ export class AIService {
       }),
     );
 
-    // save res.data to a json file
+    return plainToInstance(AssistantChatResponse, { data: res.data });
+  }
+
+  async sendAiParseCvMessage(
+    chatbotId: string,
+    dto: AssistantChatDto,
+  ): Promise<AssistantChatResponse> {
+    const chatbotInfo =
+      await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
+
+    const chatInput: AssistantChatInterface = {
+      message: dto.message,
+      stream: true,
+      run_id: dto.runId,
+      user_id: dto.userId,
+      agent_collection_name: chatbotInfo.collectionName,
+      assistant: AiAssistantType.RAG_PDF,
+      property: {
+        prompt: chatbotInfo.prompt,
+        instructions: [],
+        extra_instructions: [],
+        expected_output: `
+{
+  firstName: string,
+  lastName: string,
+  gender: string,
+  dateOfBirth: string,
+  email: string,
+  phoneCode: string,
+  phone: string,
+  title: string,
+  summary: string,
+  totalExperience: string,
+  location: string,
+  workExperience: [
+      {
+        companyName: string,
+        position: string,
+        fromMonth: number,
+        fromYear: number,
+        toMonth: number | null,
+        toYear: number | null,
+        description: string,
+      }
+  ];
+  education: [
+      {
+       institutionName: string,
+       degree: string,
+       fromMonth: number | null,
+       fromYear: number,
+       toMonth: number | null,
+       toYear: number,
+  }
+  ]
+  skills: string[];
+  languages: [
+      label: string
+      level: string, [BASIC, CONVERSATIONAL, WORKING_PROFICIENCY, FLUENT, NATIVE_BILINGUAL]
+  ];
+}
+`,
+      },
+    };
+
+    const res = await lastValueFrom(
+      this.httpService.post(aiServiceUrl.sendMessage, {
+        ...chatInput,
+      }),
+    );
 
     return plainToInstance(AssistantChatResponse, { data: res.data });
   }

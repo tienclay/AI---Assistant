@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { CvParserService } from './cv-parser.service';
 import { CvParserController } from './cv-parser.controller';
-import { AIModule } from '../ai/ai.module';
+import { AIChatbotModule } from '../ai-chatbot/ai.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Agent } from '@entities';
+import { Agent, Chatbot } from '@entities';
 
 @Module({
-  imports: [AIModule, TypeOrmModule.forFeature([Agent])],
+  imports: [AIChatbotModule, TypeOrmModule.forFeature([Agent, Chatbot])],
   providers: [CvParserService],
   controllers: [CvParserController],
 })

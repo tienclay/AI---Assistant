@@ -3,7 +3,7 @@ interface KnowledgeProperty {
   description?: string;
   instructions?: string[];
   extra_instructions?: string[];
-  expected_output?: string[];
+  expected_output?: string;
 }
 
 export interface LoadKnowledgeInterface {
