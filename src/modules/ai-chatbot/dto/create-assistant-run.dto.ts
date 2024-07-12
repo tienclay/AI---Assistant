@@ -11,7 +11,7 @@ export class CreateAssistantRun {
 export class CreateAssistantRunResponse {
   @ApiProperty()
   @Expose()
-  run_id: string;
+  runId: string;
 
   @ApiProperty()
   @Expose()

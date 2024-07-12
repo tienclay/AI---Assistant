@@ -25,7 +25,7 @@ export class ConversationService {
       dto.participantId,
     );
     const conversation = this.conversationRepository.create({
-      id: assistantRun.run_id,
+      id: assistantRun.runId,
       chatbotId,
       participantId: userId,
       title: dto.title,

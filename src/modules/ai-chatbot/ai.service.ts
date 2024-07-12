@@ -109,7 +109,7 @@ export class AIService {
     );
 
     return plainToInstance(CreateAssistantRunResponse, {
-      run_id: res.data.run_id,
+      runId: res.data.run_id,
       userId: res.data.user_id,
       chatHistory: res.data.chat_history,
     });
