@@ -25,7 +25,7 @@ export class Message extends BaseEntity {
   @Column({ type: 'enum', enum: MessageSender })
   messageSender: MessageSender;
 
-  @Column({ type: 'uuid' })
+  @Column({ type: 'uuid', nullable: true })
   participantId: string;
 
   @ManyToOne(() => Participant)

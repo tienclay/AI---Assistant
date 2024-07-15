@@ -4,6 +4,10 @@ import { IsOptional, IsString } from 'class-validator';
 export class CreateConversationDto {
   @IsString()
   @ApiProperty({ example: '' })
+  id: string;
+
+  @IsString()
+  @ApiProperty({ example: '' })
   chatbotId: string;
 
   @IsString()

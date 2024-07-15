@@ -19,6 +19,7 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 
 import { AuthEmailModule } from './modules/auth/auth-email/auth-email.module';
 import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
+import { MessageModule } from './modules/message/message.module';
 
 const modules = [
   AuthModule,
@@ -26,7 +27,7 @@ const modules = [
   AgentModule,
   FileModule,
   CvParserModule,
-  // AIChatbotModule,
+  AIChatbotModule,
   ConversationModule,
   ChatbotModule,
   OtpCacheModule,
@@ -67,6 +68,8 @@ const modules = [
     }),
 
     ...modules,
+
+    MessageModule,
 
     // ConversationModule,
   ],
