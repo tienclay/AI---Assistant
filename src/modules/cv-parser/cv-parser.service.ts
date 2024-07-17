@@ -31,7 +31,7 @@ export class CvParserService {
     );
 
     try {
-      const agentRun = await this.aiService.createAgentRun(
+      const agentRun = await this.aiService.createAgentRunForParseCv(
         chatbot.id,
         'parse-cv',
       );
@@ -42,20 +42,7 @@ export class CvParserService {
         userId: agentRun.userId,
       });
 
-      const jsonObj = extractJSONObject(message.data);
-
-      const skills = jsonObj['skills'];
-
-      const parseCvRes = plainToInstance(ParseCvResponseDto, {
-        ...jsonObj,
-        workExperiences: jsonObj['workExperience'],
-        educations: jsonObj['education'],
-        skills: (Array.isArray(skills)
-          ? skills
-          : skills.replace(', ', ',').split(',')
-        ).map((skill) => skill.trim()),
-        languages: jsonObj['languages'],
-      });
+      const parseCvRes = plainToInstance(ParseCvResponseDto, message.data);
 
       await this.aiService.clearRecordsInCollection(chatbot.id);
       return parseCvRes;

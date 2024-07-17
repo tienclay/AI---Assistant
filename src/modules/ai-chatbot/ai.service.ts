@@ -116,12 +116,14 @@ export class AIService {
         ...createAssistantRun,
       }),
     );
+
     const conversation: CreateConversationDto = {
       id: res.data.run_id,
       chatbotId,
       title: `Chat with ${chatbotInfo.collectionName}`,
       participantId: userId,
     };
+
     await this.conversationService.create(conversation);
     const paricipant: ParticipantInputDto = {
       id: userId,
@@ -129,6 +131,38 @@ export class AIService {
     };
     const newPaticipant = await this.participantRepository.create(paricipant);
     await this.participantRepository.save(newPaticipant);
+
+    return plainToInstance(CreateAssistantRunResponse, {
+      runId: res.data.run_id,
+      userId: res.data.user_id,
+      chatHistory: res.data.chat_history,
+    });
+  }
+
+  async createAgentRunForParseCv(
+    chatbotId: string,
+    userId: string,
+  ): Promise<CreateAssistantRunResponse> {
+    const chatbotInfo =
+      await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
+
+    const createAssistantRun: CreateAssistantRunInterface = {
+      user_id: userId,
+      agent_collection_name: chatbotInfo.collectionName,
+      assistant: AiAssistantType.RAG_PDF,
+      property: {
+        prompt: chatbotInfo.prompt,
+        instructions: chatbotInfo.persona,
+        extra_instructions: [],
+      },
+    };
+
+    const res = await lastValueFrom(
+      this.httpService.post(aiServiceUrl.createAssistantRun, {
+        ...createAssistantRun,
+      }),
+    );
+
     return plainToInstance(CreateAssistantRunResponse, {
       runId: res.data.run_id,
       userId: res.data.user_id,
@@ -142,8 +176,6 @@ export class AIService {
   ): Promise<AssistantChatResponse> {
     const chatbotInfo =
       await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
-
-    console.log('chatbotInfo :>> ', chatbotInfo);
 
     const chatInput: AssistantChatInterface = {
       message: dto.message,
@@ -194,46 +226,46 @@ export class AIService {
         instructions: [],
         extra_instructions: [],
         expected_output: `
-{
-  firstName: string,
-  lastName: string,
-  gender: string,
-  dateOfBirth: string,
-  email: string,
-  phoneCode: string,
-  phone: string,
-  title: string,
-  summary: string,
-  totalExperience: string,
-  location: string,
-  workExperience: [
-      {
-        companyName: string,
-        position: string,
-        fromMonth: number,
-        fromYear: number,
-        toMonth: number | null,
-        toYear: number | null,
-        description: string,
-      }
-  ];
-  education: [
-      {
-       institutionName: string,
-       degree: string,
-       fromMonth: number | null,
-       fromYear: number,
-       toMonth: number | null,
-       toYear: number,
-  }
-  ]
-  skills: string[];
-  languages: [
-      label: string
-      level: string, [BASIC, CONVERSATIONAL, WORKING_PROFICIENCY, FLUENT, NATIVE_BILINGUAL]
-  ];
-}
-`,
+        {
+          firstName: string,
+          lastName: string,
+          gender: string,
+          dateOfBirth: string,
+          email: string,
+          phoneCode: string,
+          phone: string,
+          title: string,
+          summary: string,
+          totalExperience: string,
+          location: string,
+          workExperience: [
+              {
+                companyName: string,
+                position: string,
+                fromMonth: number,
+                fromYear: number,
+                toMonth: number | null,
+                toYear: number | null,
+                description: string,
+              }
+          ];
+          education: [
+              {
+               institutionName: string,
+               degree: string,
+               fromMonth: number | null,
+               fromYear: number,
+               toMonth: number | null,
+               toYear: number,
+          }
+          ]
+          skills: string[];
+          languages: [
+              label: string
+              level: string, [BASIC, CONVERSATIONAL, WORKING_PROFICIENCY, FLUENT, NATIVE_BILINGUAL]
+          ];
+        }
+        `,
       },
     };
 
@@ -243,7 +275,9 @@ export class AIService {
       }),
     );
 
-    return plainToInstance(AssistantChatResponse, { data: res.data });
+    const { $defs, ...remain } = res.data;
+
+    return plainToInstance(AssistantChatResponse, { data: remain });
   }
 
   async sendHistory(
