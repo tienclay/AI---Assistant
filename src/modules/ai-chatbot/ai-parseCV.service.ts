@@ -27,7 +27,7 @@ import { MessageInputDto } from '../message/dto';
 import { ParticipantInputDto } from './dto/paticipant.dto';
 import { v4 as uuidv4 } from 'uuid';
 @Injectable()
-export class AIService {
+export class AIParseCVService {
   constructor(
     private httpService: HttpService,
     @InjectRepository(Chatbot)
@@ -73,7 +73,7 @@ export class AIService {
       await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
 
     const loadKnowledgeInput: LoadKnowledgeInterface = {
-      assistant: AiAssistantType.AUTO_PDF,
+      assistant: AiAssistantType.RAG_PDF,
       agent_collection_name: chatbotInfo.collectionName,
       website_urls: websiteUrls,
       pdf_urls: pdfUrls,
@@ -103,7 +103,7 @@ export class AIService {
     const createAssistantRun: CreateAssistantRunInterface = {
       user_id: userId,
       agent_collection_name: chatbotInfo.collectionName,
-      assistant: AiAssistantType.AUTO_PDF,
+      assistant: AiAssistantType.RAG_PDF,
       property: {
         prompt: chatbotInfo.prompt,
         instructions: chatbotInfo.persona,
@@ -126,7 +126,7 @@ export class AIService {
     await this.conversationService.create(conversation);
 
     const paricipant: ParticipantInputDto = {
-      id: userId,
+      id: userId == 'parse-cv' ? uuidv4() : userId,
       name: userId,
     };
 
@@ -154,7 +154,7 @@ export class AIService {
       run_id: dto.runId,
       user_id: dto.userId,
       agent_collection_name: chatbotInfo.collectionName,
-      assistant: AiAssistantType.AUTO_PDF,
+      assistant: AiAssistantType.RAG_PDF,
       property: {
         prompt: chatbotInfo.prompt,
         instructions: chatbotInfo.persona,
@@ -191,7 +191,7 @@ export class AIService {
       run_id: dto.runId,
       user_id: dto.userId,
       agent_collection_name: chatbotInfo.collectionName,
-      assistant: AiAssistantType.AUTO_PDF,
+      assistant: AiAssistantType.RAG_PDF,
       property: {
         prompt: chatbotInfo.prompt,
         instructions: [],
@@ -260,7 +260,7 @@ export class AIService {
       run_id: dto.runId,
       user_id: dto.userId,
       agent_collection_name: chatbotInfo.collectionName,
-      assistant: AiAssistantType.AUTO_PDF,
+      assistant: AiAssistantType.RAG_PDF,
       property: {
         prompt: chatbotInfo.prompt,
         instructions: chatbotInfo.persona,

@@ -1,5 +1,5 @@
 import { HttpModule } from '@nestjs/axios';
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { AiDatabaseConfig, AiServiceConfig } from 'src/config';
 import { AIService } from './ai.service';
@@ -8,6 +8,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { Agent, Chatbot, Participant } from '@entities';
 import { ConversationModule } from '../conversation/conversation.module';
 import { MessageModule } from '../message/message.module';
+import { AIParseCVService } from './ai-parseCV.service';
 
 @Module({
   imports: [
@@ -36,8 +37,8 @@ import { MessageModule } from '../message/message.module';
     MessageModule,
   ],
 
-  providers: [AIService],
+  providers: [AIService, AIParseCVService],
   controllers: [AIController],
-  exports: [AIService],
+  exports: [AIService, AIParseCVService],
 })
 export class AIChatbotModule {}
