@@ -16,7 +16,7 @@ import {
 import { UserRole } from 'src/common/enums/user.enum';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User } from '@entities';
-import { LoadKnowledgeDto } from './dto/load-knowledge.dto';
+
 import { AuthGuard } from '../auth/guard/auth.guard';
 import {
   AssistantChatDto,
@@ -26,7 +26,7 @@ import {
 } from './dto';
 import { AssistantHistoryDto } from './dto/history.dto';
 
-@Controller('chatbot')
+@Controller('ai-chatbot')
 @ApiTags('AIChatbot-Service')
 export class AIController {
   constructor(private readonly aiService: AIService) {}

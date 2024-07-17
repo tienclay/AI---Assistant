@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AIService } from '../ai-chatbot/ai.service';
 import { plainToInstance } from 'class-transformer';
 import { ResponseConversationDto } from './dto/response-conversation.dto';
 import { Conversation, Message } from '@entities';
 import { Repository } from 'typeorm';
+import { AIAssistantNotFoundException } from 'src/common/infra-exception';
 
 @Injectable()
 export class ConversationService {
@@ -15,17 +15,13 @@ export class ConversationService {
     private readonly conversationRepository: Repository<Conversation>,
     @InjectRepository(Message)
     private readonly messageRepository: Repository<Message>,
-    private readonly aiService: AIService,
   ) {}
-  async create(dto: CreateConversationDto) {
-    const [chatbotId, userId] = [dto.chatbotId, dto.participantId];
 
-    const assistantRun = await this.aiService.createAgentRun(
-      dto.chatbotId,
-      dto.participantId,
-    );
+  async create(dto: CreateConversationDto) {
+    const [id, chatbotId, userId] = [dto.id, dto.chatbotId, dto.participantId];
+
     const conversation = this.conversationRepository.create({
-      id: assistantRun.runId,
+      id,
       chatbotId,
       participantId: userId,
       title: dto.title,
@@ -43,15 +39,36 @@ export class ConversationService {
     return this.conversationRepository.find({ where: { participantId } });
   }
 
-  getAllMessageInConversation(conversationId: string): Promise<Message[]> {
+  async getAllMessageInConversation(
+    conversationId: string,
+  ): Promise<Message[]> {
+    const conversation = this.conversationRepository.find({
+      where: {
+        id: conversationId,
+      },
+    });
+    if (!conversation) {
+      throw new AIAssistantNotFoundException('Not found conversation');
+    }
     return this.messageRepository.find({ where: { conversationId } });
   }
 
-  update(id: number, updateConversationDto: UpdateConversationDto) {
-    return `This action updates a #${id} conversation`;
+  async getAllConversations(): Promise<ResponseConversationDto[]> {
+    const conversations = await this.conversationRepository.find();
+    return conversations.map((conversation) =>
+      plainToInstance(ResponseConversationDto, conversation),
+    );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} conversation`;
+  update(id: string, updateConversationDto: UpdateConversationDto) {
+    return this.conversationRepository.update(id, updateConversationDto);
+  }
+
+  updateMessage(id: string, messageId: string) {
+    return this.conversationRepository.update(id, { lastMessageId: messageId });
+  }
+
+  remove(id: string) {
+    return this.conversationRepository.delete(id);
   }
 }

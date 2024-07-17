@@ -1,4 +1,4 @@
-import { Chatbot } from '@entities';
+import { Chatbot, Participant } from '@entities';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
@@ -11,7 +11,7 @@ import {
   CreateAssistantRunInterface,
   LoadKnowledgeInterface,
 } from './interfaces';
-import { AiAssistantType } from 'src/common/enums';
+import { AiAssistantType, MessageSender } from 'src/common/enums';
 import { plainToInstance } from 'class-transformer';
 import {
   AssistantChatDto,
@@ -20,6 +20,11 @@ import {
 } from './dto';
 import { AssistantHistoryDto } from './dto/history.dto';
 import { AgentHistory } from './interfaces/history.interface';
+import { ConversationService } from '../conversation/conversation.service';
+import { CreateConversationDto } from '../conversation/dto/create-conversation.dto';
+import { MessageService } from '../message/message.service';
+import { MessageInputDto } from '../message/dto';
+import { ParticipantInputDto } from './dto/paticipant.dto';
 
 @Injectable()
 export class AIService {
@@ -29,6 +34,10 @@ export class AIService {
     private readonly chatbotRepository: Repository<Chatbot>,
     @InjectDataSource('cv-parser')
     private readonly dataSource: DataSource,
+    private readonly messageService: MessageService,
+    private readonly conversationService: ConversationService,
+    @InjectRepository(Participant)
+    private readonly participantRepository: Repository<Participant>,
   ) {}
 
   /**
@@ -107,7 +116,19 @@ export class AIService {
         ...createAssistantRun,
       }),
     );
-
+    const conversation: CreateConversationDto = {
+      id: res.data.run_id,
+      chatbotId,
+      title: `Chat with ${chatbotInfo.collectionName}`,
+      participantId: userId,
+    };
+    await this.conversationService.create(conversation);
+    const paricipant: ParticipantInputDto = {
+      id: userId,
+      name: userId,
+    };
+    const newPaticipant = await this.participantRepository.create(paricipant);
+    await this.participantRepository.save(newPaticipant);
     return plainToInstance(CreateAssistantRunResponse, {
       runId: res.data.run_id,
       userId: res.data.user_id,
@@ -143,6 +164,13 @@ export class AIService {
         ...chatInput,
       }),
     );
+    const message: MessageInputDto = {
+      content: res.data,
+      conversationId: dto.runId,
+      messageSender: MessageSender.BOT,
+      participantId: null,
+    };
+    await this.messageService.createMessage(message);
 
     return plainToInstance(AssistantChatResponse, { data: res.data });
   }
