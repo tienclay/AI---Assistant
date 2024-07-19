@@ -17,6 +17,8 @@ export class SocialMediaController {
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
+
+    console.log('req :>> ', req);
     // Return a '200 OK' response to all events
     res.status(200).send('EVENT_RECEIVED');
     // Check if a token and mode is in the query string of the request
@@ -36,6 +38,8 @@ export class SocialMediaController {
   @Post('facebook/webhooks')
   async postwebhook(@Req() req: Request, @Res() res: Response) {
     let body = req.body;
+
+    console.log('body :>> ', body);
 
     // Checks if this is an event from a page subscription
     if (body.object === 'page') {
