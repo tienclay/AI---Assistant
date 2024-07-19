@@ -36,7 +36,7 @@ export class CvParserService {
         chatbot.id,
         'parse-cv',
       );
-      console.log('22 :>> ', 22);
+
       const message = await this.aiService.sendAiParseCvMessage(chatbot.id, {
         message: 'Parse this Cv into Json for me',
         runId: agentRun.runId,
@@ -44,7 +44,7 @@ export class CvParserService {
       });
 
       const parseCvRes = plainToInstance(ParseCvResponseDto, message.data);
-      console.log('parseCvRes :>> ', parseCvRes);
+
       await this.aiService.clearRecordsInCollection(chatbot.id);
       return parseCvRes;
     } catch (error) {

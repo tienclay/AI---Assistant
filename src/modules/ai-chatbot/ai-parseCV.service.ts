@@ -132,7 +132,7 @@ export class AIParseCVService {
     };
 
     const newPaticipant = await this.participantRepository.create(paricipant);
-    console.log('111 :>> ', newPaticipant);
+
     await this.participantRepository.save(newPaticipant);
 
     return plainToInstance(CreateAssistantRunResponse, {
@@ -269,16 +269,13 @@ export class AIParseCVService {
 `,
       },
     };
-    console.log(
-      'chatInput.property.expected_output :>> ',
-      chatInput.property.expected_output,
-    );
+
     const res = await lastValueFrom(
       this.httpService.post(aiServiceUrl.sendMessage, {
         ...chatInput,
       }),
     );
-    console.log('2 :>> ', res.data);
+
     return plainToInstance(AssistantChatResponse, {
       data: res.data,
     });
