@@ -25,6 +25,7 @@ import {
   CreateAssistantRunResponse,
 } from './dto';
 import { AssistantHistoryDto } from './dto/history.dto';
+import { LoadKnowledgeDto } from './dto/load-knowledge.dto';
 
 @Controller('ai-chatbot')
 @ApiTags('AIChatbot-Service')
@@ -40,8 +41,14 @@ export class AIController {
   loadKnowledge(
     @CurrentUser() user: User,
     @Param('chatbotId') chatbotId: string,
+    @Body() dto: LoadKnowledgeDto,
   ): Promise<boolean> {
-    return this.aiService.loadKnowledge(user.id, chatbotId);
+    return this.aiService.loadKnowledge(
+      user.id,
+      chatbotId,
+      dto.websiteUrls,
+      dto.pdfUrls,
+    );
   }
 
   @Post(':chatbotId/create-run')

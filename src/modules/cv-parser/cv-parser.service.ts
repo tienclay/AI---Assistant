@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AIService } from '../ai-chatbot/ai.service';
+
 import { ParseCvResponseDto } from './dto/cv-parser-response.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -7,11 +7,12 @@ import { Agent, Chatbot } from '@entities';
 import { extractJSONObject } from 'src/common/utils/extract-json.util';
 import { plainToInstance } from 'class-transformer';
 import { AIAssistantBadRequestException } from 'src/common/infra-exception';
+import { AIParseCVService } from '../ai-chatbot/ai-parseCV.service';
 
 @Injectable()
 export class CvParserService {
   constructor(
-    private readonly aiService: AIService,
+    private readonly aiService: AIParseCVService,
     @InjectRepository(Agent)
     private readonly agentRepository: Repository<Agent>,
     @InjectRepository(Chatbot)

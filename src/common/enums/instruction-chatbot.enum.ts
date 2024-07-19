@@ -11,6 +11,7 @@ export enum Persona {
 }
 
 export enum Instruction {
+  LimitSentences = 'Keep your answers under 3 sentences.',
   ProvideCustomerSupport = 'Provide customer support',
   HandleBillingSupport = 'Handle billing support',
   ManageAccountSupport = 'Manage account support',

@@ -25,9 +25,10 @@ import { CreateConversationDto } from '../conversation/dto/create-conversation.d
 import { MessageService } from '../message/message.service';
 import { MessageInputDto } from '../message/dto';
 import { ParticipantInputDto } from './dto/paticipant.dto';
-
+import { v4 as uuidv4 } from 'uuid';
+import { extractJSONObject } from 'src/common/utils/extract-json.util';
 @Injectable()
-export class AIService {
+export class AIParseCVService {
   constructor(
     private httpService: HttpService,
     @InjectRepository(Chatbot)
@@ -73,7 +74,7 @@ export class AIService {
       await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
 
     const loadKnowledgeInput: LoadKnowledgeInterface = {
-      assistant: AiAssistantType.AUTO_PDF,
+      assistant: AiAssistantType.RAG_PDF,
       agent_collection_name: chatbotInfo.collectionName,
       website_urls: websiteUrls,
       pdf_urls: pdfUrls,
@@ -103,7 +104,7 @@ export class AIService {
     const createAssistantRun: CreateAssistantRunInterface = {
       user_id: userId,
       agent_collection_name: chatbotInfo.collectionName,
-      assistant: AiAssistantType.AUTO_PDF,
+      assistant: AiAssistantType.RAG_PDF,
       property: {
         prompt: chatbotInfo.prompt,
         instructions: chatbotInfo.persona,
@@ -123,11 +124,10 @@ export class AIService {
       title: `Chat with ${chatbotInfo.collectionName}`,
       participantId: userId,
     };
-
     await this.conversationService.create(conversation);
 
     const paricipant: ParticipantInputDto = {
-      id: userId,
+      id: userId == 'parse-cv' ? uuidv4() : userId,
       name: userId,
     };
 
@@ -141,7 +141,6 @@ export class AIService {
       chatHistory: res.data.chat_history,
     });
   }
-
   async createAgentRunForParseCv(
     chatbotId: string,
     userId: string,
@@ -172,7 +171,6 @@ export class AIService {
       chatHistory: res.data.chat_history,
     });
   }
-
   async sendMessage(
     chatbotId: string,
     dto: AssistantChatDto,
@@ -186,11 +184,11 @@ export class AIService {
       run_id: dto.runId,
       user_id: dto.userId,
       agent_collection_name: chatbotInfo.collectionName,
-      assistant: AiAssistantType.AUTO_PDF,
+      assistant: AiAssistantType.RAG_PDF,
       property: {
         prompt: chatbotInfo.prompt,
-        instructions: chatbotInfo.instruction,
-        extra_instructions: chatbotInfo.persona,
+        instructions: chatbotInfo.persona,
+        extra_instructions: [],
       },
     };
 
@@ -223,52 +221,52 @@ export class AIService {
       run_id: dto.runId,
       user_id: dto.userId,
       agent_collection_name: chatbotInfo.collectionName,
-      assistant: AiAssistantType.AUTO_PDF,
+      assistant: AiAssistantType.RAG_PDF,
       property: {
-        prompt: chatbotInfo.prompt,
+        // prompt: chatbotInfo.prompt,
         instructions: [],
         extra_instructions: [],
         expected_output: `
-        {
-          firstName: string,
-          lastName: string,
-          gender: string,
-          dateOfBirth: string,
-          email: string,
-          phoneCode: string,
-          phone: string,
-          title: string,
-          summary: string,
-          totalExperience: string,
-          location: string,
-          workExperience: [
-              {
-                companyName: string,
-                position: string,
-                fromMonth: number,
-                fromYear: number,
-                toMonth: number | null,
-                toYear: number | null,
-                description: string,
-              }
-          ];
-          education: [
-              {
-               institutionName: string,
-               degree: string,
-               fromMonth: number | null,
-               fromYear: number,
-               toMonth: number | null,
-               toYear: number,
-          }
-          ]
-          skills: string[];
-          languages: [
-              label: string
-              level: string, [BASIC, CONVERSATIONAL, WORKING_PROFICIENCY, FLUENT, NATIVE_BILINGUAL]
-          ];
-        }
-        `,
+{
+  firstName: string,
+  lastName: string,
+  gender: string,
+  dateOfBirth: string,
+  email: string,
+  phoneCode: string,
+  phone: string,
+  title: string,
+  summary: string,
+  totalExperience: string,
+  location: string,
+  workExperiences: [
+      {
+        companyName: string,
+        position: string,
+        fromMonth: number,
+        fromYear: number,
+        toMonth: number | null,
+        toYear: number | null,
+        description: string,
+      }
+  ];
+  educations: [
+      {
+       institutionName: string,
+       degree: string,
+       fromMonth: number | null,
+       fromYear: number,
+       toMonth: number | null,
+       toYear: number,
+  }
+  ]
+  skills: string[];
+  languages: [
+      label: string
+      level: enum, [BASIC, CONVERSATIONAL, WORKING_PROFICIENCY, FLUENT, NATIVE_BILINGUAL]
+  ];
+}
+`,
       },
     };
 
@@ -278,9 +276,9 @@ export class AIService {
       }),
     );
 
-    const { $defs, ...remain } = res.data;
-
-    return plainToInstance(AssistantChatResponse, { data: remain });
+    return plainToInstance(AssistantChatResponse, {
+      data: res.data,
+    });
   }
 
   async sendHistory(
@@ -294,7 +292,7 @@ export class AIService {
       run_id: dto.runId,
       user_id: dto.userId,
       agent_collection_name: chatbotInfo.collectionName,
-      assistant: AiAssistantType.AUTO_PDF,
+      assistant: AiAssistantType.RAG_PDF,
       property: {
         prompt: chatbotInfo.prompt,
         instructions: chatbotInfo.persona,
