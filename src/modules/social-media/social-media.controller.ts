@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import * as dotenv from 'dotenv';
@@ -12,14 +12,21 @@ export class SocialMediaController {
   constructor() {}
 
   @Get('facebook/webhooks')
-  async getwebhook(@Req() req: Request, @Res() res: Response) {
+  async getwebhook(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() dto: any,
+  ) {
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
 
+    console.log('dto :>> ', dto);
+
     // Check if a token and mode is in the query string of the request
     if (mode && token) {
       // Check the mode and token sent is correct
+
       if (mode === 'subscribe' && token === FB_VERIFY_TOKEN) {
         // Respond with the challenge token from the request
         res.status(200).send(challenge);
