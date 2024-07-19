@@ -12,17 +12,27 @@ export class SocialMediaController {
   constructor() {}
 
   @Get('facebook/webhooks')
-  async getwebhook(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Body() dto: any,
-  ) {
+  async getwebhook(@Req() req: Request, @Res() res: Response) {
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
 
-    console.log('dto :>> ', dto);
+    let body = req.body;
 
+    console.log('body :>> ', body);
+    // Check the webhook event is from a Page subscription
+    if (body.object === 'page') {
+      // Iterate over each entry - there may be multiple if batched
+      body.entry.forEach(function (entry) {
+        // Get the webhook event. entry.messaging is an array, but
+        // will only ever contain one event, so we get index 0
+        let webhook_event = entry.messaging[0];
+        console.log(webhook_event);
+      });
+    }
+
+    // Return a '200 OK' response to all events
+    res.status(200).send('EVENT_RECEIVED');
     // Check if a token and mode is in the query string of the request
     if (mode && token) {
       // Check the mode and token sent is correct
