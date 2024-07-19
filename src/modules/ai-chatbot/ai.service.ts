@@ -132,7 +132,7 @@ export class AIService {
     };
 
     const newPaticipant = await this.participantRepository.create(paricipant);
-    console.log('111 :>> ', newPaticipant);
+
     await this.participantRepository.save(newPaticipant);
 
     return plainToInstance(CreateAssistantRunResponse, {
@@ -271,7 +271,7 @@ export class AIService {
         `,
       },
     };
-    console.log('1 :>> ', 1);
+
     const res = await lastValueFrom(
       this.httpService.post(aiServiceUrl.sendMessage, {
         ...chatInput,

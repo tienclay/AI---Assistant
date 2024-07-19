@@ -26,6 +26,7 @@ import { MessageService } from '../message/message.service';
 import { MessageInputDto } from '../message/dto';
 import { ParticipantInputDto } from './dto/paticipant.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { extractJSONObject } from 'src/common/utils/extract-json.util';
 @Injectable()
 export class AIParseCVService {
   constructor(
@@ -140,7 +141,36 @@ export class AIParseCVService {
       chatHistory: res.data.chat_history,
     });
   }
+  async createAgentRunForParseCv(
+    chatbotId: string,
+    userId: string,
+  ): Promise<CreateAssistantRunResponse> {
+    const chatbotInfo =
+      await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
 
+    const createAssistantRun: CreateAssistantRunInterface = {
+      user_id: userId,
+      agent_collection_name: chatbotInfo.collectionName,
+      assistant: AiAssistantType.RAG_PDF,
+      property: {
+        prompt: chatbotInfo.prompt,
+        instructions: chatbotInfo.persona,
+        extra_instructions: [],
+      },
+    };
+
+    const res = await lastValueFrom(
+      this.httpService.post(aiServiceUrl.createAssistantRun, {
+        ...createAssistantRun,
+      }),
+    );
+
+    return plainToInstance(CreateAssistantRunResponse, {
+      runId: res.data.run_id,
+      userId: res.data.user_id,
+      chatHistory: res.data.chat_history,
+    });
+  }
   async sendMessage(
     chatbotId: string,
     dto: AssistantChatDto,
@@ -193,7 +223,7 @@ export class AIParseCVService {
       agent_collection_name: chatbotInfo.collectionName,
       assistant: AiAssistantType.RAG_PDF,
       property: {
-        prompt: chatbotInfo.prompt,
+        // prompt: chatbotInfo.prompt,
         instructions: [],
         extra_instructions: [],
         expected_output: `
@@ -209,7 +239,7 @@ export class AIParseCVService {
   summary: string,
   totalExperience: string,
   location: string,
-  workExperience: [
+  workExperiences: [
       {
         companyName: string,
         position: string,
@@ -220,7 +250,7 @@ export class AIParseCVService {
         description: string,
       }
   ];
-  education: [
+  educations: [
       {
        institutionName: string,
        degree: string,
@@ -233,20 +263,25 @@ export class AIParseCVService {
   skills: string[];
   languages: [
       label: string
-      level: string, [BASIC, CONVERSATIONAL, WORKING_PROFICIENCY, FLUENT, NATIVE_BILINGUAL]
+      level: enum, [BASIC, CONVERSATIONAL, WORKING_PROFICIENCY, FLUENT, NATIVE_BILINGUAL]
   ];
 }
 `,
       },
     };
-    console.log('1 :>> ', 1);
+    console.log(
+      'chatInput.property.expected_output :>> ',
+      chatInput.property.expected_output,
+    );
     const res = await lastValueFrom(
       this.httpService.post(aiServiceUrl.sendMessage, {
         ...chatInput,
       }),
     );
-    console.log('2 :>> ', 2);
-    return plainToInstance(AssistantChatResponse, { data: res.data });
+    console.log('2 :>> ', res.data);
+    return plainToInstance(AssistantChatResponse, {
+      data: res.data,
+    });
   }
 
   async sendHistory(

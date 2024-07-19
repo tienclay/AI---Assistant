@@ -44,7 +44,7 @@ export class CvParserService {
       });
 
       const parseCvRes = plainToInstance(ParseCvResponseDto, message.data);
-
+      console.log('parseCvRes :>> ', parseCvRes);
       await this.aiService.clearRecordsInCollection(chatbot.id);
       return parseCvRes;
     } catch (error) {
