@@ -74,8 +74,9 @@ export class FacebookService {
       // Create the payload for a basic text message, which
       // will be added to the body of your request to the Send API
       response = {
-        text: `You sent the message: '${receivedMessage.text}'. Now send me an attachment!`,
+        text: `Welcome to Thanh AI, I am an AI assistant`,
       };
+      console.log('received message:', receivedMessage.text);
     } else if (receivedMessage.attachments) {
       // Get the URL of the message attachment
       let attachmentUrl = receivedMessage.attachments[0].payload.url;
@@ -128,7 +129,7 @@ export class FacebookService {
     this.callSendAPI(senderPsid, request, response);
   }
 
-  async callSendAPI(senderPsid, request: Request, response: Response) {
+  async callSendAPI(senderPsid, request: Request, response: any) {
     // The page access token we have generated in your app settings
     const PAGE_ACCESS_TOKEN = process.env.FB_VERIFY_ACCESS_TOKEN;
 
@@ -139,6 +140,8 @@ export class FacebookService {
       },
       message: response,
     };
+
+    console.log('send message:', response);
 
     // Send the HTTP request to the Messenger Platform
 
