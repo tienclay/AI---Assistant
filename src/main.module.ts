@@ -20,6 +20,7 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 import { AuthEmailModule } from './modules/auth/auth-email/auth-email.module';
 import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
 import { MessageModule } from './modules/message/message.module';
+import { SocialMediaModule } from './modules/social-media/social-media.module';
 
 const modules = [
   AuthModule,
@@ -33,6 +34,7 @@ const modules = [
   OtpCacheModule,
   AuthEmailModule,
   ChatbotModule,
+  SocialMediaModule,
 ];
 
 @Module({
