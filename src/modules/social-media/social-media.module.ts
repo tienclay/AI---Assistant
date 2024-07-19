@@ -4,7 +4,11 @@ import { FacebookService } from './facebook/facebook.service';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [HttpModule],
+  imports: [
+    HttpModule.register({
+      baseURL: 'https://graph.facebook.com/v2.6/me/messages',
+    }),
+  ],
   providers: [FacebookService],
   controllers: [SocialMediaController],
 })

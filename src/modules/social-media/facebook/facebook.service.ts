@@ -10,10 +10,6 @@ const FB_VERIFY_TOKEN = process.env.FB_VERIFY_TOKEN;
 export class FacebookService {
   constructor(private readonly httpService: HttpService) {}
 
-  async hello() {
-    return 'Hello World!';
-  }
-
   async handleGetWebhook(req: Request, res: Response) {
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
@@ -145,14 +141,12 @@ export class FacebookService {
 
     // Send the HTTP request to the Messenger Platform
 
-    await this.httpService.post(
-      'https://graph.facebook.com/v2.6/me/messages',
-      requestBody,
-      {
+    await this.httpService
+      .post('https://graph.facebook.com/v2.6/me/messages', requestBody, {
         params: {
           access_token: PAGE_ACCESS_TOKEN,
         },
-      },
-    );
+      })
+      .toPromise();
   }
 }
