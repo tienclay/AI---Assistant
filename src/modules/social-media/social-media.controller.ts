@@ -1,7 +1,10 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-const VERIFY_TOKEN = process.env.VERIFY_TOKEN;
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+const FB_VERIFY_TOKEN = process.env.FB_VERIFY_TOKEN;
 
 @Controller('social-media')
 @ApiTags('Social media')
@@ -9,18 +12,16 @@ export class SocialMediaController {
   constructor() {}
 
   @Get('facebook/webhooks')
-  async getwebhook(req: Request, res: Response) {
-    // Parse the query params
-    let mode = req.query['hub.mode'];
-    let token = req.query['hub.verify_token'];
-    let challenge = req.query['hub.challenge'];
+  async getwebhook(@Req() req: Request, @Res() res: Response) {
+    const mode = req.query['hub.mode'];
+    const token = req.query['hub.verify_token'];
+    const challenge = req.query['hub.challenge'];
 
     // Check if a token and mode is in the query string of the request
     if (mode && token) {
       // Check the mode and token sent is correct
-      if (mode === 'subscribe' && token === VERIFY_TOKEN) {
+      if (mode === 'subscribe' && token === FB_VERIFY_TOKEN) {
         // Respond with the challenge token from the request
-        console.log('WEBHOOK_VERIFIED');
         res.status(200).send(challenge);
       } else {
         // Respond with '403 Forbidden' if verify tokens do not match
@@ -30,7 +31,7 @@ export class SocialMediaController {
   }
 
   @Post('facebook/webhooks')
-  async postwebhook(req: Request, res: Response) {
+  async postwebhook(@Req() req: Request, @Res() res: Response) {
     let body = req.body;
 
     console.log(`\u{1F7EA} Received webhook:`);
