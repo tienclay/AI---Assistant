@@ -51,6 +51,8 @@ jobs:
           script: |
             cd /home/massbit/heydevs_dev/ai-chatbot-api
             git checkout dev
-            GIT_SSH_COMMAND='ssh -i /home/massbit/.ssh/id_rsa' git pull
+            git stash -u
+            GIT_SSH_COMMAND='ssh -i /home/massbit/.ssh/id_rsa -o StrictHostKeyChecking=accept-new' git pull
+            npm install
             npm run build
-            pm2 restart ai-chatbot-api --update-env
+            pm2 describe ai-chatbot-api > /dev/null 2>&1 && pm2 restart ai-chatbot-api --update-env || pm2 start /home/massbit/heydevs_dev/ai-chatbot-api/dist/src/main.js --name ai-chatbot-api
