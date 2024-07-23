@@ -275,7 +275,12 @@ export class AIParseCVService {
         ...chatInput,
       }),
     );
-
+    const isString = typeof res.data === 'string';
+    if (isString) {
+      return plainToInstance(AssistantChatResponse, {
+        data: extractJSONObject(res.data),
+      });
+    }
     return plainToInstance(AssistantChatResponse, {
       data: res.data,
     });
