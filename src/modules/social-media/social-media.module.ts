@@ -5,8 +5,13 @@ import { HttpModule } from '@nestjs/axios';
 import { DiscordService } from './discord/discord.service';
 
 @Module({
-  imports: [HttpModule],
-  providers: [FacebookService, DiscordService],
+  imports: [
+    HttpModule.register({
+      baseURL: 'https://graph.facebook.com/v2.6/me/messages',
+    }),
+  ],
+  providers: [FacebookService],
+
   controllers: [SocialMediaController],
 })
 export class SocialMediaModule {}
