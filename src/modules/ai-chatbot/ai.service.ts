@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 import { DataSource, Repository } from 'typeorm';
-import { aiServiceUrl } from './constants';
+import { AI_QUEUE_JOB, AI_QUEUE_NAME, aiServiceUrl } from './constants';
 import {
   chatbotInfo,
   AssistantChatInterface,
@@ -25,6 +25,8 @@ import { CreateConversationDto } from '../conversation/dto/create-conversation.d
 import { MessageService } from '../message/message.service';
 import { MessageInputDto } from '../message/dto';
 import { ParticipantInputDto } from './dto/paticipant.dto';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class AIService {
@@ -38,6 +40,8 @@ export class AIService {
     private readonly conversationService: ConversationService,
     @InjectRepository(Participant)
     private readonly participantRepository: Repository<Participant>,
+    @InjectQueue(AI_QUEUE_NAME)
+    private readonly aiQueue: Queue,
   ) {}
 
   /**
@@ -83,12 +87,8 @@ export class AIService {
         extra_instructions: [],
       },
     };
-
-    await lastValueFrom(
-      this.httpService.post(aiServiceUrl.loadKnowledge, {
-        ...loadKnowledgeInput,
-      }),
-    );
+    // send request to processor
+    await this.aiQueue.add(AI_QUEUE_JOB.LOAD_KNOWLEDGE, loadKnowledgeInput);
 
     return true;
   }

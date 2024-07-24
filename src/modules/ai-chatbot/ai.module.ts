@@ -9,6 +9,9 @@ import { Agent, Chatbot, Participant } from '@entities';
 import { ConversationModule } from '../conversation/conversation.module';
 import { MessageModule } from '../message/message.module';
 import { AIParseCVService } from './ai-parseCV.service';
+import { BullModule } from '@nestjs/bull';
+import { AI_QUEUE_NAME } from './constants';
+import { AiProcessor } from './ai.processor';
 
 @Module({
   imports: [
@@ -35,9 +38,17 @@ import { AIParseCVService } from './ai-parseCV.service';
     }),
     ConversationModule,
     MessageModule,
+    BullModule.registerQueue({
+      name: AI_QUEUE_NAME,
+      defaultJobOptions: {
+        removeOnComplete: {
+          count: 1000,
+        },
+      },
+    }),
   ],
 
-  providers: [AIService, AIParseCVService],
+  providers: [AIService, AIParseCVService, AiProcessor],
   controllers: [AIController],
   exports: [AIService, AIParseCVService],
 })
