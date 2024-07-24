@@ -53,6 +53,12 @@ export class ConversationService {
     return this.messageRepository.find({ where: { conversationId } });
   }
 
+  async getConversationById(conversationId: string): Promise<Conversation> {
+    return this.conversationRepository.findOne({
+      where: { id: conversationId },
+    });
+  }
+
   async getAllConversations(): Promise<ResponseConversationDto[]> {
     const conversations = await this.conversationRepository.find();
     return conversations.map((conversation) =>

@@ -21,6 +21,7 @@ import { AuthEmailModule } from './modules/auth/auth-email/auth-email.module';
 import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
 import { MessageModule } from './modules/message/message.module';
 import { SocialMediaModule } from './modules/social-media/social-media.module';
+import { RealtimeModule } from './modules/realtime/realtime.module';
 
 const modules = [
   AuthModule,
@@ -35,6 +36,7 @@ const modules = [
   AuthEmailModule,
   ChatbotModule,
   SocialMediaModule,
+  RealtimeModule,
 ];
 
 @Module({
