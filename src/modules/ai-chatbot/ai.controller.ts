@@ -1,11 +1,15 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   Post,
+  Query,
   UseGuards,
+  forwardRef,
 } from '@nestjs/common';
 import { AIService } from './ai.service';
 import {
@@ -26,11 +30,24 @@ import {
 } from './dto';
 import { AssistantHistoryDto } from './dto/history.dto';
 import { LoadKnowledgeDto } from './dto/load-knowledge.dto';
+import { ChatGateway } from '../realtime/chat.gateway';
 
 @Controller('ai-chatbot')
 @ApiTags('AIChatbot-Service')
 export class AIController {
-  constructor(private readonly aiService: AIService) {}
+  constructor(
+    private readonly aiService: AIService,
+    @Inject(forwardRef(() => ChatGateway))
+    private readonly chatGateway: ChatGateway,
+  ) {}
+
+  @Get('test-wb')
+  async testSendMessage(
+    @Query('conversationId') conversationId: string,
+    @Query('message') message: string,
+  ): Promise<void> {
+    this.chatGateway.sendMessageToClient(conversationId, message);
+  }
 
   @Post(':chatbotId/load-knowledge')
   @Roles(UserRole.CLIENT)
@@ -59,6 +76,7 @@ export class AIController {
     @Body() dto: CreateAssistantRun,
     @Param('chatbotId') chatbotId: string,
   ): Promise<CreateAssistantRunResponse> {
+    console.log('dto :>> ', dto);
     return this.aiService.createAgentRun(chatbotId, dto.userId);
   }
 

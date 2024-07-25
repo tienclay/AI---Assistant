@@ -1,11 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
-import { DatabaseConfig, LogConfig, configurations } from './config';
+import {
+  BullConfig,
+  DatabaseConfig,
+  LogConfig,
+  configurations,
+} from './config';
 import { AuthModule } from './modules/auth/auth.module';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { APP_FILTER } from '@nestjs/core';
 import { GlobalHandleExceptionFilter } from './common/infra-exception';
-import { AIModule } from './modules/ai/ai.module';
+// import { AIModule } from './modules/ai/ai.module';
 
 import { AgentModule } from './modules/agent/agent.module';
 import { FileModule } from './modules/file/file.module';
@@ -21,10 +26,12 @@ import { AuthEmailModule } from './modules/auth/auth-email/auth-email.module';
 import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
 import { MessageModule } from './modules/message/message.module';
 import { SocialMediaModule } from './modules/social-media/social-media.module';
+import { RealtimeModule } from './modules/realtime/realtime.module';
+import { BullModule } from '@nestjs/bull';
 
 const modules = [
   AuthModule,
-  AIModule,
+  // AIModule,
   AgentModule,
   FileModule,
   CvParserModule,
@@ -35,6 +42,7 @@ const modules = [
   AuthEmailModule,
   ChatbotModule,
   SocialMediaModule,
+  RealtimeModule,
 ];
 
 @Module({
@@ -64,9 +72,22 @@ const modules = [
         return config as WinstonModuleOptions;
       },
     }),
+
     RedisModule.forRoot({
       type: 'single',
       url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+    }),
+
+    BullModule.forRootAsync({
+      inject: [BullConfig.KEY],
+      useFactory: (config: ConfigType<typeof BullConfig>) => {
+        if (!config) {
+          throw new Error('Cannot start app without bull config');
+        }
+        return {
+          redis: config.redis,
+        };
+      },
     }),
 
     ...modules,

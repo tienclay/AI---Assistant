@@ -8,6 +8,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ConversationService } from './conversation.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
