@@ -11,7 +11,6 @@ export class DiscordService {
     this.chat();
   }
   chat(): string {
-    console.log('1 :>> ', 1);
     const client = new Client({
       intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'],
     });

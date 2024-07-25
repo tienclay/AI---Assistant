@@ -4,3 +4,11 @@ export const aiServiceUrl = {
   sendMessage: '/chat',
   getAgentHistory: '/history',
 };
+
+export const AI_QUEUE_NAME = 'ai-chatbot-queue';
+
+export const AI_QUEUE_JOB = {
+  LOAD_KNOWLEDGE: 'LOAD_KNOWLEDGE',
+  SEND_MESSAGE: 'SEND_MESSAGE',
+  CREATE_RUN: 'CREATE_RUN',
+};

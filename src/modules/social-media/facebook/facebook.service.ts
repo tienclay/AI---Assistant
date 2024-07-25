@@ -43,7 +43,6 @@ export class FacebookService {
 
         // Get the sender PSID
         let senderPsid = webhookEvent.sender.id;
-        console.log('Sender PSID: ' + senderPsid);
 
         // Check if the event is a message or postback and
         // pass the event to the appropriate handler function
@@ -72,7 +71,6 @@ export class FacebookService {
       response = {
         text: `Welcome to Thanh AI, I am an AI assistant`,
       };
-      console.log('received message:', receivedMessage.text);
     } else if (receivedMessage.attachments) {
       // Get the URL of the message attachment
       let attachmentUrl = receivedMessage.attachments[0].payload.url;
@@ -136,8 +134,6 @@ export class FacebookService {
       },
       message: response,
     };
-
-    console.log('send message:', response);
 
     // Send the HTTP request to the Messenger Platform
 
