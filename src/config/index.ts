@@ -4,6 +4,8 @@ import AiServiceConfig from './ai-service.config';
 import CacheConfig from './cache.config';
 import NovuConfig from './novu.config';
 import LogConfig from './log.config';
+import BullConfig from './bull.config';
+
 const configurations = [
   DatabaseConfig,
   AiServiceConfig,
@@ -11,6 +13,7 @@ const configurations = [
   CacheConfig,
   NovuConfig,
   LogConfig,
+  BullConfig,
 ];
 
 export {
@@ -21,4 +24,5 @@ export {
   CacheConfig,
   NovuConfig,
   LogConfig,
+  BullConfig,
 };

@@ -27,10 +27,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const participantId = socket.handshake.query.participantId as string;
     const conversations =
       await this.conversationService.getParticipantConversation(participantId);
+
     const conversationIdsString = conversations.map((conversation) =>
       conversation.id.toString(),
     );
-
     socket.join(conversationIdsString);
     return null;
   }
@@ -46,8 +46,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() socket: Socket,
     @MessageBody() dto: SendMessageDto,
   ): Promise<void> {
+    const participantId = socket.handshake.query.participantId as string;
+
     const conversation = await this.conversationService.getConversationById(
       dto.runId,
     );
+
+    await this.conversationService.userSendMessage(
+      dto.runId,
+      dto.message,
+      participantId,
+    );
+  }
+
+  async sendMessageToClient(
+    conversationId: string,
+    message: string,
+  ): Promise<void> {
+    this.server.to(conversationId).emit(SocketEvent.MESSAGE_RECEIVED, {
+      message,
+    });
   }
 }

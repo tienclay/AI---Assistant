@@ -7,6 +7,7 @@ import { ResponseConversationDto } from './dto/response-conversation.dto';
 import { Conversation, Message } from '@entities';
 import { Repository } from 'typeorm';
 import { AIAssistantNotFoundException } from 'src/common/infra-exception';
+import { MessageSender } from 'src/common/enums';
 
 @Injectable()
 export class ConversationService {
@@ -64,6 +65,20 @@ export class ConversationService {
     return conversations.map((conversation) =>
       plainToInstance(ResponseConversationDto, conversation),
     );
+  }
+
+  async userSendMessage(
+    conversationId: string,
+    message: string,
+    participantId: string,
+  ): Promise<Message> {
+    const newMessage = this.messageRepository.create({
+      conversationId,
+      content: message,
+      messageSender: MessageSender.USER,
+      participantId,
+    });
+    return this.messageRepository.save(newMessage);
   }
 
   update(id: string, updateConversationDto: UpdateConversationDto) {
