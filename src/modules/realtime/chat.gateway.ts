@@ -52,11 +52,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       dto.runId,
     );
 
-    await this.conversationService.userSendMessage(
-      dto.runId,
-      dto.message,
-      participantId,
-    );
+    await this.aiService.sendMessage(conversation.chatbotId, {
+      message: dto[0].message,
+      runId: dto[0].runId,
+      userId: participantId,
+    });
   }
 
   async sendMessageToClient(

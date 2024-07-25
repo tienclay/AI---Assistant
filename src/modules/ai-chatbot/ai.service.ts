@@ -192,21 +192,6 @@ export class AIService {
     };
 
     await this.aiQueue.add(AI_QUEUE_JOB.SEND_MESSAGE, chatInput);
-
-    // const res = await lastValueFrom(
-    //   this.httpService.post(aiServiceUrl.sendMessage, {
-    //     ...chatInput,
-    //   }),
-    // );
-    // const message: MessageInputDto = {
-    //   content: res.data,
-    //   conversationId: dto.runId,
-    //   messageSender: MessageSender.BOT,
-    //   participantId: null,
-    // };
-    // await this.messageService.createMessage(message);
-
-    // return plainToInstance(AssistantChatResponse, { data: res.data });
   }
 
   async sendAiParseCvMessage(

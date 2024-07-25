@@ -13,6 +13,7 @@ import { ConversationService } from '../conversation/conversation.service';
 import { MessageService } from '../message/message.service';
 import { MessageInputDto } from '../message/dto';
 import { MessageSender } from 'src/common/enums';
+import { ChatGateway } from '../realtime/chat.gateway';
 
 @Processor(AI_QUEUE_NAME)
 export class AiProcessor {
@@ -20,6 +21,7 @@ export class AiProcessor {
     private httpService: HttpService,
     private readonly conversationService: ConversationService,
     private readonly messageService: MessageService,
+    private readonly chatGateway: ChatGateway,
   ) {}
 
   @Process(AI_QUEUE_JOB.LOAD_KNOWLEDGE)
@@ -51,6 +53,7 @@ export class AiProcessor {
         ...chatInput,
       }),
     );
+
     const message: MessageInputDto = {
       content: res.data,
       conversationId: chatInput.run_id,
@@ -58,5 +61,7 @@ export class AiProcessor {
       participantId: null,
     };
     await this.messageService.createMessage(message);
+
+    await this.chatGateway.sendMessageToClient(chatInput.run_id, res.data);
   }
 }
