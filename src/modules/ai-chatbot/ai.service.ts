@@ -86,6 +86,7 @@ export class AIService {
         instructions: chatbotInfo.persona,
         extra_instructions: [],
       },
+      model: chatbotInfo.model,
     };
     // send request to processor
     await this.aiQueue.add(AI_QUEUE_JOB.LOAD_KNOWLEDGE, loadKnowledgeInput);
@@ -109,6 +110,7 @@ export class AIService {
         instructions: chatbotInfo.persona,
         extra_instructions: [],
       },
+      model: chatbotInfo.model,
     };
 
     const res = await lastValueFrom(
@@ -158,6 +160,7 @@ export class AIService {
         instructions: chatbotInfo.persona,
         extra_instructions: [],
       },
+      model: chatbotInfo.model,
     };
 
     const res = await lastValueFrom(
@@ -189,6 +192,7 @@ export class AIService {
         instructions: chatbotInfo.instruction,
         extra_instructions: chatbotInfo.persona,
       },
+      model: chatbotInfo.model,
     };
 
     await this.aiQueue.add(AI_QUEUE_JOB.SEND_MESSAGE, chatInput);
@@ -254,6 +258,7 @@ export class AIService {
         }
         `,
       },
+      model: chatbotInfo.model,
     };
 
     const res = await lastValueFrom(
@@ -284,6 +289,7 @@ export class AIService {
         instructions: chatbotInfo.persona,
         extra_instructions: [],
       },
+      model: chatbotInfo.model,
     };
 
     const res = await lastValueFrom(
@@ -322,6 +328,7 @@ export class AIService {
       prompt: chatbot.prompt,
       persona: chatbot.persona,
       instruction: chatbot.instruction,
+      model: chatbot.model,
     };
   }
 }

@@ -16,4 +16,6 @@ export interface CreateAssistantRunInterface {
   agent_collection_name: string;
 
   property: KnowledgeProperty;
+
+  model: string;
 }

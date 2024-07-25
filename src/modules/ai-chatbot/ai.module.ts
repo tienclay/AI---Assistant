@@ -9,6 +9,7 @@ import { Agent, Chatbot, Participant } from '@entities';
 import { ConversationModule } from '../conversation/conversation.module';
 import { MessageModule } from '../message/message.module';
 import { AIParseCVService } from './ai-parseCV.service';
+
 import { BullModule } from '@nestjs/bull';
 import { AI_QUEUE_NAME } from './constants';
 import { AiProcessor } from './ai.processor';
@@ -37,6 +38,7 @@ import { RealtimeModule } from '../realtime/realtime.module';
         };
       },
     }),
+
     ConversationModule,
     MessageModule,
     BullModule.registerQueue({

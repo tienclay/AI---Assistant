@@ -16,4 +16,5 @@ export interface AssistantChatInterface {
   agent_collection_name: string;
   assistant: AiAssistantType;
   property: KnowledgeProperty;
+  model: string;
 }

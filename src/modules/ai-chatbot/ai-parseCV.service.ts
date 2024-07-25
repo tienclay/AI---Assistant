@@ -26,7 +26,7 @@ import { MessageService } from '../message/message.service';
 import { MessageInputDto } from '../message/dto';
 import { ParticipantInputDto } from './dto/paticipant.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { extractJSONObject } from 'src/common/utils/extract-json.util';
+
 @Injectable()
 export class AIParseCVService {
   constructor(
@@ -110,6 +110,7 @@ export class AIParseCVService {
         instructions: chatbotInfo.persona,
         extra_instructions: [],
       },
+      model: chatbotInfo.model,
     };
 
     const res = await lastValueFrom(
@@ -157,6 +158,7 @@ export class AIParseCVService {
         instructions: chatbotInfo.persona,
         extra_instructions: [],
       },
+      model: chatbotInfo.model,
     };
 
     const res = await lastValueFrom(
@@ -190,6 +192,7 @@ export class AIParseCVService {
         instructions: chatbotInfo.persona,
         extra_instructions: [],
       },
+      model: chatbotInfo.model,
     };
 
     const res = await lastValueFrom(
@@ -268,6 +271,7 @@ export class AIParseCVService {
 }
 `,
       },
+      model: chatbotInfo.model,
     };
 
     const res = await lastValueFrom(
@@ -303,6 +307,7 @@ export class AIParseCVService {
         instructions: chatbotInfo.persona,
         extra_instructions: [],
       },
+      model: chatbotInfo.model,
     };
 
     const res = await lastValueFrom(
@@ -341,6 +346,7 @@ export class AIParseCVService {
       prompt: chatbot.prompt,
       persona: chatbot.persona,
       instruction: chatbot.instruction,
+      model: chatbot.model,
     };
   }
 }
