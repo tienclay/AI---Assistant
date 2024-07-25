@@ -3,4 +3,5 @@ export interface chatbotInfo {
   prompt: string;
   instruction: string[];
   persona: string[];
+  model: string;
 }

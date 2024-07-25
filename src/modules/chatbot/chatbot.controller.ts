@@ -80,7 +80,14 @@ export class ChatbotController {
   getChatbotProperty() {
     return this.chatbotService.getSampleProperty();
   }
-
+  @Get('all-models')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.CLIENT)
+  @ApiOperation({ summary: 'Get all models' })
+  @ApiBearerAuth('access-token')
+  getAllModels(): string[] {
+    return this.chatbotService.getALlModels();
+  }
   @Patch(':id/load-knowledge')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRole.CLIENT)

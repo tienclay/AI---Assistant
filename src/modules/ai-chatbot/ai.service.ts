@@ -82,6 +82,7 @@ export class AIService {
         instructions: chatbotInfo.persona,
         extra_instructions: [],
       },
+      model: chatbotInfo.model,
     };
 
     await lastValueFrom(
@@ -109,6 +110,7 @@ export class AIService {
         instructions: chatbotInfo.persona,
         extra_instructions: [],
       },
+      model: chatbotInfo.model,
     };
 
     const res = await lastValueFrom(
@@ -158,6 +160,7 @@ export class AIService {
         instructions: chatbotInfo.persona,
         extra_instructions: [],
       },
+      model: chatbotInfo.model,
     };
 
     const res = await lastValueFrom(
@@ -192,6 +195,7 @@ export class AIService {
         instructions: chatbotInfo.instruction,
         extra_instructions: chatbotInfo.persona,
       },
+      model: chatbotInfo.model,
     };
 
     const res = await lastValueFrom(
@@ -270,6 +274,7 @@ export class AIService {
         }
         `,
       },
+      model: chatbotInfo.model,
     };
 
     const res = await lastValueFrom(
@@ -300,6 +305,7 @@ export class AIService {
         instructions: chatbotInfo.persona,
         extra_instructions: [],
       },
+      model: chatbotInfo.model,
     };
 
     const res = await lastValueFrom(
@@ -338,6 +344,7 @@ export class AIService {
       prompt: chatbot.prompt,
       persona: chatbot.persona,
       instruction: chatbot.instruction,
+      model: chatbot.model,
     };
   }
 }

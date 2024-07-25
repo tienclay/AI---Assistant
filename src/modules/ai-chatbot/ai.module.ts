@@ -9,6 +9,8 @@ import { Agent, Chatbot, Participant } from '@entities';
 import { ConversationModule } from '../conversation/conversation.module';
 import { MessageModule } from '../message/message.module';
 import { AIParseCVService } from './ai-parseCV.service';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { AI_PACKAGE_NAME, AI_SERVICE_NAME } from './ai.pb';
 
 @Module({
   imports: [
@@ -33,6 +35,7 @@ import { AIParseCVService } from './ai-parseCV.service';
         };
       },
     }),
+
     ConversationModule,
     MessageModule,
   ],

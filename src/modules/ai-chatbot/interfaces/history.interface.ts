@@ -13,4 +13,5 @@ export interface AgentHistory {
   assistant: AiAssistantType;
   agent_collection_name: string;
   property: KnowledgeProperty;
+  model: string;
 }

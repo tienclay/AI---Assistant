@@ -12,4 +12,5 @@ export interface LoadKnowledgeInterface {
   website_urls?: any;
   pdf_urls?: any;
   property: KnowledgeProperty;
+  model?: string;
 }

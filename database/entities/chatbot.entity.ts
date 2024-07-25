@@ -26,4 +26,7 @@ export class Chatbot extends BaseEntity {
 
   @Column({ type: 'varchar', nullable: true, array: true })
   persona: string[];
+
+  @Column({ type: 'varchar', default: 'gpt-4o-mini' })
+  model: string;
 }

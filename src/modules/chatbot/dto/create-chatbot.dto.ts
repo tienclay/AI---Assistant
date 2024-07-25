@@ -29,4 +29,9 @@ export class CreateChatbotDto {
   @IsArray()
   @IsOptional()
   instruction: string[];
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  model: string;
 }
