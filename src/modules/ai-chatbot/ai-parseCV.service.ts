@@ -26,6 +26,7 @@ import { MessageService } from '../message/message.service';
 import { MessageInputDto } from '../message/dto';
 import { ParticipantInputDto } from './dto/paticipant.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { extractJSONObject } from 'src/common/utils/extract-json.util';
 
 @Injectable()
 export class AIParseCVService {
