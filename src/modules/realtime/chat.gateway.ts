@@ -53,8 +53,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
 
     await this.aiService.sendMessage(conversation.chatbotId, {
-      message: dto[0].message,
-      runId: dto[0].runId,
+      message: dto.message,
+      runId: dto.runId,
       userId: participantId,
     });
   }

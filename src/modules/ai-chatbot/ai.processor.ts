@@ -61,7 +61,6 @@ export class AiProcessor {
       participantId: null,
     };
     await this.messageService.createMessage(message);
-
     await this.chatGateway.sendMessageToClient(chatInput.run_id, res.data);
   }
 }

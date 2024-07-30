@@ -76,7 +76,6 @@ export class AIController {
     @Body() dto: CreateAssistantRun,
     @Param('chatbotId') chatbotId: string,
   ): Promise<CreateAssistantRunResponse> {
-    console.log('dto :>> ', dto);
     return this.aiService.createAgentRun(chatbotId, dto.userId);
   }
 

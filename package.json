@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.600.0",
+    "@discordjs/rest": "^2.3.0",
     "@grpc/grpc-js": "^1.11.1",
     "@grpc/proto-loader": "^0.7.13",
     "@nestjs-modules/ioredis": "^2.0.2",
@@ -59,6 +60,7 @@
     "cache-manager": "^5.7.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "discord-api-types": "^0.37.93",
     "discord.js": "^15.0.0-dev.1690805171-488aa58b2.0",
     "facebook-nodejs-business-sdk": "^20.0.0",
     "nest-winston": "^1.10.0",
