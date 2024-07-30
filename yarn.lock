@@ -2855,7 +2855,7 @@ agent-base@6:
 
 "ai-chatbot-proto@https://github.com/heydevs-io/ai-chatbot-proto":
   version "1.0.0"
-  resolved "https://github.com/heydevs-io/ai-chatbot-proto#a705ad3a314e42472d20b34118b855a4da1fcce1"
+  resolved "https://github.com/heydevs-io/ai-chatbot-proto#deacdd9690a1bdbff6b8bc978953ce057983b938"
 
 ajv-formats@2.1.1:
   version "2.1.1"
@@ -3733,6 +3733,11 @@ cross-spawn@^7.0.0, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
+crypto-js@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.2.0.tgz#4d931639ecdfd12ff80e8186dba6af2c2e856631"
+  integrity sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==
+
 currency-codes@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/currency-codes/-/currency-codes-1.5.1.tgz#7ed12dc00be91414937c71855ff5ea6059b88d47"
@@ -3871,10 +3876,15 @@ discord-api-types@0.37.83:
   resolved "https://registry.yarnpkg.com/discord-api-types/-/discord-api-types-0.37.83.tgz#a22a799729ceded8176ea747157837ddf4708b1f"
   integrity sha512-urGGYeWtWNYMKnYlZnOnDHm8fVRffQs3U0SpE8RHeiuLKb/u92APS8HoQnPTFbnXmY1vVnXjXO4dOxcAn3J+DA==
 
-discord-api-types@^0.37.41, discord-api-types@^0.37.50:
+discord-api-types@^0.37.41, discord-api-types@^0.37.50, discord-api-types@^0.37.93:
   version "0.37.93"
   resolved "https://registry.yarnpkg.com/discord-api-types/-/discord-api-types-0.37.93.tgz#fd2d34738ec2984cc5f904fe245dccf1cc35ffcd"
   integrity sha512-M5jn0x3bcXk8EI2c6F6V6LeOWq10B/cJf+YJSyqNmg7z4bdXK+Z7g9zGJwHS0h9Bfgs0nun2LQISFOzwck7G9A==
+
+discord-interactions@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/discord-interactions/-/discord-interactions-4.0.0.tgz#0523737bbccaba38e46c409d494ba036177cc380"
+  integrity sha512-27HSJ379W9E4T6Or+efQRGnekJ6g8kYokSFtK5HKc/3ObC+83O+vxdg2trStD/2XPIHVPMNVIoZAeK9s/EL8Yg==
 
 discord.js@^15.0.0-dev.1690805171-488aa58b2.0:
   version "15.0.0-dev.1690805171-488aa58b2.0"

@@ -27,7 +27,8 @@
     "seed": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-extension/dist/cli/index.js seed -d ormconfig",
     "proto:install": "yarn add https://github.com/heydevs-io/ai-chatbot-proto",
     "proto:ai": "protoc --plugin=node_modules/.bin/protoc-gen-ts_proto -I=./node_modules/ai-chatbot-proto/proto --ts_proto_out=src/modules/ai-chatbot node_modules/ai-chatbot-proto/proto/ai.proto --ts_proto_opt=nestJs=true --ts_proto_opt=fileSuffix=.pb",
-    "proto:all": "yarn proto:ai"
+    "proto:discord": "protoc --plugin=node_modules/.bin/protoc-gen-ts_proto -I=./node_modules/ai-chatbot-proto/proto --ts_proto_out=src/modules/social-media/discord node_modules/ai-chatbot-proto/proto/discord.proto --ts_proto_opt=nestJs=true --ts_proto_opt=fileSuffix=.pb",
+    "proto:all": "yarn proto:ai && yarn proto:discord"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.600.0",
@@ -59,6 +60,9 @@
     "cache-manager": "^5.7.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "crypto-js": "^4.2.0",
+    "discord-api-types": "^0.37.93",
+    "discord-interactions": "^4.0.0",
     "discord.js": "^15.0.0-dev.1690805171-488aa58b2.0",
     "facebook-nodejs-business-sdk": "^20.0.0",
     "nest-winston": "^1.10.0",

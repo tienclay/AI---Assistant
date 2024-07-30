@@ -179,7 +179,8 @@ export class AIService {
   async sendMessage(chatbotId: string, dto: AssistantChatDto): Promise<any> {
     const chatbotInfo =
       await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
-
+    console.log('chatbotId :>> ', chatbotId);
+    console.log('chatbotInfo.model :>> ', chatbotInfo.model);
     const chatInput: AssistantChatInterface = {
       message: dto.message,
       stream: true,
