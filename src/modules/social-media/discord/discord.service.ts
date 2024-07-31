@@ -14,7 +14,16 @@ import {
 
 import { ChatbotDiscordToken } from './dtos/input-chatbot-token.dto';
 import { InteractionResponseType, InteractionType } from 'discord-interactions';
-import { decrypt, encrypt } from 'src/common/utils/crypto-aes.util';
+import { encrypt } from 'src/common/utils/crypto-aes.util';
+
+import { HttpService } from '@nestjs/axios';
+import { AIService } from 'src/modules/ai-chatbot/ai.service';
+import { plainToInstance } from 'class-transformer';
+import { ChannelService } from 'src/modules/channel/channel.service';
+import { CreateChannelDto } from 'src/modules/channel/dtos/create-channel.dto';
+import { AssistantChatInterface } from 'src/modules/ai-chatbot/interfaces';
+import { AiAssistantType } from 'src/common/enums';
+import { AiProcessor } from 'src/modules/ai-chatbot/ai.processor';
 
 dotenv.config({
   path: '.env',
@@ -25,8 +34,40 @@ export class DiscordService {
   constructor(
     @InjectRepository(ChatbotDiscord)
     private readonly chatbotDiscordRepository: Repository<ChatbotDiscord>,
+    private readonly httpService: HttpService,
+    private readonly aiService: AIService,
+    private readonly channelService: ChannelService,
   ) {}
-  chat(): string {
+
+  sendMessage(channelId: string, refMessage: string, content: string) {
+    this.httpService.post(`/channels/${channelId}/messages`, {
+      content: content,
+      message_reference: {
+        message_id: refMessage,
+      },
+    });
+  }
+
+  createChannel(): void {
+    const client = new Client({
+      intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'],
+    });
+    const PREFIX = 'channel';
+    client.on('ready', () => {
+      console.log(`hiii chatbot!`);
+    });
+
+    client.on('messageCreate', (message) => {
+      // instead of 'message', it's now 'messageCreate'
+      if (message.content === 'channel') {
+        message.guild.channels.create({ name: 'channel' });
+        message.channel.send('Channel Created!');
+      }
+    });
+    client.login(process.env.DISCORD_TOKEN);
+  }
+
+  chat(token: string): string {
     const client = new Client({
       intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'],
     });
@@ -39,9 +80,13 @@ export class DiscordService {
       if (message.author.bot) return;
       if (message.content.startsWith(PREFIX)) {
         message.reply('hello world!');
+        const content = message.content;
+        console.log(message.content);
+        // message.reply('hello world!');
       }
     });
-    client.login(process.env.TOKEN);
+    // client.login(process.env.DISCORD_TOKEN);
+    client.login(token);
 
     return 'hello world';
   }
@@ -100,7 +145,14 @@ export class DiscordService {
     }
   }
 
-  async interaction(type: any, data: any) {
+  // async isRegister
+  async interaction(
+    type: any,
+    data: any,
+    message: string,
+    channelId: string,
+    userId: string,
+  ) {
     // Handle discord interactions
     if (type === InteractionType.PING) {
       return { type: InteractionResponseType.PONG };
@@ -125,8 +177,55 @@ export class DiscordService {
         };
       } else {
         // send a message into the ai-chanel
-      }
+        const chatbotId = process.env.CODELIGHT_ID;
+        const chatbotInfo =
+          await this.aiService.getAgentCollectionNameAndPromptByChatbotId(
+            chatbotId,
+          );
+        const channel = await this.channelService.getChannelById(channelId);
+        let runId;
+        if (!channel) {
+          const runData = await this.aiService.createAgentRunDiscord(
+            chatbotId,
+            userId,
+          );
+          runId = runData.runId;
+          const objectChannel = {
+            chatbotId: chatbotId,
+            conversationId: runId,
+            channelId: channelId,
+          };
+          console.log('objectChannel :>> ', objectChannel);
+          await this.channelService.create(objectChannel);
+        } else {
+          runId = channel.conversationId;
+        }
+        const dataInput: AssistantChatInterface = {
+          message: message,
+          stream: true,
+          run_id: runId,
+          user_id: userId,
+          agent_collection_name: chatbotInfo.collectionName,
+          assistant: AiAssistantType.AUTO_PDF,
+          property: {
+            prompt: chatbotInfo.prompt,
+            instructions: chatbotInfo.instruction,
+            extra_instructions: chatbotInfo.persona,
+          },
+          model: chatbotInfo.model,
+        };
+        const response = await this.aiService.sendDiscordMessage(dataInput);
+        console.log(response);
+        console.log('typeof response :>> ', typeof response);
 
+        return {
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            // Fetches a random emoji to send from a helper function
+            content: response.toString(),
+          },
+        };
+      }
       console.error(`unknown command: ${name}`);
 
       throw new AIAssistantBadRequestException('unknown command');

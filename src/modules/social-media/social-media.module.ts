@@ -5,15 +5,16 @@ import { HttpModule } from '@nestjs/axios';
 import { DiscordService } from './discord/discord.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatbotDiscord } from 'database/entities/chatbot.discord.entity';
+import { DiscordModule } from './discord/discord.module';
 
 @Module({
   imports: [
     HttpModule.register({
       baseURL: 'https://graph.facebook.com/v2.6/me/messages',
     }),
-    TypeOrmModule.forFeature([ChatbotDiscord]),
+    DiscordModule,
   ],
-  providers: [FacebookService, DiscordService],
+  providers: [FacebookService],
 
   controllers: [SocialMediaController],
 })

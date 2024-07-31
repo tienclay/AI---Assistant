@@ -19,5 +19,9 @@ export class CreateAssistantRunResponse {
 
   @ApiProperty()
   @Expose()
+  conversationId: string;
+
+  @ApiProperty()
+  @Expose()
   chatHistory: string[];
 }

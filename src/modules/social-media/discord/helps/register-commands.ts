@@ -10,6 +10,13 @@ const TEST_COMMAND = {
 const RAG_COMMAND = {
   name: 'rag-ai',
   description: "Answers any questions based on the bot's knowledge",
+  options: [
+    {
+      type: 3,
+      name: 'message',
+      description: 'request',
+    },
+  ],
   type: 1,
 };
 

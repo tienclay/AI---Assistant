@@ -36,6 +36,7 @@ import { BullModule } from '@nestjs/bull';
 
 import * as dotenv from 'dotenv';
 import { VerifyKeyMiddleware } from './common/middlewares/verify-key.middleware';
+import { ChannelModule } from './modules/channel/channel.module';
 dotenv.config({
   path: '.env',
 });
@@ -105,6 +106,8 @@ const modules = [
 
     MessageModule,
 
+    ChannelModule,
+
     // ConversationModule,
   ],
   providers: [
@@ -114,11 +117,12 @@ const modules = [
     },
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(VerifyKeyMiddleware).forRoutes({
-      path: 'social-media/discord/interactions',
-      method: RequestMethod.POST,
-    });
-  }
-}
+// export class AppModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer.apply(VerifyKeyMiddleware).forRoutes({
+//       path: 'social-media/discord/interactions',
+//       method: RequestMethod.POST,
+//     });
+//   }
+// }
+export class AppModule {}

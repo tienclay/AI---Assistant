@@ -14,6 +14,7 @@ import { BullModule } from '@nestjs/bull';
 import { AI_QUEUE_NAME } from './constants';
 import { AiProcessor } from './ai.processor';
 import { RealtimeModule } from '../realtime/realtime.module';
+import { DiscordModule } from '../social-media/discord/discord.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { RealtimeModule } from '../realtime/realtime.module';
       },
     }),
     forwardRef(() => RealtimeModule),
+    DiscordModule,
   ],
 
   providers: [AIService, AIParseCVService, AiProcessor],

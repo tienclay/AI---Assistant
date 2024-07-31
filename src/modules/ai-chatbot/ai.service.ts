@@ -140,6 +140,58 @@ export class AIService {
     return plainToInstance(CreateAssistantRunResponse, {
       runId: res.data.run_id,
       userId: res.data.user_id,
+      conversationId: res.data.run_id,
+      chatHistory: res.data.chat_history,
+    });
+  }
+
+  async createAgentRunDiscord(
+    chatbotId: string,
+    userId: string,
+  ): Promise<CreateAssistantRunResponse> {
+    const chatbotInfo =
+      await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
+
+    const createAssistantRun: CreateAssistantRunInterface = {
+      user_id: userId,
+      agent_collection_name: chatbotInfo.collectionName,
+      assistant: AiAssistantType.AUTO_PDF,
+      property: {
+        prompt: chatbotInfo.prompt,
+        instructions: chatbotInfo.persona,
+        extra_instructions: [],
+      },
+      model: chatbotInfo.model,
+    };
+
+    const res = await lastValueFrom(
+      this.httpService.post(aiServiceUrl.createAssistantRun, {
+        ...createAssistantRun,
+      }),
+    );
+
+    const conversation: CreateConversationDto = {
+      id: res.data.run_id,
+      chatbotId,
+      title: `Chat with ${chatbotInfo.collectionName}`,
+      participantId: userId,
+    };
+
+    await this.conversationService.create(conversation);
+
+    // const paricipant: ParticipantInputDto = {
+    //   id: userId,
+    //   name: userId,
+    // };
+
+    // const newPaticipant = await this.participantRepository.create(paricipant);
+
+    // await this.participantRepository.save(newPaticipant);
+
+    return plainToInstance(CreateAssistantRunResponse, {
+      runId: res.data.run_id,
+      userId: res.data.user_id,
+      conversationId: res.data.run_id,
       chatHistory: res.data.chat_history,
     });
   }
@@ -315,7 +367,7 @@ export class AIService {
     return true;
   }
 
-  private async getAgentCollectionNameAndPromptByChatbotId(
+  async getAgentCollectionNameAndPromptByChatbotId(
     chatbotId: string,
   ): Promise<chatbotInfo> {
     const chatbot = await this.chatbotRepository.findOneOrFail({
@@ -331,5 +383,27 @@ export class AIService {
       instruction: chatbot.instruction,
       model: chatbot.model,
     };
+  }
+  removePatternFromResponse(response: string): string {
+    // Regular expression to match the pattern " - Running: {dynamic part}\n\n"
+    const pattern = /\n - Running: .*\n\n/;
+
+    // Check if the pattern exists in the response
+    if (pattern.test(response)) {
+      // Remove the pattern from the response
+      response = response.replace(pattern, '');
+    }
+
+    return response;
+  }
+
+  async sendDiscordMessage(message: AssistantChatInterface) {
+    const res = await lastValueFrom(
+      this.httpService.post(aiServiceUrl.sendMessage, {
+        ...message,
+      }),
+    );
+
+    return this.removePatternFromResponse(res.data);
   }
 }

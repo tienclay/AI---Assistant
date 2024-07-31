@@ -97,9 +97,19 @@ export class SocialMediaController {
   @Post('discord/interactions')
   async handleDiscordInteraction(@Body() body: any, @Res() res: Response) {
     const { type, data } = body;
-    console.log('body :>> ', body);
-    // return await this.discordService.interaction(type, data);
-    const resData = await this.discordService.interaction(type, data);
+    const channelId = body.channel_id;
+    const userId = body.member.user.id;
+    const message = body.data.options[0].value;
+
+    const resData = await this.discordService.interaction(
+      type,
+      data,
+      message,
+      channelId,
+      userId,
+    );
+    console.log('resData :>> ', resData);
+    console.log('resData.data.content :>> ', resData.data.content);
     res.send(resData);
   }
 }
