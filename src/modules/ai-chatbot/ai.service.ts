@@ -27,6 +27,9 @@ import { MessageInputDto } from '../message/dto';
 import { ParticipantInputDto } from './dto/paticipant.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import * as samplePropertyJson from './json/sample-property.json';
+import * as allSupportedModels from './json/all-model-support.json';
+import { ChatbotSampleProperty } from './dto/chatbot-response.dto';
 
 @Injectable()
 export class AIService {
@@ -60,6 +63,10 @@ export class AIService {
     } catch (error) {
       throw new Error('Error creating table');
     }
+  }
+
+  async getSampleProperty(): Promise<ChatbotSampleProperty> {
+    return samplePropertyJson;
   }
 
   async loadKnowledge(
@@ -179,14 +186,47 @@ export class AIService {
 
     await this.conversationService.create(conversation);
 
-    // const paricipant: ParticipantInputDto = {
-    //   id: userId,
-    //   name: userId,
-    // };
+    return plainToInstance(CreateAssistantRunResponse, {
+      runId: res.data.run_id,
+      userId: res.data.user_id,
+      conversationId: res.data.run_id,
+      chatHistory: res.data.chat_history,
+    });
+  }
 
-    // const newPaticipant = await this.participantRepository.create(paricipant);
+  async createAgentRunSocialMedia(
+    chatbotId: string,
+    userId: string,
+  ): Promise<CreateAssistantRunResponse> {
+    const chatbotInfo =
+      await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
 
-    // await this.participantRepository.save(newPaticipant);
+    const createAssistantRun: CreateAssistantRunInterface = {
+      user_id: userId,
+      agent_collection_name: chatbotInfo.collectionName,
+      assistant: AiAssistantType.AUTO_PDF,
+      property: {
+        prompt: chatbotInfo.prompt,
+        instructions: chatbotInfo.persona,
+        extra_instructions: [],
+      },
+      model: chatbotInfo.model,
+    };
+
+    const res = await lastValueFrom(
+      this.httpService.post(aiServiceUrl.createAssistantRun, {
+        ...createAssistantRun,
+      }),
+    );
+
+    const conversation: CreateConversationDto = {
+      id: res.data.run_id,
+      chatbotId,
+      title: `Chat with ${chatbotInfo.collectionName}`,
+      participantId: userId,
+    };
+
+    await this.conversationService.create(conversation);
 
     return plainToInstance(CreateAssistantRunResponse, {
       runId: res.data.run_id,
@@ -231,8 +271,6 @@ export class AIService {
   async sendMessage(chatbotId: string, dto: AssistantChatDto): Promise<any> {
     const chatbotInfo =
       await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
-    console.log('chatbotId :>> ', chatbotId);
-    console.log('chatbotInfo.model :>> ', chatbotInfo.model);
     const chatInput: AssistantChatInterface = {
       message: dto.message,
       stream: true,
@@ -249,6 +287,34 @@ export class AIService {
     };
 
     await this.aiQueue.add(AI_QUEUE_JOB.SEND_MESSAGE, chatInput);
+  }
+
+  async sendMessageTelegram(
+    chatbotId: string,
+    telegramUserId: string,
+    dto: AssistantChatDto,
+  ): Promise<any> {
+    const chatbotInfo =
+      await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
+    const chatInput: AssistantChatInterface = {
+      message: dto.message,
+      stream: true,
+      run_id: dto.runId,
+      user_id: dto.userId,
+      agent_collection_name: chatbotInfo.collectionName,
+      assistant: AiAssistantType.AUTO_PDF,
+      property: {
+        prompt: chatbotInfo.prompt,
+        instructions: chatbotInfo.instruction,
+        extra_instructions: chatbotInfo.persona,
+      },
+      model: chatbotInfo.model,
+    };
+
+    await this.aiQueue.add(AI_QUEUE_JOB.SEND_MESSAGE_TELEGRAM, {
+      ...chatInput,
+      telegramUserId,
+    });
   }
 
   async sendAiParseCvMessage(
@@ -405,5 +471,9 @@ export class AIService {
     );
 
     return this.removePatternFromResponse(res.data);
+  }
+
+  getAllModels(): string[] {
+    return allSupportedModels;
   }
 }

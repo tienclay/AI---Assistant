@@ -53,9 +53,7 @@ export class DiscordService {
       intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'],
     });
     const PREFIX = 'channel';
-    client.on('ready', () => {
-      console.log(`hiii chatbot!`);
-    });
+    client.on('ready', () => {});
 
     client.on('messageCreate', (message) => {
       // instead of 'message', it's now 'messageCreate'
@@ -72,16 +70,13 @@ export class DiscordService {
       intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'],
     });
     const PREFIX = '/';
-    client.on('ready', () => {
-      console.log(`hiii chatbot!`);
-    });
+    client.on('ready', () => {});
 
     client.on('messageCreate', (message) => {
       if (message.author.bot) return;
       if (message.content.startsWith(PREFIX)) {
         message.reply('hello world!');
         const content = message.content;
-        console.log(message.content);
         // message.reply('hello world!');
       }
     });
@@ -195,7 +190,6 @@ export class DiscordService {
             conversationId: runId,
             channelId: channelId,
           };
-          console.log('objectChannel :>> ', objectChannel);
           await this.channelService.create(objectChannel);
         } else {
           runId = channel.conversationId;
@@ -215,8 +209,6 @@ export class DiscordService {
           model: chatbotInfo.model,
         };
         const response = await this.aiService.sendDiscordMessage(dataInput);
-        console.log(response);
-        console.log('typeof response :>> ', typeof response);
 
         return {
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,

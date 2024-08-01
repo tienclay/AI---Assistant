@@ -50,24 +50,7 @@ export class SocialMediaController {
     return this.fbService.handleSendWebhook(req, res);
   }
 
-  // async sendMessage(dto: MessageRequest): Promise<Observable<MessageResponse>> {
-  //   console.log('message :>> ', dto.message);
-
-  //   const message = dto.message;
-
-  //   return new Observable<MessageResponse>((observer) => {
-  //     // Simulate an asynchronous operation using setTimeout
-  //     setTimeout(() => {
-  //       const response: MessageResponse = { response: `Received: ${message}` };
-  //       observer.next(response);
-  //       observer.complete();
-  //     }, 1000); // Simulate a 1-second delay
-  //   });
-  // }
-
   async sendMessage(dto: MessageRequest): Promise<MessageResponse> {
-    console.log('message :>> ', dto.message);
-
     const message = dto.message;
 
     return { response: message };
@@ -108,8 +91,6 @@ export class SocialMediaController {
       channelId,
       userId,
     );
-    console.log('resData :>> ', resData);
-    console.log('resData.data.content :>> ', resData.data.content);
     res.send(resData);
   }
 }

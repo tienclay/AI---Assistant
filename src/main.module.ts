@@ -44,7 +44,7 @@ dotenv.config({
 const modules = [
   AuthModule,
   // AIModule,
-  AgentModule,
+  // AgentModule,
   FileModule,
   CvParserModule,
   AIChatbotModule,

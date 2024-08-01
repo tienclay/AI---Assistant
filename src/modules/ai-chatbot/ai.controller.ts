@@ -18,7 +18,7 @@ import {
   Roles,
 } from 'src/common/decorators';
 import { UserRole } from 'src/common/enums/user.enum';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { User } from '@entities';
 
 import { AuthGuard } from '../auth/guard/auth.guard';
@@ -31,6 +31,8 @@ import {
 import { AssistantHistoryDto } from './dto/history.dto';
 import { LoadKnowledgeDto } from './dto/load-knowledge.dto';
 import { ChatGateway } from '../realtime/chat.gateway';
+import { ChatbotSampleProperty } from './dto/chatbot-response.dto';
+import { RolesGuard } from '../auth/guard';
 
 @Controller('ai-chatbot')
 @ApiTags('AIChatbot-Service')
@@ -40,6 +42,21 @@ export class AIController {
     @Inject(forwardRef(() => ChatGateway))
     private readonly chatGateway: ChatGateway,
   ) {}
+
+  @Get('sample-property')
+  @ApiOperation({ summary: 'Get all chat bot sample properties' })
+  @AiAssistantApiResponse(ChatbotSampleProperty)
+  getChatbotProperty() {
+    return this.aiService.getSampleProperty();
+  }
+  @Get('all-models')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.CLIENT)
+  @ApiOperation({ summary: 'Get all models' })
+  @ApiBearerAuth('access-token')
+  getAllModels(): string[] {
+    return this.aiService.getAllModels();
+  }
 
   @Get('test-wb')
   async testSendMessage(

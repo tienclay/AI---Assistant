@@ -6,6 +6,8 @@ import { DiscordService } from './discord/discord.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatbotDiscord } from 'database/entities/chatbot.discord.entity';
 import { DiscordModule } from './discord/discord.module';
+import { TelegramService } from './telegram/telegram.service';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
   imports: [
@@ -13,6 +15,7 @@ import { DiscordModule } from './discord/discord.module';
       baseURL: 'https://graph.facebook.com/v2.6/me/messages',
     }),
     DiscordModule,
+    TelegramModule,
   ],
   providers: [FacebookService],
 
