@@ -24,7 +24,8 @@ import { CreateChannelDto } from 'src/modules/channel/dtos/create-channel.dto';
 import { AssistantChatInterface } from 'src/modules/ai-chatbot/interfaces';
 import { AiAssistantType } from 'src/common/enums';
 import { AiProcessor } from 'src/modules/ai-chatbot/ai.processor';
-
+import { UserDiscord } from 'src/modules/ai-chatbot/interfaces/chat-discord.interface';
+import { lastValueFrom } from 'rxjs';
 dotenv.config({
   path: '.env',
 });
@@ -39,20 +40,20 @@ export class DiscordService {
     private readonly channelService: ChannelService,
   ) {}
 
-  sendMessage(channelId: string, refMessage: string, content: string) {
-    this.httpService.post(`/channels/${channelId}/messages`, {
-      content: content,
-      message_reference: {
-        message_id: refMessage,
-      },
-    });
+  async sendMessage(channelId: string, content: string, user: UserDiscord) {
+    await lastValueFrom(
+      this.httpService.post(`/channels/${channelId}/messages`, {
+        content: content,
+        mentions: [user],
+      }),
+    );
   }
 
   createChannel(): void {
     const client = new Client({
       intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'],
     });
-    const PREFIX = 'channel';
+    // const PREFIX = 'channel';
     client.on('ready', () => {
       console.log(`hiii chatbot!`);
     });
@@ -151,7 +152,7 @@ export class DiscordService {
     data: any,
     message: string,
     channelId: string,
-    userId: string,
+    user: UserDiscord,
   ) {
     // Handle discord interactions
     if (type === InteractionType.PING) {
@@ -185,10 +186,11 @@ export class DiscordService {
         const channel = await this.channelService.getChannelById(channelId);
         let runId;
         if (!channel) {
-          const runData = await this.aiService.createAgentRunDiscord(
-            chatbotId,
-            userId,
-          );
+          const runData =
+            await this.aiService.createAgentRunWithoutCreateParticipant(
+              chatbotId,
+              user.id,
+            );
           runId = runData.runId;
           const objectChannel = {
             chatbotId: chatbotId,
@@ -204,7 +206,7 @@ export class DiscordService {
           message: message,
           stream: true,
           run_id: runId,
-          user_id: userId,
+          user_id: user.id,
           agent_collection_name: chatbotInfo.collectionName,
           assistant: AiAssistantType.AUTO_PDF,
           property: {
@@ -214,15 +216,24 @@ export class DiscordService {
           },
           model: chatbotInfo.model,
         };
-        const response = await this.aiService.sendDiscordMessage(dataInput);
-        console.log(response);
-        console.log('typeof response :>> ', typeof response);
+        const dto = {
+          message,
+          runId,
+          userId: user.id,
+        };
+
+        await this.aiService.sendMessageDiscord(
+          chatbotId,
+          dto,
+          channelId,
+          user,
+        );
 
         return {
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
             // Fetches a random emoji to send from a helper function
-            content: response.toString(),
+            content: `Your's request is being processed`,
           },
         };
       }

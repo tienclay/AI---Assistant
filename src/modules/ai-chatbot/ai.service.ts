@@ -27,6 +27,10 @@ import { MessageInputDto } from '../message/dto';
 import { ParticipantInputDto } from './dto/paticipant.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import {
+  AssistantChatDiscordInterface,
+  UserDiscord,
+} from './interfaces/chat-discord.interface';
 
 @Injectable()
 export class AIService {
@@ -145,7 +149,7 @@ export class AIService {
     });
   }
 
-  async createAgentRunDiscord(
+  async createAgentRunWithoutCreateParticipant(
     chatbotId: string,
     userId: string,
   ): Promise<CreateAssistantRunResponse> {
@@ -231,8 +235,7 @@ export class AIService {
   async sendMessage(chatbotId: string, dto: AssistantChatDto): Promise<any> {
     const chatbotInfo =
       await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
-    console.log('chatbotId :>> ', chatbotId);
-    console.log('chatbotInfo.model :>> ', chatbotInfo.model);
+
     const chatInput: AssistantChatInterface = {
       message: dto.message,
       stream: true,
@@ -251,6 +254,38 @@ export class AIService {
     await this.aiQueue.add(AI_QUEUE_JOB.SEND_MESSAGE, chatInput);
   }
 
+  async sendMessageDiscord(
+    chatbotId: string,
+    dto: AssistantChatDto,
+    channelId: string,
+    user: UserDiscord,
+  ): Promise<any> {
+    const chatbotInfo =
+      await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
+
+    const chatInput: AssistantChatInterface = {
+      message: dto.message,
+      stream: true,
+      run_id: dto.runId,
+      user_id: dto.userId,
+      agent_collection_name: chatbotInfo.collectionName,
+      assistant: AiAssistantType.AUTO_PDF,
+      property: {
+        prompt: chatbotInfo.prompt,
+        instructions: chatbotInfo.instruction,
+        extra_instructions: chatbotInfo.persona,
+      },
+      model: chatbotInfo.model,
+    };
+    const discordInput: AssistantChatDiscordInterface = {
+      chatInput,
+      channelId,
+      user,
+      messageRequest: dto.message,
+    };
+
+    await this.aiQueue.add(AI_QUEUE_JOB.SEND_MESSAGE_DISCORD, discordInput);
+  }
   async sendAiParseCvMessage(
     chatbotId: string,
     dto: AssistantChatDto,

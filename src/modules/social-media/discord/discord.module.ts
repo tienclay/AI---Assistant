@@ -11,9 +11,9 @@ import { ChannelModule } from 'src/modules/channel/channel.module';
 @Module({
   imports: [
     HttpModule.registerAsync({
-      inject: [AiServiceConfig.KEY],
-      useFactory: (aiServiceConfig: ConfigType<typeof AiServiceConfig>) => {
-        const { baseURL, headers } = aiServiceConfig;
+      inject: [DiscordConfig.KEY],
+      useFactory: (discordConfig: ConfigType<typeof DiscordConfig>) => {
+        const { baseURL, headers } = discordConfig;
         return {
           baseURL,
           headers,

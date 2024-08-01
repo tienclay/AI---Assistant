@@ -66,8 +66,6 @@ export class SocialMediaController {
   // }
 
   async sendMessage(dto: MessageRequest): Promise<MessageResponse> {
-    console.log('message :>> ', dto.message);
-
     const message = dto.message;
 
     return { response: message };
@@ -97,8 +95,9 @@ export class SocialMediaController {
   @Post('discord/interactions')
   async handleDiscordInteraction(@Body() body: any, @Res() res: Response) {
     const { type, data } = body;
+
     const channelId = body.channel_id;
-    const userId = body.member.user.id;
+    const user = body.member.user;
     const message = body.data.options[0].value;
 
     const resData = await this.discordService.interaction(
@@ -106,10 +105,9 @@ export class SocialMediaController {
       data,
       message,
       channelId,
-      userId,
+      user,
     );
-    console.log('resData :>> ', resData);
-    console.log('resData.data.content :>> ', resData.data.content);
+
     res.send(resData);
   }
 }

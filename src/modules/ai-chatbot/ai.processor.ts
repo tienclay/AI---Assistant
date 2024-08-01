@@ -15,6 +15,7 @@ import { MessageInputDto } from '../message/dto';
 import { MessageSender } from 'src/common/enums';
 import { ChatGateway } from '../realtime/chat.gateway';
 import { DiscordService } from '../social-media/discord/discord.service';
+import { AssistantChatDiscordInterface } from './interfaces/chat-discord.interface';
 
 @Processor(AI_QUEUE_NAME)
 export class AiProcessor {
@@ -67,8 +68,8 @@ export class AiProcessor {
   }
 
   @Process(AI_QUEUE_JOB.SEND_MESSAGE_DISCORD)
-  async sendMessageDiscord(job: Job<AssistantChatInterface>) {
-    const chatInput = job.data;
+  async sendMessageDiscord(job: Job<AssistantChatDiscordInterface>) {
+    const { chatInput, channelId, user, messageRequest } = job.data;
 
     const res = await lastValueFrom(
       this.httpService.post(aiServiceUrl.sendMessage, {
@@ -82,7 +83,8 @@ export class AiProcessor {
       messageSender: MessageSender.BOT,
       participantId: null,
     };
+    const response = `Qusetion: ${messageRequest}\nAnswer: ${res.data}`;
     await this.messageService.createMessage(message);
-    await this.chatGateway.sendMessageToClient(chatInput.run_id, res.data);
+    await this.discordService.sendMessage(channelId, response, user);
   }
 }
