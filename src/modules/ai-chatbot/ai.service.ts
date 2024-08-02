@@ -27,6 +27,7 @@ import { MessageInputDto } from '../message/dto';
 import { ParticipantInputDto } from './dto/paticipant.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { extractLastParagraph } from 'src/common/utils/extract-response.util';
 
 @Injectable()
 export class AIService {
@@ -234,7 +235,7 @@ export class AIService {
     };
     await this.messageService.createMessage(message);
 
-    return res.data;
+    return extractLastParagraph(res.data);
   }
 
   async sendAiParseCvMessage(
