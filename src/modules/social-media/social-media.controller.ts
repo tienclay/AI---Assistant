@@ -14,6 +14,8 @@ export class SocialMediaController {
 
   @Get('facebook/webhooks')
   async getwebhook(@Req() req: Request, @Res() res: Response) {
+    console.log('req :>> ', req);
+    console.log('res :>> ', res);
     return this.fbService.handleGetWebhook(req, res);
   }
 
