@@ -150,7 +150,7 @@ export class ChatbotController {
     @Param('id') id: string,
     @Body() dto: AssistantChatDto,
   ): Promise<AssistantChatResponse> {
-    return this.aiService.sendMessage(id, dto);
+    return this.aiService.sendDirectMessage(id, dto);
   }
 
   @Post(':id/history')

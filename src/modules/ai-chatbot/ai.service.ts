@@ -27,10 +27,13 @@ import { MessageInputDto } from '../message/dto';
 import { ParticipantInputDto } from './dto/paticipant.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+
 import {
   AssistantChatDiscordInterface,
   UserDiscord,
 } from './interfaces/chat-discord.interface';
+
+import { extractLastParagraph } from 'src/common/utils/extract-response.util';
 
 @Injectable()
 export class AIService {
@@ -253,6 +256,44 @@ export class AIService {
 
     await this.aiQueue.add(AI_QUEUE_JOB.SEND_MESSAGE, chatInput);
   }
+  async sendDirectMessage(
+    chatbotId: string,
+    dto: AssistantChatDto,
+  ): Promise<any> {
+    const chatbotInfo =
+      await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
+
+    const chatInput: AssistantChatInterface = {
+      message: dto.message,
+      stream: true,
+      run_id: dto.runId,
+      user_id: dto.userId,
+      agent_collection_name: chatbotInfo.collectionName,
+      assistant: AiAssistantType.AUTO_PDF,
+      property: {
+        prompt: chatbotInfo.prompt,
+        instructions: chatbotInfo.instruction,
+        extra_instructions: chatbotInfo.persona,
+      },
+      model: chatbotInfo.model,
+    };
+
+    const res = await lastValueFrom(
+      this.httpService.post(aiServiceUrl.sendMessage, {
+        ...chatInput,
+      }),
+    );
+
+    const message: MessageInputDto = {
+      content: res.data,
+      conversationId: chatInput.run_id,
+      messageSender: MessageSender.BOT,
+      participantId: null,
+    };
+    await this.messageService.createMessage(message);
+
+    return extractLastParagraph(res.data);
+  }
 
   async sendMessageDiscord(
     chatbotId: string,
@@ -277,6 +318,7 @@ export class AIService {
       },
       model: chatbotInfo.model,
     };
+
     const discordInput: AssistantChatDiscordInterface = {
       chatInput,
       channelId,
@@ -286,6 +328,7 @@ export class AIService {
 
     await this.aiQueue.add(AI_QUEUE_JOB.SEND_MESSAGE_DISCORD, discordInput);
   }
+
   async sendAiParseCvMessage(
     chatbotId: string,
     dto: AssistantChatDto,

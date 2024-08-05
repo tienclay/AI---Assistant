@@ -12,26 +12,26 @@ import {
 import { join } from 'path';
 
 async function bootstrap() {
-  const CORE_SERVICE_URL = '0.0.0.0:50051';
+  // const CORE_SERVICE_URL = '0.0.0.0:50051';
 
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.GRPC,
-    options: {
-      package: DISCORD_PACKAGE_NAME,
-      protoPath: join(
-        process.cwd(),
-        'node_modules/ai-chatbot-proto/proto/discord.proto',
-      ),
-      url: CORE_SERVICE_URL,
-      loader: {
-        includeDirs: [join(process.cwd(), 'src/protobuf')],
-        defaults: true,
-      },
-    },
-  });
-  await app.startAllMicroservices();
-
+  // const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  // app.connectMicroservice<MicroserviceOptions>({
+  //   transport: Transport.GRPC,
+  //   options: {
+  //     package: DISCORD_PACKAGE_NAME,
+  //     protoPath: join(
+  //       process.cwd(),
+  //       'node_modules/ai-chatbot-proto/proto/discord.proto',
+  //     ),
+  //     url: CORE_SERVICE_URL,
+  //     loader: {
+  //       includeDirs: [join(process.cwd(), 'src/protobuf')],
+  //       defaults: true,
+  //     },
+  //   },
+  // });
+  // await app.startAllMicroservices();
+  const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
 
   const swaggerOption = new DocumentBuilder()
