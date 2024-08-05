@@ -1,3 +1,4 @@
+import { ChatbotDiscordModule } from './../../chatbot-discord/chatbot-discord.module';
 import { HttpModule } from '@nestjs/axios';
 import { forwardRef, Module } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
@@ -23,6 +24,7 @@ import { ChannelModule } from 'src/modules/channel/channel.module';
     TypeOrmModule.forFeature([ChatbotDiscord]),
     forwardRef(() => AIChatbotModule),
     ChannelModule,
+    ChatbotDiscordModule,
   ],
   providers: [DiscordService],
   exports: [DiscordService],

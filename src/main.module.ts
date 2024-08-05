@@ -37,6 +37,7 @@ import { BullModule } from '@nestjs/bull';
 import * as dotenv from 'dotenv';
 import { VerifyKeyMiddleware } from './common/middlewares/verify-key.middleware';
 import { ChannelModule } from './modules/channel/channel.module';
+import { ChatbotDiscordModule } from './modules/chatbot-discord/chatbot-discord.module';
 dotenv.config({
   path: '.env',
 });
@@ -107,6 +108,8 @@ const modules = [
     MessageModule,
 
     ChannelModule,
+
+    ChatbotDiscordModule,
 
     // ConversationModule,
   ],

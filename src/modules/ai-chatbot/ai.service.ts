@@ -299,7 +299,8 @@ export class AIService {
     chatbotId: string,
     dto: AssistantChatDto,
     channelId: string,
-    user: UserDiscord,
+    userId: string,
+    discordToken: string,
   ): Promise<any> {
     const chatbotInfo =
       await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
@@ -322,8 +323,9 @@ export class AIService {
     const discordInput: AssistantChatDiscordInterface = {
       chatInput,
       channelId,
-      user,
+      userId,
       messageRequest: dto.message,
+      discordToken,
     };
 
     await this.aiQueue.add(AI_QUEUE_JOB.SEND_MESSAGE_DISCORD, discordInput);

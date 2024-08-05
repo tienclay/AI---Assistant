@@ -12,6 +12,7 @@ export interface UserDiscord {
 export interface AssistantChatDiscordInterface {
   chatInput: AssistantChatInterface;
   channelId: string;
-  user: UserDiscord;
+  userId: string;
   messageRequest: string;
+  discordToken: string;
 }

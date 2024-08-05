@@ -69,7 +69,8 @@ export class AiProcessor {
 
   @Process(AI_QUEUE_JOB.SEND_MESSAGE_DISCORD)
   async sendMessageDiscord(job: Job<AssistantChatDiscordInterface>) {
-    const { chatInput, channelId, user, messageRequest } = job.data;
+    const { chatInput, channelId, userId, messageRequest, discordToken } =
+      job.data;
 
     const res = await lastValueFrom(
       this.httpService.post(aiServiceUrl.sendMessage, {
@@ -85,6 +86,11 @@ export class AiProcessor {
     };
     const response = `Qusetion: ${messageRequest}\nAnswer: ${res.data}`;
     await this.messageService.createMessage(message);
-    await this.discordService.sendMessage(channelId, response, user);
+    await this.discordService.sendMessageDiscord(
+      channelId,
+      response,
+      userId,
+      discordToken,
+    );
   }
 }

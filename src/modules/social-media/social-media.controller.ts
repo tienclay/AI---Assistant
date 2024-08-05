@@ -8,7 +8,6 @@ import {
   Query,
   Req,
   Res,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
@@ -19,17 +18,13 @@ import {
   MessageRequest,
   MessageResponse,
 } from './discord/discord.pb';
-import { Observable } from 'rxjs';
-import { fromJSON } from '@grpc/proto-loader';
+
 import { DiscordService } from './discord/discord.service';
 import { ChatbotDiscordInfo } from './discord/dtos/info-chatbot.dto';
 import { ChatbotDiscordToken } from './discord/dtos/input-chatbot-token.dto';
-import { DiscordGuard } from './guards';
 import { InteractionResponseType, InteractionType } from 'discord-interactions';
-import { getRandomEmoji } from './discord/utils';
-dotenv.config();
 
-const FB_VERIFY_TOKEN = process.env.FB_VERIFY_TOKEN;
+dotenv.config();
 
 @Controller('social-media')
 @ApiTags('Social media')
@@ -42,8 +37,6 @@ export class SocialMediaController {
 
   @Get('facebook/webhooks')
   async getwebhook(@Req() req: Request, @Res() res: Response) {
-    console.log('req :>> ', req);
-    console.log('res :>> ', res);
     return this.fbService.handleGetWebhook(req, res);
   }
 
@@ -51,21 +44,6 @@ export class SocialMediaController {
   async postwebhook(@Req() req: Request, @Res() res: Response) {
     return this.fbService.handleSendWebhook(req, res);
   }
-
-  // async sendMessage(dto: MessageRequest): Promise<Observable<MessageResponse>> {
-  //   console.log('message :>> ', dto.message);
-
-  //   const message = dto.message;
-
-  //   return new Observable<MessageResponse>((observer) => {
-  //     // Simulate an asynchronous operation using setTimeout
-  //     setTimeout(() => {
-  //       const response: MessageResponse = { response: `Received: ${message}` };
-  //       observer.next(response);
-  //       observer.complete();
-  //     }, 1000); // Simulate a 1-second delay
-  //   });
-  // }
 
   async sendMessage(dto: MessageRequest): Promise<MessageResponse> {
     const message = dto.message;
@@ -94,12 +72,19 @@ export class SocialMediaController {
     return await this.discordService.updateChatbotToken(chatbotId, body);
   }
 
-  @Post('discord/interactions')
-  async handleDiscordInteraction(@Body() body: any, @Res() res: Response) {
-    const { type, data } = body;
-
+  @Post('discord/:chatbotid/interactions')
+  async handleDiscordInteraction(
+    @Body() body: any,
+    @Res() res: Response,
+    @Param('chatbotid') chatbotId: string,
+  ) {
+    const { type, data, application_id } = body;
+    const appId = application_id;
+    if (type === InteractionType.PING) {
+      return res.send({ type: InteractionResponseType.PONG });
+    }
     const channelId = body.channel_id;
-    const user = body.member.user;
+    const user = body.member.user ? body.member.user : null;
     const message = body.data.options[0].value;
 
     const resData = await this.discordService.interaction(
@@ -108,6 +93,8 @@ export class SocialMediaController {
       message,
       channelId,
       user,
+      chatbotId,
+      appId,
     );
 
     res.send(resData);

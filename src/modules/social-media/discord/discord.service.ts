@@ -1,3 +1,4 @@
+import { ChatbotDiscordService } from './../../chatbot-discord/chatbot-discord.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { Client } from 'discord.js';
@@ -38,6 +39,7 @@ export class DiscordService {
     private readonly httpService: HttpService,
     private readonly aiService: AIService,
     private readonly channelService: ChannelService,
+    private readonly chatbotDiscordService: ChatbotDiscordService,
   ) {}
 
   async sendMessage(channelId: string, content: string, user: UserDiscord) {
@@ -46,6 +48,43 @@ export class DiscordService {
         content: content,
         mentions: [user],
       }),
+    );
+  }
+  async fetchFromDiscord(
+    endpoint: string,
+    discordToken: string,
+    options: RequestInit = {},
+  ) {
+    const baseURL = process.env.DISCORD_URL;
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bot ${discordToken}`,
+    };
+    const response = await fetch(`${baseURL}${endpoint}`, {
+      ...options,
+      headers: {
+        ...headers,
+        ...options.headers,
+      },
+    });
+    return response.json();
+  }
+
+  async sendMessageDiscord(
+    channelId: string,
+    content: string,
+    userId: string,
+    discordToken: string,
+  ) {
+    content = `<@!${userId}>\n` + content;
+    await this.fetchFromDiscord(
+      `/channels/${channelId}/messages`,
+      discordToken,
+      {
+        method: 'POST',
+        body: JSON.stringify({ content: content }),
+      },
     );
   }
 
@@ -91,7 +130,7 @@ export class DiscordService {
 
     return 'hello world';
   }
-  async installCommands(appId: string) {
+  async installCommands(id: string) {
     // const chatbotDiscord = await this.chatbotDiscordRepository.findOne({
     //   where: { id: appId },
     // });
@@ -99,16 +138,19 @@ export class DiscordService {
     //   throw new AIAssistantNotFoundException('Not found chatbot');
     // }
     // const discordToken = decrypt(chatbotDiscord.discordToken);
-    const discordToken = process.env.DISCORD_TOKEN;
+    const chatbotDiscord = await this.chatbotDiscordRepository.findOneByOrFail({
+      id,
+    });
+    const { appId, discordToken } = chatbotDiscord;
     await InstallGlobalCommands(appId, ALL_COMMANDS, discordToken);
   }
   async updateChatbotInfo(
-    chatbotId: string,
+    chatbotDiscordId: string,
     dto: ChatbotDiscordInfo,
   ): Promise<string> {
     try {
       const chatbotDiscord = await this.chatbotDiscordRepository.findOne({
-        where: { id: chatbotId },
+        where: { id: chatbotDiscordId },
       });
       if (!chatbotDiscord) {
         throw new AIAssistantNotFoundException('Not found chatbot');
@@ -127,12 +169,12 @@ export class DiscordService {
   }
 
   async updateChatbotToken(
-    chatbotId: string,
+    chatbotDiscordId: string,
     dto: ChatbotDiscordToken,
   ): Promise<string> {
     try {
       const chatbotDiscord = await this.chatbotDiscordRepository.findOne({
-        where: { id: chatbotId },
+        where: { id: chatbotDiscordId },
       });
       if (!chatbotDiscord) {
         throw new AIAssistantNotFoundException('Not found chatbot');
@@ -153,6 +195,8 @@ export class DiscordService {
     message: string,
     channelId: string,
     user: UserDiscord,
+    chatbotId: string,
+    appId: string,
   ) {
     // Handle discord interactions
     if (type === InteractionType.PING) {
@@ -177,8 +221,10 @@ export class DiscordService {
           },
         };
       } else {
+        const chatbotDiscord =
+          await this.chatbotDiscordService.getChatbotDiscordByAppId(appId);
+        const { discordToken } = chatbotDiscord;
         // send a message into the ai-chanel
-        const chatbotId = process.env.CODELIGHT_ID;
         const chatbotInfo =
           await this.aiService.getAgentCollectionNameAndPromptByChatbotId(
             chatbotId,
@@ -197,25 +243,12 @@ export class DiscordService {
             conversationId: runId,
             channelId: channelId,
           };
-          console.log('objectChannel :>> ', objectChannel);
+
           await this.channelService.create(objectChannel);
         } else {
           runId = channel.conversationId;
         }
-        const dataInput: AssistantChatInterface = {
-          message: message,
-          stream: true,
-          run_id: runId,
-          user_id: user.id,
-          agent_collection_name: chatbotInfo.collectionName,
-          assistant: AiAssistantType.AUTO_PDF,
-          property: {
-            prompt: chatbotInfo.prompt,
-            instructions: chatbotInfo.instruction,
-            extra_instructions: chatbotInfo.persona,
-          },
-          model: chatbotInfo.model,
-        };
+
         const dto = {
           message,
           runId,
@@ -226,7 +259,8 @@ export class DiscordService {
           chatbotId,
           dto,
           channelId,
-          user,
+          user.id,
+          discordToken,
         );
 
         return {

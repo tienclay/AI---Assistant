@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddChannelDiscord1722829695382 implements MigrationInterface {
-  name = 'AddChannelDiscord1722829695382';
+export class AddChannelDiscord1722832785736 implements MigrationInterface {
+  name = 'AddChannelDiscord1722832785736';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
