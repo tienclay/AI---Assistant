@@ -1,11 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  OneToOne,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
 import { Chatbot } from './chatbot.entity';
 import { BaseEntity } from './base.entity';
 import { Message } from './message.entity';

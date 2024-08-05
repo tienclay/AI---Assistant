@@ -6,6 +6,6 @@ export default registerAs<HttpModuleOptions>('discord-service', () => ({
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
-    Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
+    Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
   },
 }));

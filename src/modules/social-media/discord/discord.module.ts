@@ -1,8 +1,13 @@
+import { ChatbotDiscordModule } from './../../chatbot-discord/chatbot-discord.module';
 import { HttpModule } from '@nestjs/axios';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import { DiscordConfig } from 'src/config';
+import { AiServiceConfig, DiscordConfig } from 'src/config';
 import { DiscordService } from './discord.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ChatbotDiscord } from 'database/entities/chatbot.discord.entity';
+import { AIChatbotModule } from 'src/modules/ai-chatbot/ai.module';
+import { ChannelModule } from 'src/modules/channel/channel.module';
 
 @Module({
   imports: [
@@ -16,6 +21,10 @@ import { DiscordService } from './discord.service';
         };
       },
     }),
+    TypeOrmModule.forFeature([ChatbotDiscord]),
+    forwardRef(() => AIChatbotModule),
+    ChannelModule,
+    ChatbotDiscordModule,
   ],
   providers: [DiscordService],
   exports: [DiscordService],

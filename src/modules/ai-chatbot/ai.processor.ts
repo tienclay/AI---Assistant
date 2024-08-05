@@ -14,6 +14,8 @@ import { MessageService } from '../message/message.service';
 import { MessageInputDto } from '../message/dto';
 import { MessageSender } from 'src/common/enums';
 import { ChatGateway } from '../realtime/chat.gateway';
+import { DiscordService } from '../social-media/discord/discord.service';
+import { AssistantChatDiscordInterface } from './interfaces/chat-discord.interface';
 
 @Processor(AI_QUEUE_NAME)
 export class AiProcessor {
@@ -22,6 +24,7 @@ export class AiProcessor {
     private readonly conversationService: ConversationService,
     private readonly messageService: MessageService,
     private readonly chatGateway: ChatGateway,
+    private readonly discordService: DiscordService,
   ) {}
 
   @Process(AI_QUEUE_JOB.LOAD_KNOWLEDGE)
@@ -62,5 +65,32 @@ export class AiProcessor {
     };
     await this.messageService.createMessage(message);
     await this.chatGateway.sendMessageToClient(chatInput.run_id, res.data);
+  }
+
+  @Process(AI_QUEUE_JOB.SEND_MESSAGE_DISCORD)
+  async sendMessageDiscord(job: Job<AssistantChatDiscordInterface>) {
+    const { chatInput, channelId, userId, messageRequest, discordToken } =
+      job.data;
+
+    const res = await lastValueFrom(
+      this.httpService.post(aiServiceUrl.sendMessage, {
+        ...chatInput,
+      }),
+    );
+
+    const message: MessageInputDto = {
+      content: res.data,
+      conversationId: chatInput.run_id,
+      messageSender: MessageSender.BOT,
+      participantId: null,
+    };
+    const response = `Qusetion: ${messageRequest}\nAnswer: ${res.data}`;
+    await this.messageService.createMessage(message);
+    await this.discordService.sendMessageDiscord(
+      channelId,
+      response,
+      userId,
+      discordToken,
+    );
   }
 }

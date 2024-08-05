@@ -3,6 +3,8 @@ import { SocialMediaController } from './social-media.controller';
 import { FacebookService } from './facebook/facebook.service';
 import { HttpModule } from '@nestjs/axios';
 import { DiscordService } from './discord/discord.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ChatbotDiscord } from 'database/entities/chatbot.discord.entity';
 import { DiscordModule } from './discord/discord.module';
 
 @Module({
