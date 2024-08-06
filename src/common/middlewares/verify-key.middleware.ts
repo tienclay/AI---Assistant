@@ -9,6 +9,8 @@ dotenv.config();
 @Injectable()
 export class VerifyKeyMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    verifyKeyMiddleware(process.env.PUBLIC_KEY)(req, res, next);
+    const query = req.query;
+    const public_key = query.public_key as string;
+    verifyKeyMiddleware(public_key)(req, res, next);
   }
 }

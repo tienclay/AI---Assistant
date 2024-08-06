@@ -120,12 +120,12 @@ const modules = [
     },
   ],
 })
-// export class AppModule implements NestModule {
-//   configure(consumer: MiddlewareConsumer) {
-//     consumer.apply(VerifyKeyMiddleware).forRoutes({
-//       path: 'social-media/discord/interactions',
-//       method: RequestMethod.POST,
-//     });
-//   }
-// }
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(VerifyKeyMiddleware).forRoutes({
+      path: 'social-media/discord/:chatbotId/interactions',
+      method: RequestMethod.POST,
+    });
+  }
+}
+// export class AppModule {}

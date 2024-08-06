@@ -20,8 +20,15 @@ export class CoreTransformInterceptor
         const respMessage = 'success';
         const respStatusCode = HttpStatus.OK;
 
+        const request = context.switchToHttp().getRequest();
+        const url = request.url;
+
+        if (url.includes('interactions') && url.includes('discord')) {
+          return result;
+        }
         if (result) {
           const data = result;
+
           // Paging/Single documents
           if (typeof result['docs'] != 'undefined') {
             return {

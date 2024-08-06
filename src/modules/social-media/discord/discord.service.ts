@@ -19,12 +19,8 @@ import { encrypt } from 'src/common/utils/crypto-aes.util';
 
 import { HttpService } from '@nestjs/axios';
 import { AIService } from 'src/modules/ai-chatbot/ai.service';
-import { plainToInstance } from 'class-transformer';
+
 import { ChannelService } from 'src/modules/channel/channel.service';
-import { CreateChannelDto } from 'src/modules/channel/dtos/create-channel.dto';
-import { AssistantChatInterface } from 'src/modules/ai-chatbot/interfaces';
-import { AiAssistantType } from 'src/common/enums';
-import { AiProcessor } from 'src/modules/ai-chatbot/ai.processor';
 import { UserDiscord } from 'src/modules/ai-chatbot/interfaces/chat-discord.interface';
 import { lastValueFrom } from 'rxjs';
 dotenv.config({
@@ -120,7 +116,6 @@ export class DiscordService {
       if (message.author.bot) return;
       if (message.content.startsWith(PREFIX)) {
         message.reply('hello world!');
-        const content = message.content;
         console.log(message.content);
         // message.reply('hello world!');
       }
@@ -225,10 +220,10 @@ export class DiscordService {
           await this.chatbotDiscordService.getChatbotDiscordByAppId(appId);
         const { discordToken } = chatbotDiscord;
         // send a message into the ai-chanel
-        const chatbotInfo =
-          await this.aiService.getAgentCollectionNameAndPromptByChatbotId(
-            chatbotId,
-          );
+
+        await this.aiService.getAgentCollectionNameAndPromptByChatbotId(
+          chatbotId,
+        );
         const channel = await this.channelService.getChannelById(channelId);
         let runId;
         if (!channel) {
@@ -271,7 +266,6 @@ export class DiscordService {
           },
         };
       }
-      console.error(`unknown command: ${name}`);
 
       throw new AIAssistantBadRequestException('unknown command');
     } else {
