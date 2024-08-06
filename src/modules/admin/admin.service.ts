@@ -10,8 +10,7 @@ import { Repository } from 'typeorm';
 import { UserInputDto, UserOutputDto, UserUpdateDto } from './dto';
 import { hashPassword } from 'src/common/utils/hash-password.util';
 import { plainToInstance } from 'class-transformer';
-import { PromptDto } from '../agent/dto/prompt-data.dto';
-import * as promptData from './json/enum-data.json';
+
 @Injectable()
 export class UserService {
   constructor(
@@ -80,9 +79,5 @@ export class UserService {
     } catch (error) {
       throw new NotFoundException('User not found');
     }
-  }
-
-  getPrompt(): PromptDto {
-    return plainToInstance(PromptDto, promptData);
   }
 }
