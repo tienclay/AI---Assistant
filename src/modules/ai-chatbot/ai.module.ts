@@ -55,7 +55,7 @@ import { DiscordModule } from '../social-media/discord/discord.module';
   ],
 
   providers: [AIService, AIParseCVService, AiProcessor],
-  controllers: [AIController],
+  // controllers: [AIController],
   exports: [AIService, AIParseCVService],
 })
 export class AIChatbotModule {}

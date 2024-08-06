@@ -9,7 +9,7 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import * as dotenv from 'dotenv';
 import { FacebookService } from './facebook/facebook.service';
@@ -18,7 +18,6 @@ import {
   MessageRequest,
   MessageResponse,
 } from './discord/discord.pb';
-
 import { DiscordService } from './discord/discord.service';
 import { ChatbotDiscordInfo } from './discord/dtos/info-chatbot.dto';
 import { ChatbotDiscordToken } from './discord/dtos/input-chatbot-token.dto';

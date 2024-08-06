@@ -11,7 +11,7 @@ import { Channel } from 'database/entities/channel.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Channel, Conversation])],
   providers: [ChannelService],
-  controllers: [ChanelController],
+  // controllers: [ChanelController],
   exports: [ChannelService],
 })
 export class ChannelModule {}
