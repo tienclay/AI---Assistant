@@ -23,6 +23,7 @@ export const DiscordRequest = async (
   // throw API errors
   if (!res.ok) {
     const data = await res.json();
+
     throw new Error(JSON.stringify(data));
   }
   // return original response

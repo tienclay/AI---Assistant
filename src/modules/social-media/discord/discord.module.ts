@@ -1,3 +1,4 @@
+import { ChatbotDiscordModule } from './../../chatbot-discord/chatbot-discord.module';
 import { HttpModule } from '@nestjs/axios';
 import { forwardRef, Module } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
@@ -11,9 +12,9 @@ import { ChannelModule } from 'src/modules/channel/channel.module';
 @Module({
   imports: [
     HttpModule.registerAsync({
-      inject: [AiServiceConfig.KEY],
-      useFactory: (aiServiceConfig: ConfigType<typeof AiServiceConfig>) => {
-        const { baseURL, headers } = aiServiceConfig;
+      inject: [DiscordConfig.KEY],
+      useFactory: (discordConfig: ConfigType<typeof DiscordConfig>) => {
+        const { baseURL, headers } = discordConfig;
         return {
           baseURL,
           headers,
@@ -23,6 +24,7 @@ import { ChannelModule } from 'src/modules/channel/channel.module';
     TypeOrmModule.forFeature([ChatbotDiscord]),
     forwardRef(() => AIChatbotModule),
     ChannelModule,
+    ChatbotDiscordModule,
   ],
   providers: [DiscordService],
   exports: [DiscordService],

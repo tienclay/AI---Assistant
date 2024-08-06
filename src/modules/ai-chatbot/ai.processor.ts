@@ -8,7 +8,6 @@ import {
 } from './interfaces';
 import { lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
 import { ConversationService } from '../conversation/conversation.service';
 import { MessageService } from '../message/message.service';
 import { MessageInputDto } from '../message/dto';
@@ -17,6 +16,7 @@ import { ChatGateway } from '../realtime/chat.gateway';
 import { DiscordService } from '../social-media/discord/discord.service';
 import { TelegramService } from '../social-media/telegram/telegram.service';
 import { extractLastParagraph } from 'src/common/utils/extract-response.util';
+import { AssistantChatDiscordInterface } from './interfaces/chat-discord.interface';
 
 @Processor(AI_QUEUE_NAME)
 export class AiProcessor {
@@ -70,8 +70,9 @@ export class AiProcessor {
   }
 
   @Process(AI_QUEUE_JOB.SEND_MESSAGE_DISCORD)
-  async sendMessageDiscord(job: Job<AssistantChatInterface>) {
-    const chatInput = job.data;
+  async sendMessageDiscord(job: Job<AssistantChatDiscordInterface>) {
+    const { chatInput, channelId, userId, messageRequest, discordToken } =
+      job.data;
 
     const res = await lastValueFrom(
       this.httpService.post(aiServiceUrl.sendMessage, {
@@ -85,8 +86,14 @@ export class AiProcessor {
       messageSender: MessageSender.BOT,
       participantId: null,
     };
+    const response = `Qusetion: ${messageRequest}\nAnswer: ${res.data}`;
     await this.messageService.createMessage(message);
-    await this.chatGateway.sendMessageToClient(chatInput.run_id, res.data);
+    await this.discordService.sendMessageDiscord(
+      channelId,
+      response,
+      userId,
+      discordToken,
+    );
   }
 
   @Process(AI_QUEUE_JOB.SEND_MESSAGE_TELEGRAM)

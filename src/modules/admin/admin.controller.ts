@@ -14,7 +14,6 @@ import { UserInputDto, UserOutputDto } from './dto';
 import { AuthGuard } from '../auth/guard/auth.guard';
 import { AiAssistantApiResponse, Roles } from 'src/common/decorators';
 import { UserRole } from 'src/common/enums/user.enum';
-import { PromptDto } from '../agent/dto/prompt-data.dto';
 
 @Controller('admin')
 @ApiTags('Admin')
@@ -48,14 +47,14 @@ export class UserController {
     return this.userService.getAllClient();
   }
 
-  @UseGuards(AuthGuard)
-  @Roles(UserRole.ADMIN)
-  @ApiBearerAuth('access-token')
-  @AiAssistantApiResponse(PromptDto)
-  @Get('example-prompt')
-  getPrompt() {
-    return this.userService.getPrompt();
-  }
+  // @UseGuards(AuthGuard)
+  // @Roles(UserRole.ADMIN)
+  // @ApiBearerAuth('access-token')
+  // @AiAssistantApiResponse(PromptDto)
+  // @Get('example-prompt')
+  // getPrompt() {
+  //   return this.userService.getPrompt();
+  // }
 
   @UseGuards(AuthGuard)
   @Roles(UserRole.ADMIN)

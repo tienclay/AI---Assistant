@@ -1,6 +1,6 @@
 import { AiAssistantType } from 'src/common/enums';
 
-interface KnowledgeProperty {
+export interface KnowledgeProperty {
   prompt?: string;
   description?: string;
   instructions?: string[];

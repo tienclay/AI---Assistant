@@ -8,9 +8,8 @@ import {
   Query,
   Req,
   Res,
-  UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import * as dotenv from 'dotenv';
 import { FacebookService } from './facebook/facebook.service';
@@ -19,17 +18,12 @@ import {
   MessageRequest,
   MessageResponse,
 } from './discord/discord.pb';
-import { Observable } from 'rxjs';
-import { fromJSON } from '@grpc/proto-loader';
 import { DiscordService } from './discord/discord.service';
 import { ChatbotDiscordInfo } from './discord/dtos/info-chatbot.dto';
 import { ChatbotDiscordToken } from './discord/dtos/input-chatbot-token.dto';
-import { DiscordGuard } from './guards';
 import { InteractionResponseType, InteractionType } from 'discord-interactions';
-import { getRandomEmoji } from './discord/utils';
-dotenv.config();
 
-const FB_VERIFY_TOKEN = process.env.FB_VERIFY_TOKEN;
+dotenv.config();
 
 @Controller('social-media')
 @ApiTags('Social media')
@@ -77,11 +71,19 @@ export class SocialMediaController {
     return await this.discordService.updateChatbotToken(chatbotId, body);
   }
 
-  @Post('discord/interactions')
-  async handleDiscordInteraction(@Body() body: any, @Res() res: Response) {
-    const { type, data } = body;
+  @Post('discord/:chatbotid/interactions')
+  async handleDiscordInteraction(
+    @Body() body: any,
+    @Res() res: Response,
+    @Param('chatbotid') chatbotId: string,
+  ) {
+    const { type, data, application_id } = body;
+    const appId = application_id;
+    if (type === InteractionType.PING) {
+      return res.send({ type: InteractionResponseType.PONG });
+    }
     const channelId = body.channel_id;
-    const userId = body.member.user.id;
+    const user = body.member.user ? body.member.user : null;
     const message = body.data.options[0].value;
 
     const resData = await this.discordService.interaction(
@@ -89,8 +91,11 @@ export class SocialMediaController {
       data,
       message,
       channelId,
-      userId,
+      user,
+      chatbotId,
+      appId,
     );
+
     res.send(resData);
   }
 }

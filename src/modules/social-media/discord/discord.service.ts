@@ -1,3 +1,4 @@
+import { ChatbotDiscordService } from './../../chatbot-discord/chatbot-discord.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { Client } from 'discord.js';
@@ -24,7 +25,8 @@ import { CreateChannelDto } from 'src/modules/channel/dtos/create-channel.dto';
 import { AssistantChatInterface } from 'src/modules/ai-chatbot/interfaces';
 import { AiAssistantType } from 'src/common/enums';
 import { AiProcessor } from 'src/modules/ai-chatbot/ai.processor';
-
+import { UserDiscord } from 'src/modules/ai-chatbot/interfaces/chat-discord.interface';
+import { lastValueFrom } from 'rxjs';
 dotenv.config({
   path: '.env',
 });
@@ -37,15 +39,53 @@ export class DiscordService {
     private readonly httpService: HttpService,
     private readonly aiService: AIService,
     private readonly channelService: ChannelService,
+    private readonly chatbotDiscordService: ChatbotDiscordService,
   ) {}
 
-  sendMessage(channelId: string, refMessage: string, content: string) {
-    this.httpService.post(`/channels/${channelId}/messages`, {
-      content: content,
-      message_reference: {
-        message_id: refMessage,
+  async sendMessage(channelId: string, content: string, user: UserDiscord) {
+    await lastValueFrom(
+      this.httpService.post(`/channels/${channelId}/messages`, {
+        content: content,
+        mentions: [user],
+      }),
+    );
+  }
+  async fetchFromDiscord(
+    endpoint: string,
+    discordToken: string,
+    options: RequestInit = {},
+  ) {
+    const baseURL = process.env.DISCORD_URL;
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bot ${discordToken}`,
+    };
+    const response = await fetch(`${baseURL}${endpoint}`, {
+      ...options,
+      headers: {
+        ...headers,
+        ...options.headers,
       },
     });
+    return response.json();
+  }
+
+  async sendMessageDiscord(
+    channelId: string,
+    content: string,
+    userId: string,
+    discordToken: string,
+  ) {
+    content = `<@!${userId}>\n` + content;
+    await this.fetchFromDiscord(
+      `/channels/${channelId}/messages`,
+      discordToken,
+      {
+        method: 'POST',
+        body: JSON.stringify({ content: content }),
+      },
+    );
   }
 
   createChannel(): void {
@@ -54,6 +94,11 @@ export class DiscordService {
     });
     const PREFIX = 'channel';
     client.on('ready', () => {});
+
+    // const PREFIX = 'channel';
+    client.on('ready', () => {
+      console.log(`hiii chatbot!`);
+    });
 
     client.on('messageCreate', (message) => {
       // instead of 'message', it's now 'messageCreate'
@@ -85,7 +130,7 @@ export class DiscordService {
 
     return 'hello world';
   }
-  async installCommands(appId: string) {
+  async installCommands(id: string) {
     // const chatbotDiscord = await this.chatbotDiscordRepository.findOne({
     //   where: { id: appId },
     // });
@@ -93,16 +138,19 @@ export class DiscordService {
     //   throw new AIAssistantNotFoundException('Not found chatbot');
     // }
     // const discordToken = decrypt(chatbotDiscord.discordToken);
-    const discordToken = process.env.DISCORD_TOKEN;
+    const chatbotDiscord = await this.chatbotDiscordRepository.findOneByOrFail({
+      id,
+    });
+    const { appId, discordToken } = chatbotDiscord;
     await InstallGlobalCommands(appId, ALL_COMMANDS, discordToken);
   }
   async updateChatbotInfo(
-    chatbotId: string,
+    chatbotDiscordId: string,
     dto: ChatbotDiscordInfo,
   ): Promise<string> {
     try {
       const chatbotDiscord = await this.chatbotDiscordRepository.findOne({
-        where: { id: chatbotId },
+        where: { id: chatbotDiscordId },
       });
       if (!chatbotDiscord) {
         throw new AIAssistantNotFoundException('Not found chatbot');
@@ -121,12 +169,12 @@ export class DiscordService {
   }
 
   async updateChatbotToken(
-    chatbotId: string,
+    chatbotDiscordId: string,
     dto: ChatbotDiscordToken,
   ): Promise<string> {
     try {
       const chatbotDiscord = await this.chatbotDiscordRepository.findOne({
-        where: { id: chatbotId },
+        where: { id: chatbotDiscordId },
       });
       if (!chatbotDiscord) {
         throw new AIAssistantNotFoundException('Not found chatbot');
@@ -146,7 +194,9 @@ export class DiscordService {
     data: any,
     message: string,
     channelId: string,
-    userId: string,
+    user: UserDiscord,
+    chatbotId: string,
+    appId: string,
   ) {
     // Handle discord interactions
     if (type === InteractionType.PING) {
@@ -171,8 +221,10 @@ export class DiscordService {
           },
         };
       } else {
+        const chatbotDiscord =
+          await this.chatbotDiscordService.getChatbotDiscordByAppId(appId);
+        const { discordToken } = chatbotDiscord;
         // send a message into the ai-chanel
-        const chatbotId = process.env.CODELIGHT_ID;
         const chatbotInfo =
           await this.aiService.getAgentCollectionNameAndPromptByChatbotId(
             chatbotId,
@@ -180,41 +232,43 @@ export class DiscordService {
         const channel = await this.channelService.getChannelById(channelId);
         let runId;
         if (!channel) {
-          const runData = await this.aiService.createAgentRunDiscord(
-            chatbotId,
-            userId,
-          );
+          const runData =
+            await this.aiService.createAgentRunWithoutCreateParticipant(
+              chatbotId,
+              user.id,
+            );
           runId = runData.runId;
           const objectChannel = {
             chatbotId: chatbotId,
             conversationId: runId,
             channelId: channelId,
           };
+
           await this.channelService.create(objectChannel);
         } else {
           runId = channel.conversationId;
         }
-        const dataInput: AssistantChatInterface = {
-          message: message,
-          stream: true,
-          run_id: runId,
-          user_id: userId,
-          agent_collection_name: chatbotInfo.collectionName,
-          assistant: AiAssistantType.AUTO_PDF,
-          property: {
-            prompt: chatbotInfo.prompt,
-            instructions: chatbotInfo.instruction,
-            extra_instructions: chatbotInfo.persona,
-          },
-          model: chatbotInfo.model,
+
+        const dto = {
+          message,
+          runId,
+          userId: user.id,
         };
-        const response = await this.aiService.sendDiscordMessage(dataInput);
+        // const response = await this.aiService.sendDiscordMessage(dto);
+
+        await this.aiService.sendMessageDiscord(
+          chatbotId,
+          dto,
+          channelId,
+          user.id,
+          discordToken,
+        );
 
         return {
           type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           data: {
             // Fetches a random emoji to send from a helper function
-            content: response.toString(),
+            content: `Your's request is being processed`,
           },
         };
       }

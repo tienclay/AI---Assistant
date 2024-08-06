@@ -57,7 +57,7 @@ import { TelegramModule } from '../social-media/telegram/telegram.module';
   ],
 
   providers: [AIService, AIParseCVService, AiProcessor],
-  controllers: [AIController],
+  // controllers: [AIController],
   exports: [AIService, AIParseCVService],
 })
 export class AIChatbotModule {}

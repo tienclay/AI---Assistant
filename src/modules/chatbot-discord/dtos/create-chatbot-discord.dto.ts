@@ -1,14 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class AssistantHistoryDto {
-  @IsNotEmpty()
+export class CreateChatbotDiscordDto {
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
-  runId: string;
+  discordToken: string;
 
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
-  userId: string;
+  publicKey: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  appId: string;
 }
