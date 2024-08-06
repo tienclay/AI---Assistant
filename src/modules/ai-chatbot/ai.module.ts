@@ -15,6 +15,7 @@ import { AI_QUEUE_NAME } from './constants';
 import { AiProcessor } from './ai.processor';
 import { RealtimeModule } from '../realtime/realtime.module';
 import { DiscordModule } from '../social-media/discord/discord.module';
+import { TelegramModule } from '../social-media/telegram/telegram.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { DiscordModule } from '../social-media/discord/discord.module';
     }),
     forwardRef(() => RealtimeModule),
     DiscordModule,
+    TelegramModule,
   ],
 
   providers: [AIService, AIParseCVService, AiProcessor],
