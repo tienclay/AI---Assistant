@@ -52,7 +52,6 @@ export class AiProcessor {
   @Process(AI_QUEUE_JOB.SEND_MESSAGE)
   async sendMessage(job: Job<AssistantChatInterface>) {
     const chatInput = job.data;
-
     const res = await lastValueFrom(
       this.httpService.post(aiServiceUrl.sendMessage, {
         ...chatInput,

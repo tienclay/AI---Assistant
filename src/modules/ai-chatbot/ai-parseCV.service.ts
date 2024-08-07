@@ -346,6 +346,7 @@ export class AIParseCVService {
       collectionName: `${chatbot.name}:${chatbot.id}`,
       prompt: chatbot.prompt,
       persona: chatbot.persona,
+      description: chatbot.description,
       instruction: chatbot.instruction,
       model: chatbot.model,
     };

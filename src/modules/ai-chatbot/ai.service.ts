@@ -289,6 +289,7 @@ export class AIService {
       property: {
         prompt: chatbotInfo.prompt,
         instructions: chatbotInfo.instruction,
+        description: chatbotInfo.description,
         extra_instructions: chatbotInfo.persona,
       },
       model: chatbotInfo.model,
@@ -312,6 +313,7 @@ export class AIService {
       property: {
         prompt: chatbotInfo.prompt,
         instructions: chatbotInfo.instruction,
+        description: chatbotInfo.description,
         extra_instructions: chatbotInfo.persona,
       },
       model: chatbotInfo.model,
@@ -331,7 +333,7 @@ export class AIService {
     };
     await this.messageService.createMessage(message);
 
-    return res.data;
+    return extractLastParagraph(res.data);
   }
 
   async sendMessageTelegram(
@@ -352,6 +354,7 @@ export class AIService {
       property: {
         prompt: chatbotInfo.prompt,
         instructions: chatbotInfo.instruction,
+        description: chatbotInfo.description,
         extra_instructions: chatbotInfo.persona,
       },
       model: chatbotInfo.model,
@@ -399,6 +402,7 @@ export class AIService {
       property: {
         prompt: chatbotInfo.prompt,
         instructions: chatbotInfo.instruction,
+        description: chatbotInfo.description,
         extra_instructions: chatbotInfo.persona,
       },
       model: chatbotInfo.model,
@@ -543,6 +547,7 @@ export class AIService {
     return {
       collectionName: `${chatbot.name}:${chatbot.id}`,
       prompt: chatbot.prompt,
+      description: chatbot.description,
       persona: chatbot.persona,
       instruction: chatbot.instruction,
       model: chatbot.model,
