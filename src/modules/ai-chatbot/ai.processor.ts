@@ -15,7 +15,7 @@ import { MessageSender } from 'src/common/enums';
 import { ChatGateway } from '../realtime/chat.gateway';
 import { DiscordService } from '../social-media/discord/discord.service';
 import { TelegramService } from '../social-media/telegram/telegram.service';
-import { extractLastParagraph } from 'src/common/utils/extract-response.util';
+import { removePatternFromResponse } from 'src/common/utils/extract-response.util';
 import { AssistantChatDiscordInterface } from './interfaces/chat-discord.interface';
 
 @Processor(AI_QUEUE_NAME)
@@ -116,7 +116,7 @@ export class AiProcessor {
 
     await this.telegramService.sendTelegramMessageBack(
       chatInput.telegramUserId,
-      extractLastParagraph(res.data),
+      removePatternFromResponse(res.data),
     );
   }
 }

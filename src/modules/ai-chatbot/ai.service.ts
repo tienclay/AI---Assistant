@@ -36,8 +36,6 @@ import {
   UserDiscord,
 } from './interfaces/chat-discord.interface';
 
-import { extractLastParagraph } from 'src/common/utils/extract-response.util';
-
 @Injectable()
 export class AIService {
   constructor(
@@ -333,7 +331,7 @@ export class AIService {
     };
     await this.messageService.createMessage(message);
 
-    return extractLastParagraph(res.data);
+    return this.removePatternFromResponse(res.data);
   }
 
   async sendMessageTelegram(
@@ -379,7 +377,7 @@ export class AIService {
     };
     await this.messageService.createMessage(message);
 
-    return extractLastParagraph(res.data);
+    return this.removePatternFromResponse(res.data);
   }
 
   async sendMessageDiscord(
