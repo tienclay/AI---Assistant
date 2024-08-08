@@ -5,3 +5,6 @@ export * from './conversation.entity';
 export * from './participant.entity';
 export * from './message.entity';
 export * from './knowledge.entity';
+export * from './telegram-account.entity';
+export * from './telegram-chatbot.entity';
+export * from './telegram-participant.entity';

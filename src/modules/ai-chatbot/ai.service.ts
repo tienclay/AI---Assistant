@@ -31,10 +31,7 @@ import * as samplePropertyJson from './json/sample-property.json';
 import * as allSupportedModels from './json/all-model-support.json';
 import { ChatbotSampleProperty } from './dto/chatbot-response.dto';
 
-import {
-  AssistantChatDiscordInterface,
-  UserDiscord,
-} from './interfaces/chat-discord.interface';
+import { AssistantChatDiscordInterface } from './interfaces/chat-discord.interface';
 
 @Injectable()
 export class AIService {
@@ -337,6 +334,8 @@ export class AIService {
   async sendMessageTelegram(
     chatbotId: string,
     telegramUserId: string,
+    telegramBotId: string,
+    telegramChatId: string,
     dto: AssistantChatDto,
   ): Promise<any> {
     const chatbotInfo =
@@ -359,8 +358,10 @@ export class AIService {
     };
 
     await this.aiQueue.add(AI_QUEUE_JOB.SEND_MESSAGE_TELEGRAM, {
-      ...chatInput,
+      chatInput,
+      telegramChatId,
       telegramUserId,
+      telegramBotId,
     });
 
     const res = await lastValueFrom(
@@ -486,6 +487,7 @@ export class AIService {
       }),
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { $defs, ...remain } = res.data;
 
     return plainToInstance(AssistantChatResponse, { data: remain });
