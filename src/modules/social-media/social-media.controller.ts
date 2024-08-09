@@ -11,7 +11,8 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import * as dotenv from 'dotenv';
 import { FacebookService } from './facebook/facebook.service';
@@ -24,6 +25,13 @@ import { DiscordService } from './discord/discord.service';
 import { ChatbotDiscordInfo } from './discord/dtos/info-chatbot.dto';
 import { ChatbotDiscordToken } from './discord/dtos/input-chatbot-token.dto';
 import { InteractionResponseType, InteractionType } from 'discord-interactions';
+import { TelegramService } from './telegram/telegram.service';
+import {
+  StartTelegramChatbotInputDto,
+  StartTelegramChatbotResponseDto,
+  StopTelegramChatbotInputDto,
+  StopTelegramChatbotResponseDto,
+} from './telegram/dtos';
 
 dotenv.config();
 
@@ -34,6 +42,7 @@ export class SocialMediaController {
   constructor(
     private readonly fbService: FacebookService,
     private readonly discordService: DiscordService,
+    private readonly telegramService: TelegramService,
   ) {}
 
   @Get('facebook/webhooks')
@@ -105,5 +114,30 @@ export class SocialMediaController {
         content: `Your's request is being processed`,
       },
     };
+  }
+
+  @Get('telegram/chatbots')
+  async getTelegramChatbots() {
+    return await this.telegramService.getRunningTelegramChatbots();
+  }
+
+  @Post('telegram/chatbots/start')
+  @ApiResponse({
+    type: StartTelegramChatbotResponseDto,
+  })
+  async startTelegramChatbot(@Body() body: StartTelegramChatbotInputDto) {
+    return await this.telegramService.startTelegramChatbot(
+      body.telegramChatbotId,
+    );
+  }
+
+  @Post('telegram/chatbots/stop')
+  @ApiResponse({
+    type: StopTelegramChatbotResponseDto,
+  })
+  async stopTelegramChatbot(@Body() body: StopTelegramChatbotInputDto) {
+    return await this.telegramService.stopTelegramChatbot(
+      body.telegramChatbotId,
+    );
   }
 }

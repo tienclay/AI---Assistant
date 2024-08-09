@@ -12,6 +12,7 @@ import { ConversationService } from '../conversation/conversation.service';
 import { SocketEvent } from './dto/socket-event';
 import { SendMessageDto } from './dto/send-message.dto';
 import { AIService } from '../ai-chatbot/ai.service';
+import { removePatternFromResponse } from 'src/common/utils/extract-response.util';
 
 @WebSocketGateway()
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -64,7 +65,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     message: string,
   ): Promise<void> {
     this.server.to(conversationId).emit(SocketEvent.MESSAGE_RECEIVED, {
-      message,
+      message: removePatternFromResponse(message),
     });
   }
 }

@@ -117,6 +117,9 @@ export class DiscordService {
       if (message.author.bot) return;
       if (message.content.startsWith(PREFIX)) {
         message.reply('hello world!');
+
+        const content = message.content;
+        // message.reply('hello world!');
       }
     });
     // client.login(process.env.DISCORD_TOKEN);

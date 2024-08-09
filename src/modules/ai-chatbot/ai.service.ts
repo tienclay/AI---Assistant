@@ -31,12 +31,7 @@ import * as samplePropertyJson from './json/sample-property.json';
 import * as allSupportedModels from './json/all-model-support.json';
 import { ChatbotSampleProperty } from './dto/chatbot-response.dto';
 
-import {
-  AssistantChatDiscordInterface,
-  UserDiscord,
-} from './interfaces/chat-discord.interface';
-
-import { extractLastParagraph } from 'src/common/utils/extract-response.util';
+import { AssistantChatDiscordInterface } from './interfaces/chat-discord.interface';
 
 @Injectable()
 export class AIService {
@@ -289,6 +284,7 @@ export class AIService {
       property: {
         prompt: chatbotInfo.prompt,
         instructions: chatbotInfo.instruction,
+        description: chatbotInfo.description,
         extra_instructions: chatbotInfo.persona,
       },
       model: chatbotInfo.model,
@@ -312,46 +308,7 @@ export class AIService {
       property: {
         prompt: chatbotInfo.prompt,
         instructions: chatbotInfo.instruction,
-        extra_instructions: chatbotInfo.persona,
-      },
-      model: chatbotInfo.model,
-    };
-
-    const res = await lastValueFrom(
-      this.httpService.post(aiServiceUrl.sendMessage, {
-        ...chatInput,
-      }),
-    );
-
-    const message: MessageInputDto = {
-      content: res.data,
-      conversationId: chatInput.run_id,
-      messageSender: MessageSender.BOT,
-      participantId: null,
-    };
-    await this.messageService.createMessage(message);
-
-    return res.data;
-  }
-
-  async sendMessageTelegram(
-    chatbotId: string,
-    telegramUserId: string,
-    dto: AssistantChatDto,
-  ): Promise<any> {
-    const chatbotInfo =
-      await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
-
-    const chatInput: AssistantChatInterface = {
-      message: dto.message,
-      stream: true,
-      run_id: dto.runId,
-      user_id: dto.userId,
-      agent_collection_name: chatbotInfo.collectionName,
-      assistant: AiAssistantType.AUTO_PDF,
-      property: {
-        prompt: chatbotInfo.prompt,
-        instructions: chatbotInfo.instruction,
+        description: chatbotInfo.description,
         extra_instructions: chatbotInfo.persona,
       },
       model: chatbotInfo.model,
@@ -359,7 +316,6 @@ export class AIService {
 
     await this.aiQueue.add(AI_QUEUE_JOB.SEND_MESSAGE_TELEGRAM, {
       ...chatInput,
-      telegramUserId,
     });
 
     const res = await lastValueFrom(
@@ -376,7 +332,57 @@ export class AIService {
     };
     await this.messageService.createMessage(message);
 
-    return extractLastParagraph(res.data);
+    return this.removePatternFromResponse(res.data);
+  }
+
+  async sendMessageTelegram(
+    chatbotId: string,
+    telegramUserId: string,
+    telegramBotId: string,
+    telegramChatId: string,
+    dto: AssistantChatDto,
+  ): Promise<any> {
+    const chatbotInfo =
+      await this.getAgentCollectionNameAndPromptByChatbotId(chatbotId);
+
+    const chatInput: AssistantChatInterface = {
+      message: dto.message,
+      stream: true,
+      run_id: dto.runId,
+      user_id: dto.userId,
+      agent_collection_name: chatbotInfo.collectionName,
+      assistant: AiAssistantType.AUTO_PDF,
+      property: {
+        prompt: chatbotInfo.prompt,
+        instructions: chatbotInfo.instruction,
+        description: chatbotInfo.description,
+        extra_instructions: chatbotInfo.persona,
+      },
+      model: chatbotInfo.model,
+    };
+
+    await this.aiQueue.add(AI_QUEUE_JOB.SEND_MESSAGE_TELEGRAM, {
+      chatInput,
+      telegramChatId,
+      telegramUserId,
+      telegramBotId,
+    });
+
+    const res = await lastValueFrom(
+      this.httpService.post(aiServiceUrl.sendMessage, {
+        ...chatInput,
+      }),
+    );
+
+    const message: MessageInputDto = {
+      content: res.data,
+      conversationId: chatInput.run_id,
+      messageSender: MessageSender.BOT,
+      participantId: null,
+    };
+    await this.messageService.createMessage(message);
+
+    return this.removePatternFromResponse(res.data);
   }
 
   async sendMessageDiscord(
@@ -399,6 +405,7 @@ export class AIService {
       property: {
         prompt: chatbotInfo.prompt,
         instructions: chatbotInfo.instruction,
+        description: chatbotInfo.description,
         extra_instructions: chatbotInfo.persona,
       },
       model: chatbotInfo.model,
@@ -484,6 +491,7 @@ export class AIService {
       }),
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { $defs, ...remain } = res.data;
 
     return plainToInstance(AssistantChatResponse, { data: remain });
@@ -543,6 +551,7 @@ export class AIService {
     return {
       collectionName: `${chatbot.name}:${chatbot.id}`,
       prompt: chatbot.prompt,
+      description: chatbot.description,
       persona: chatbot.persona,
       instruction: chatbot.instruction,
       model: chatbot.model,
