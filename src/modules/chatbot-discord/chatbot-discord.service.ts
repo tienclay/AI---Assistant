@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ChatbotDiscord } from 'database/entities/chatbot.discord.entity';
 import { Repository } from 'typeorm';
 import { CreateChatbotDiscordDto } from './dtos/create-chatbot-discord.dto';
-import { encrypt } from 'src/common/utils/crypto-aes.util';
+import { decrypt, encrypt } from 'src/common/utils/crypto-aes.util';
 
 @Injectable()
 export class ChatbotDiscordService {
@@ -11,11 +11,12 @@ export class ChatbotDiscordService {
     @InjectRepository(ChatbotDiscord)
     private readonly chatbotDiscordRepository: Repository<ChatbotDiscord>,
   ) {}
+
   async create(dto: CreateChatbotDiscordDto) {
     const chatbotDiscordInfo = {
       discordToken: encrypt(dto.discordToken),
       publicKey: encrypt(dto.publicKey),
-      appId: encrypt(dto.appId),
+      appId: dto.appId,
     };
     this.chatbotDiscordRepository.create(chatbotDiscordInfo);
     await this.chatbotDiscordRepository.save(chatbotDiscordInfo);
@@ -29,7 +30,13 @@ export class ChatbotDiscordService {
   }
 
   async getChatbotDiscordByAppId(appId: string): Promise<ChatbotDiscord> {
-    appId = encrypt(appId);
-    return await this.chatbotDiscordRepository.findOneByOrFail({ appId });
+    const hashInfo = await this.chatbotDiscordRepository.findOneByOrFail({
+      appId,
+    });
+    return {
+      ...hashInfo,
+      discordToken: decrypt(hashInfo.discordToken),
+      publicKey: decrypt(hashInfo.publicKey),
+    };
   }
 }

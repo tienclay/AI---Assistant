@@ -15,7 +15,7 @@ import {
 
 import { ChatbotDiscordToken } from './dtos/input-chatbot-token.dto';
 import { InteractionResponseType, InteractionType } from 'discord-interactions';
-import { encrypt } from 'src/common/utils/crypto-aes.util';
+import { decrypt, encrypt } from 'src/common/utils/crypto-aes.util';
 
 import { HttpService } from '@nestjs/axios';
 import { AIService } from 'src/modules/ai-chatbot/ai.service';
