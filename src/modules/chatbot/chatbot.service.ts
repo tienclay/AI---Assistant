@@ -4,11 +4,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Chatbot, Knowledge } from '@entities';
 import { Repository } from 'typeorm';
 import { AIAssistantForbiddenException } from 'src/common/infra-exception';
-import { ChatbotKnowledgeDto, UpdateChatbotDto } from './dto';
+import {
+  ChatbotKnowledgeDto,
+  improveContentResponse,
+  UpdateChatbotDto,
+} from './dto';
 import { AIService } from '../ai-chatbot/ai.service';
 import { CreateAssistantRunResponse } from '../ai-chatbot/dto';
 import * as samplePropertyJson from './json/sample-property.json';
 import { ChatbotSampleProperty } from './dto/chatbot-response.dto';
+import OpenAI from 'openai';
+import * as dotenv from 'dotenv';
+import { plainToInstance } from 'class-transformer';
+dotenv.config();
 
 @Injectable()
 export class ChatbotService {
@@ -126,6 +134,23 @@ export class ChatbotService {
     await this.chatbotRepository.softDelete({
       id,
       createdById: userId,
+    });
+  }
+
+  async enhanceContent(
+    guidance: string,
+    content: string,
+  ): Promise<improveContentResponse> {
+    if (!guidance) {
+      guidance = 'Rewrite to improve this following content';
+    }
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const completion = await openai.chat.completions.create({
+      messages: [{ role: 'assistant', content: guidance + ':\n\n' + content }],
+      model: 'gpt-4o-mini',
+    });
+    return plainToInstance(improveContentResponse, {
+      data: completion.choices[0].message.content,
     });
   }
 

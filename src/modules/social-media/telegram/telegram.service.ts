@@ -20,11 +20,11 @@ export class TelegramService {
     private telegramParticipantRepository: Repository<TelegramPartitipant>,
     private readonly aiService: AIService,
   ) {
-    this.bot = new Telegraf(process.env.TELEGRAM_TOKEN);
+    // this.bot = new Telegraf(process.env.TELEGRAM_TOKEN);
   }
 
   async onModuleInit() {
-    await this.initTelegraf();
+    // await this.initTelegraf();
   }
 
   async getOrCreateRunId(userId: string, telegramChatbotId: string) {
