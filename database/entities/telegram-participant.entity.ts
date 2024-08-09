@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
+
 import { TelegramChatbot } from './telegram-chatbot.entity';
 
 @Entity()

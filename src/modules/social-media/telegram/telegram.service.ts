@@ -161,6 +161,7 @@ export class TelegramService {
 
     const agentRun = await this.aiService.createAgentRunSocialMedia(
       telegramChatbot.chatbot.id,
+
       telegramUserId,
     );
 

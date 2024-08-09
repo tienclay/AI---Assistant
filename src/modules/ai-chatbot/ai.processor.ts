@@ -15,6 +15,7 @@ import { MessageSender } from 'src/common/enums';
 import { ChatGateway } from '../realtime/chat.gateway';
 import { DiscordService } from '../social-media/discord/discord.service';
 import { TelegramService } from '../social-media/telegram/telegram.service';
+
 import {
   extractLastParagraph,
   removePatternFromResponse,
@@ -81,14 +82,14 @@ export class AiProcessor {
         ...chatInput,
       }),
     );
-
+    const content = removePatternFromResponse(res.data);
     const message: MessageInputDto = {
-      content: res.data,
+      content,
       conversationId: chatInput.run_id,
       messageSender: MessageSender.BOT,
       participantId: null,
     };
-    const response = `Qusetion: ${messageRequest}\nAnswer: ${res.data}`;
+    const response = `Qusetion: ${messageRequest}\nAnswer: ${content}`;
     await this.messageService.createMessage(message);
     await this.discordService.sendMessageDiscord(
       channelId,
@@ -122,7 +123,7 @@ export class AiProcessor {
     await this.telegramService.sendTelegramMessageBack(
       bot,
       telegramChatId,
-      removePatternFromResponse(extractLastParagraph(res.data)),
+      removePatternFromResponse(res.data),
     );
   }
 }

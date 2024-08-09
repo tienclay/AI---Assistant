@@ -314,6 +314,10 @@ export class AIService {
       model: chatbotInfo.model,
     };
 
+    await this.aiQueue.add(AI_QUEUE_JOB.SEND_MESSAGE_TELEGRAM, {
+      ...chatInput,
+    });
+
     const res = await lastValueFrom(
       this.httpService.post(aiServiceUrl.sendMessage, {
         ...chatInput,
