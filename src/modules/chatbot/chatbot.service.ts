@@ -14,19 +14,24 @@ import { CreateAssistantRunResponse } from '../ai-chatbot/dto';
 import * as samplePropertyJson from './json/sample-property.json';
 import { ChatbotSampleProperty } from './dto/chatbot-response.dto';
 import OpenAI from 'openai';
-import * as dotenv from 'dotenv';
 import { plainToInstance } from 'class-transformer';
+
+import * as dotenv from 'dotenv';
 dotenv.config();
 
 @Injectable()
 export class ChatbotService {
+  private openai: OpenAI;
+
   constructor(
     @InjectRepository(Chatbot)
     private readonly chatbotRepository: Repository<Chatbot>,
     @InjectRepository(Knowledge)
     private readonly knowledgeRepository: Repository<Knowledge>,
     private readonly aiService: AIService,
-  ) {}
+  ) {
+    this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
 
   createChatbot(userId: string, dto: CreateChatbotDto): Promise<Chatbot> {
     const chatbotInput = this.chatbotRepository.create({
@@ -144,8 +149,7 @@ export class ChatbotService {
     if (!guidance) {
       guidance = 'Rewrite to improve this following content';
     }
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const completion = await openai.chat.completions.create({
+    const completion = await this.openai.chat.completions.create({
       messages: [{ role: 'assistant', content: guidance + ':\n\n' + content }],
       model: 'gpt-4o-mini',
     });
