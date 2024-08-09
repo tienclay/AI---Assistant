@@ -15,40 +15,30 @@ import { AuthModule } from './modules/auth/auth.module';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { APP_FILTER } from '@nestjs/core';
 import { GlobalHandleExceptionFilter } from './common/infra-exception';
-// import { AIModule } from './modules/ai/ai.module';
-
-import { AgentModule } from './modules/agent/agent.module';
 import { FileModule } from './modules/file/file.module';
 import { CvParserModule } from './modules/cv-parser/cv-parser.module';
 import { ChatbotModule } from './modules/chatbot/chatbot.module';
 import { ConversationModule } from './modules/conversation/conversation.module';
-
-import { AIChatbotModule } from './modules/ai-chatbot/ai.module';
 import { OtpCacheModule } from './modules/otp-cache/otp-cache.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
-
 import { AuthEmailModule } from './modules/auth/auth-email/auth-email.module';
 import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
 import { MessageModule } from './modules/message/message.module';
 import { SocialMediaModule } from './modules/social-media/social-media.module';
 import { RealtimeModule } from './modules/realtime/realtime.module';
 import { BullModule } from '@nestjs/bull';
-
 import * as dotenv from 'dotenv';
-import { VerifyKeyMiddleware } from './common/middlewares/verify-key.middleware';
 import { ChannelModule } from './modules/channel/channel.module';
 import { ChatbotDiscordModule } from './modules/chatbot-discord/chatbot-discord.module';
+import { VerifyKeyMiddleware } from './common/middlewares/verify-key.middleware';
 dotenv.config({
   path: '.env',
 });
 
 const modules = [
   AuthModule,
-  // AIModule,
-  AgentModule,
   FileModule,
   CvParserModule,
-  AIChatbotModule,
   ConversationModule,
   ChatbotModule,
   OtpCacheModule,

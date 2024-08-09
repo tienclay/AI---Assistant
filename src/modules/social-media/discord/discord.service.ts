@@ -88,6 +88,9 @@ export class DiscordService {
     const client = new Client({
       intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'],
     });
+    const PREFIX = 'channel';
+    client.on('ready', () => {});
+
     // const PREFIX = 'channel';
     client.on('ready', () => {
       console.log(`hiii chatbot!`);
@@ -108,16 +111,12 @@ export class DiscordService {
       intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'],
     });
     const PREFIX = '/';
-    client.on('ready', () => {
-      console.log(`hiii chatbot!`);
-    });
+    client.on('ready', () => {});
 
     client.on('messageCreate', (message) => {
       if (message.author.bot) return;
       if (message.content.startsWith(PREFIX)) {
         message.reply('hello world!');
-        console.log(message.content);
-        // message.reply('hello world!');
       }
     });
     // client.login(process.env.DISCORD_TOKEN);
@@ -249,6 +248,7 @@ export class DiscordService {
           runId,
           userId: user.id,
         };
+        // const response = await this.aiService.sendDiscordMessage(dto);
 
         await this.aiService.sendMessageDiscord(
           chatbotId,
