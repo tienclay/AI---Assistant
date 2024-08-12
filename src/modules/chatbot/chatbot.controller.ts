@@ -31,7 +31,11 @@ import {
   ChatbotResponse,
   ChatbotSampleProperty,
 } from './dto/chatbot-response.dto';
-import { ChatbotKnowledgeDto } from './dto';
+import {
+  ChatbotKnowledgeDto,
+  improveContentDto,
+  improveContentResponse,
+} from './dto';
 import {
   CreateAssistantRun,
   CreateAssistantRunResponse,
@@ -172,5 +176,21 @@ export class ChatbotController {
     @Param('id') chatbotId: string,
   ): Promise<CreateAssistantRunResponse> {
     return this.aiService.createAgentRun(chatbotId, dto.userId);
+  }
+
+  @Post('enhancement')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(UserRole.CLIENT)
+  @ApiOperation({ summary: 'Enhance content of CV' })
+  @ApiBearerAuth('access-token')
+  @AiAssistantApiResponse(improveContentResponse)
+  enhanceContentCV(
+    @Body() improveContentDto: improveContentDto,
+    @CurrentUser() user: User,
+  ): Promise<improveContentResponse> {
+    return this.chatbotService.enhanceContent(
+      improveContentDto.prompt,
+      improveContentDto.content,
+    );
   }
 }
