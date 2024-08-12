@@ -15,7 +15,11 @@ import { MessageSender } from 'src/common/enums';
 import { ChatGateway } from '../realtime/chat.gateway';
 import { DiscordService } from '../social-media/discord/discord.service';
 import { TelegramService } from '../social-media/telegram/telegram.service';
-import { removePatternFromResponse } from 'src/common/utils/extract-response.util';
+
+import {
+  extractLastParagraph,
+  removePatternFromResponse,
+} from 'src/common/utils/extract-response.util';
 import { AssistantChatDiscordInterface } from './interfaces/chat-discord.interface';
 
 @Processor(AI_QUEUE_NAME)
@@ -78,14 +82,14 @@ export class AiProcessor {
         ...chatInput,
       }),
     );
-
+    const content = removePatternFromResponse(res.data);
     const message: MessageInputDto = {
-      content: res.data,
+      content,
       conversationId: chatInput.run_id,
       messageSender: MessageSender.BOT,
       participantId: null,
     };
-    const response = `Qusetion: ${messageRequest}\nAnswer: ${res.data}`;
+    const response = `Qusetion: ${messageRequest}\nAnswer: ${content}`;
     await this.messageService.createMessage(message);
     await this.discordService.sendMessageDiscord(
       channelId,
@@ -97,7 +101,7 @@ export class AiProcessor {
 
   @Process(AI_QUEUE_JOB.SEND_MESSAGE_TELEGRAM)
   async sendMessageTelegram(job: Job<any>) {
-    const chatInput = job.data;
+    const { chatInput, telegramBotId, telegramChatId } = job.data;
 
     const res = await lastValueFrom(
       this.httpService.post(aiServiceUrl.sendMessage, {
@@ -105,17 +109,20 @@ export class AiProcessor {
       }),
     );
 
-    const message: MessageInputDto = {
-      content: res.data,
-      conversationId: chatInput.run_id,
-      messageSender: MessageSender.BOT,
-      participantId: null,
-    };
+    // const message: MessageInputDto = {
+    //   content: res.data,
+    //   conversationId: chatInput.run_id,
+    //   messageSender: MessageSender.BOT,
+    //   participantId: null,
+    // };
 
-    await this.messageService.createMessage(message);
+    // await this.messageService.createMessage(message);
 
+    const bot =
+      this.telegramService.getRunningTelegramChatbotByChatbotId(telegramBotId);
     await this.telegramService.sendTelegramMessageBack(
-      chatInput.telegramUserId,
+      bot,
+      telegramChatId,
       removePatternFromResponse(res.data),
     );
   }

@@ -1,20 +1,23 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { Chatbot } from './chatbot.entity';
-import { TelegramChatbot } from './telegram.entity';
+
+import { TelegramChatbot } from './telegram-chatbot.entity';
 
 @Entity()
-export class TelegramPartitipant extends BaseEntity {
-  @Column()
+export class TelegramParticipant extends BaseEntity {
+  @Column('uuid')
   runId: string;
 
-  @Column()
-  telegramId: string;
+  @Column('varchar')
+  telegramChatId: string;
 
-  @JoinColumn({ name: 'telegram_id' })
-  @ManyToOne(() => TelegramChatbot, (telegram) => telegram.id)
-  telegram: TelegramChatbot;
-
-  @Column()
+  @Column('varchar')
   telegramUserId: string;
+
+  @Column('uuid')
+  telegramChatbotId: string;
+
+  @JoinColumn({ name: 'telegram_chatbot_id' })
+  @ManyToOne(() => TelegramChatbot)
+  telegramChatbot: TelegramChatbot;
 }
