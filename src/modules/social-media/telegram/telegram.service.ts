@@ -268,10 +268,14 @@ export class TelegramService {
       await this.getTelegramChatbotByChatbotId(telegramChatbotId);
 
     const telegramChatId = String(message.chatId);
+    const sender = message._sender['firstName'];
+    const channelId = String(message.peerId['channelId']);
+
     const telegramUserId = String(message.senderId);
-    const messageText = message.text;
+    const messageText = `Name sender: ${sender}\nMessage: ${message.text}`;
+
     const botParticipant = await this.getOrCreateRunId(
-      telegramUserId,
+      channelId,
       telegramChatbotId,
       telegramChatId,
     );
