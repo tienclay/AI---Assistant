@@ -16,10 +16,7 @@ import { ChatGateway } from '../realtime/chat.gateway';
 import { DiscordService } from '../social-media/discord/discord.service';
 import { TelegramService } from '../social-media/telegram/telegram.service';
 
-import {
-  extractLastParagraph,
-  removePatternFromResponse,
-} from 'src/common/utils/extract-response.util';
+import { removePatternFromResponse } from 'src/common/utils/extract-response.util';
 import { AssistantChatDiscordInterface } from './interfaces/chat-discord.interface';
 
 @Processor(AI_QUEUE_NAME)
