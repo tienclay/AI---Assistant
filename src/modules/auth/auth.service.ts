@@ -14,7 +14,6 @@ import { AuthPayload } from 'src/common/interfaces';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UserService,
     private readonly jwtService: JwtService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
