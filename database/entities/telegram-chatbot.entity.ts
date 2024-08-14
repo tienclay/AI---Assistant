@@ -2,6 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { TelegramAccount } from './telegram-account.entity';
 import { Chatbot } from './chatbot.entity';
+import { TelegramChatbotStatus } from 'src/common/enums';
 
 @Entity()
 export class TelegramChatbot extends BaseEntity {
@@ -19,9 +20,19 @@ export class TelegramChatbot extends BaseEntity {
   @Column('uuid')
   accountId: string;
 
-  @Column('varchar')
+  @Column('varchar', { unique: true })
   telegramChatbotId: string;
+
+  @Column('varchar', { nullable: true })
+  stringSession: string;
 
   @Column('varchar')
   token: string;
+
+  @Column({
+    type: 'enum',
+    enum: TelegramChatbotStatus,
+    default: TelegramChatbotStatus.INACTIVE,
+  })
+  status: TelegramChatbotStatus;
 }
