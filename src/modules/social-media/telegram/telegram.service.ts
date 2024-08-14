@@ -38,7 +38,7 @@ export class TelegramService {
   ) {}
 
   async onModuleInit() {
-    // await this.initTelegramChatbots();
+    await this.initTelegramChatbots();
   }
 
   async getRunningTelegramChatbots(): Promise<TelegramChatbot[]> {

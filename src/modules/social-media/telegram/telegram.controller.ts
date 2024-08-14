@@ -17,7 +17,7 @@ import { TelegramChatbotDto } from './dtos/telegram-chatbot-info.dto';
 
 @Controller('telegram')
 @ApiTags('telegram')
-export class telegramController {
+export class TelegramController {
   constructor(private telegramService: TelegramService) {}
 
   @Get()
