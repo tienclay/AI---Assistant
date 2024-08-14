@@ -19,7 +19,7 @@ export default {
   ],
   moduleNameMapper: {
     '^src/(.*)$': '<rootDir>/src/$1',
-    '^@entities(.*)$': '<rootDir>database/entities/$1',
+    '^@entities(.*)$': '<rootDir>/database/entities/$1',
     '^@enums(.*)$': '<rootDir>/src/common/enums/$1',
   },
 };

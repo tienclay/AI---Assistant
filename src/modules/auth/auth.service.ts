@@ -1,10 +1,9 @@
 import { IAccessToken } from './../../common/interfaces/jwt.interface';
 import { LoginPasswordDto } from './dto/login.dto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserService } from '../admin/admin.service';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'database/entities/user.entity';
+import { User } from '@entities';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { AuthPayloadDto } from './dto';
