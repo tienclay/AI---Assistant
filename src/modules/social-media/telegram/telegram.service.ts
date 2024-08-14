@@ -15,6 +15,9 @@ import {
   StartTelegramChatbotResponseDto,
   StopTelegramChatbotResponseDto,
 } from './dtos';
+import { Chatbot, TelegramAccount } from '@entities';
+import { TelegramInfoDto } from './dtos/telegram-info.dto';
+import { TelegramChatbotDto } from './dtos/telegram-chatbot-info.dto';
 
 @Injectable()
 export class TelegramService {
@@ -27,6 +30,9 @@ export class TelegramService {
 
     @InjectRepository(TelegramParticipant)
     private telegramParticipantRepository: Repository<TelegramParticipant>,
+
+    @InjectRepository(TelegramAccount)
+    private telegramAccountRepository: Repository<TelegramAccount>,
 
     private readonly aiService: AIService,
   ) {}
@@ -299,5 +305,73 @@ export class TelegramService {
     message: string,
   ) {
     client.sendMessage(chatId, { message });
+  }
+
+  async getAllTelegramAccounts(): Promise<TelegramAccount[]> {
+    return await this.telegramAccountRepository.find();
+  }
+
+  async createTelegramAccount(dto: TelegramInfoDto): Promise<TelegramAccount> {
+    const telegramAccountInput =
+      await this.telegramAccountRepository.create(dto);
+    return this.telegramAccountRepository.save(telegramAccountInput);
+  }
+
+  async updateTelegramAccount(
+    id: string,
+    dto: TelegramInfoDto,
+  ): Promise<boolean> {
+    const updated = await this.telegramAccountRepository.update(id, dto);
+
+    if (updated.affected === 0) {
+      return false;
+    }
+    return true;
+  }
+
+  async deleteTelegramAccount(id: string): Promise<boolean> {
+    const deleted = await this.telegramAccountRepository.delete(id);
+
+    if (deleted.affected === 0) {
+      return false;
+    }
+    return true;
+  }
+
+  async getTelegramChatbot(): Promise<TelegramChatbot[]> {
+    return await this.telegramChatbotRepository.find();
+  }
+
+  async getTelegramChatbotById(id: string): Promise<TelegramChatbot> {
+    return await this.telegramChatbotRepository.findOneBy({ id });
+  }
+
+  async createTelegramChatbot(
+    dto: TelegramChatbotDto,
+  ): Promise<TelegramChatbot> {
+    const telegramChatbotInput =
+      await this.telegramChatbotRepository.create(dto);
+    return this.telegramChatbotRepository.save(telegramChatbotInput);
+  }
+
+  async updateTelegramChatbot(
+    id: string,
+    dto: TelegramChatbotDto,
+  ): Promise<boolean> {
+    const updated = await this.telegramChatbotRepository.update(id, dto);
+
+    if (updated.affected === 0) {
+      return false;
+    }
+    return true;
+  }
+
+  async deleteTelegramChatbot(id: string): Promise<boolean> {
+    const deleted = await this.telegramChatbotRepository.delete(id);
+
+    if (deleted.affected === 0) {
+      return false;
+    }
+    return true;
   }
 }
