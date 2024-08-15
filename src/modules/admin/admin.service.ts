@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'database/entities/user.entity';
+import { User } from '@entities';
 import { Repository } from 'typeorm';
 import { UserInputDto, UserOutputDto, UserUpdateDto } from './dto';
 import { hashPassword } from 'src/common/utils/hash-password.util';

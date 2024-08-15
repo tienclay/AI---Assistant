@@ -280,7 +280,7 @@ export class AIService {
       run_id: dto.runId,
       user_id: dto.userId,
       agent_collection_name: chatbotInfo.collectionName,
-      assistant: AiAssistantType.AUTO_PDF,
+      assistant: AiAssistantType.RAG_PDF,
       property: {
         prompt: chatbotInfo.prompt,
         instructions: chatbotInfo.instruction,
