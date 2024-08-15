@@ -7,7 +7,10 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-class JobDataDto {
+export class JobDataDto {
+  @IsString()
+  chatbotId: string;
+
   @IsString()
   chatId: string;
 

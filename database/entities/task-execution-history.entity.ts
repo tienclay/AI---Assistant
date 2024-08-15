@@ -1,14 +1,10 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { ScheduleJob } from './schedule-job.entity';
-
-enum JobStatus {
-  SUCCESS = 'SUCCESS',
-  FAILED = 'FAILED',
-}
+import { JobHistoryStatus } from 'src/common/enums';
 
 @Entity()
-export class TaskExecutionHistory extends BaseEntity {
+export class JobExecutionHistory extends BaseEntity {
   @Column('uuid')
   jobId: string;
 
@@ -19,6 +15,6 @@ export class TaskExecutionHistory extends BaseEntity {
   @Column('timestamptz')
   executionTime: Date;
 
-  @Column('enum', { enum: JobStatus })
-  status: JobStatus;
+  @Column('enum', { enum: JobHistoryStatus })
+  status: JobHistoryStatus;
 }

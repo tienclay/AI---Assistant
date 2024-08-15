@@ -4,9 +4,9 @@ import { BaseEntity } from './base.entity';
 import { JobStatus } from 'src/common/enums/schedule-job.enum';
 
 export class JobData {
-  chatbotId: string;
-  chatId: string;
-  content: string;
+  chatbotId: string; //telegram_chatbot_id of telegram_chatbots table
+  chatId: string; //telegram_chat_id of telegram_account table
+  content: string; //message we want to send
 }
 
 @Entity()

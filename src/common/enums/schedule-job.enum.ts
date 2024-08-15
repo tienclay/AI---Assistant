@@ -4,3 +4,8 @@ export enum JobStatus {
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
 }
+
+export enum JobHistoryStatus {
+  SUCCESS = 'SUCCESS',
+  FAILED = 'FAILED',
+}
