@@ -31,6 +31,7 @@ import * as dotenv from 'dotenv';
 import { ChannelModule } from './modules/channel/channel.module';
 import { ChatbotDiscordModule } from './modules/chatbot-discord/chatbot-discord.module';
 import { VerifyKeyMiddleware } from './common/middlewares/verify-key.middleware';
+import { ScheduleJobModule } from './modules/schedule-job/schedule-job.module';
 dotenv.config({
   path: '.env',
 });
@@ -46,6 +47,7 @@ const modules = [
   ChatbotModule,
   SocialMediaModule,
   RealtimeModule,
+  ScheduleJobModule,
 ];
 
 @Module({
