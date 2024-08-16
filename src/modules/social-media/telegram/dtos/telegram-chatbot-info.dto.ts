@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
-import { Column } from 'typeorm';
+import { IsOptional, IsString } from 'class-validator';
 
 export class TelegramChatbotDto {
   @IsString()
@@ -8,6 +7,7 @@ export class TelegramChatbotDto {
   chatbotId: string;
 
   @IsString()
+  @IsOptional()
   @ApiProperty({ type: String, format: 'uuid' })
   accountId: string;
 

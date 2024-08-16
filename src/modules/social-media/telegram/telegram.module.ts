@@ -7,6 +7,8 @@ import { TelegramParticipant } from 'database/entities/telegram-participant.enti
 import { AIChatbotModule } from 'src/modules/ai-chatbot/ai.module';
 import { TelegramAccount } from 'database/entities/telegram-account.entity';
 import { TelegramController } from './telegram.controller';
+import { TelegramServiceV2 } from './v2.telegram.service';
+import { TelegramManageChatbotService } from './services/telegram-manage-chatbot.service';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { TelegramController } from './telegram.controller';
     forwardRef(() => AIChatbotModule),
   ],
   controllers: [TelegramController],
-  providers: [TelegramService],
+  providers: [TelegramService, TelegramServiceV2, TelegramManageChatbotService],
   exports: [TelegramService],
 })
 export class TelegramModule {}

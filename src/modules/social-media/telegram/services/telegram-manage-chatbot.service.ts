@@ -1,12 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TelegramParticipant } from 'database/entities/telegram-participant.entity';
 import { TelegramChatbot } from 'database/entities/telegram-chatbot.entity';
-import { AIService } from 'src/modules/ai-chatbot/ai.service';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Api, TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions';
-import { NewMessageEvent, NewMessage } from 'telegram/events';
+import { NewMessage, NewMessageEvent } from 'telegram/events';
 import {
   AIAssistantBadRequestException,
   Exception,
@@ -14,15 +12,16 @@ import {
 import {
   StartTelegramChatbotResponseDto,
   StopTelegramChatbotResponseDto,
-} from './dtos';
-import { Chatbot, TelegramAccount } from '@entities';
-import { TelegramInfoDto } from './dtos/telegram-info.dto';
-import { TelegramChatbotDto } from './dtos/telegram-chatbot-info.dto';
+} from '../dtos';
+import { TelegramChatbotStatus } from 'src/common/enums';
+import { AIService } from 'src/modules/ai-chatbot/ai.service';
+import { TelegramParticipant } from '@entities';
 
 @Injectable()
-export class TelegramService {
+export class TelegramManageChatbotService implements OnModuleInit {
+  // Map <telegramChatbotId, TelegramClient>: This is used to store the Telegram clients for each chatbot
   private clients: Map<string, TelegramClient> = new Map();
-  private logger = new Logger(TelegramService.name);
+  private logger = new Logger(TelegramManageChatbotService.name);
 
   constructor(
     @InjectRepository(TelegramChatbot)
@@ -31,38 +30,11 @@ export class TelegramService {
     @InjectRepository(TelegramParticipant)
     private telegramParticipantRepository: Repository<TelegramParticipant>,
 
-    @InjectRepository(TelegramAccount)
-    private telegramAccountRepository: Repository<TelegramAccount>,
-
     private readonly aiService: AIService,
   ) {}
 
   async onModuleInit() {
-    // await this.initTelegramChatbots();
-  }
-
-  async getRunningTelegramChatbots(): Promise<TelegramChatbot[]> {
-    try {
-      const runningTelegramChatbotIds: string[] = Array.from(
-        this.clients.keys(),
-      );
-      const runningTelegramChatbots: TelegramChatbot[] =
-        await this.telegramChatbotRepository.find({
-          where: {
-            telegramChatbotId: In(runningTelegramChatbotIds),
-          },
-        });
-
-      return runningTelegramChatbots;
-    } catch (error) {
-      if (error instanceof Exception) {
-        throw error;
-      }
-
-      throw new AIAssistantBadRequestException(
-        'Error getting running Telegram chatbots',
-      );
-    }
+    await this.initTelegramChatbots();
   }
 
   async startTelegramChatbot(
@@ -70,7 +42,7 @@ export class TelegramService {
   ): Promise<StartTelegramChatbotResponseDto> {
     try {
       const client: TelegramClient | undefined =
-        this.getRunningTelegramChatbotByChatbotId(telegramChatbotId);
+        this.clients.get(telegramChatbotId);
 
       // If the client is already running, throw an error
       if (client) {
@@ -86,8 +58,17 @@ export class TelegramService {
           relations: ['account'],
         });
 
+      if (!telegramChatbot) {
+        throw new AIAssistantBadRequestException('Telegram chatbot not found');
+      }
+
       // Initialize the Telegram chatbot
       await this.initTelegramChatbot(telegramChatbot);
+
+      // Update the Telegram chatbot status
+      await this.telegramChatbotRepository.update(telegramChatbot.id, {
+        status: TelegramChatbotStatus.ACTIVE,
+      });
 
       return {
         message: 'Telegram chatbot started',
@@ -108,12 +89,12 @@ export class TelegramService {
   ): Promise<StopTelegramChatbotResponseDto> {
     try {
       const client: TelegramClient | undefined =
-        this.getRunningTelegramChatbotByChatbotId(telegramChatbotId);
+        this.clients.get(telegramChatbotId);
 
       // If the client is not running, throw an error
       if (!client) {
         throw new AIAssistantBadRequestException(
-          'Telegram chatbot not running',
+          'Telegram chatbot not running or not found',
         );
       }
 
@@ -123,6 +104,17 @@ export class TelegramService {
 
       // Remove the client from the map
       this.clients.delete(telegramChatbotId);
+
+      // Get the Telegram chatbot
+      const telegramChatbot: TelegramChatbot =
+        await this.telegramChatbotRepository.findOne({
+          where: { telegramChatbotId },
+        });
+
+      // Update the Telegram chatbot status
+      await this.telegramChatbotRepository.update(telegramChatbot.id, {
+        status: TelegramChatbotStatus.INACTIVE,
+      });
 
       // Return the response
       return {
@@ -139,74 +131,41 @@ export class TelegramService {
     }
   }
 
-  getRunningTelegramChatbotByChatbotId(
-    telegramChatbotId: string,
-  ): TelegramClient | undefined {
-    return this.clients.get(telegramChatbotId);
-  }
-
-  private async getOrCreateRunId(
-    telegramUserId: string,
-    telegramChatbotId: string,
-    telegramChatId: string,
-  ): Promise<TelegramParticipant> {
-    const telegramChatbot: TelegramChatbot =
-      await this.getTelegramChatbotByChatbotId(telegramChatbotId);
-
-    const telegramParticipant: TelegramParticipant =
-      await this.telegramParticipantRepository.findOne({
-        where: {
-          telegramUserId,
-          telegramChatbotId: telegramChatbot.id,
-        },
-      });
-
-    if (telegramParticipant) {
-      return telegramParticipant;
-    }
-
-    const agentRun = await this.aiService.createAgentRunSocialMedia(
-      telegramChatbot.chatbot.id,
-
-      telegramUserId,
-    );
-
-    const newParticipant: TelegramParticipant =
-      this.telegramParticipantRepository.create({
-        telegramChatId,
-        telegramChatbotId: telegramChatbot.id,
-        telegramUserId,
-        runId: agentRun.runId,
-      });
-
-    return this.telegramParticipantRepository.save(newParticipant);
-  }
-
-  private async getTelegramChatbotByChatbotId(
-    telegramChatbotId: string,
-  ): Promise<TelegramChatbot> {
-    const telegramChatbot: TelegramChatbot | undefined =
-      await this.telegramChatbotRepository.findOne({
-        where: { telegramChatbotId },
-        relations: ['chatbot'],
-      });
-
-    if (!telegramChatbot)
-      throw new AIAssistantBadRequestException('Telegram chatbot not found');
-
-    return telegramChatbot;
+  async sendTelegramMessageBack(
+    client: TelegramClient,
+    chatId: string,
+    message: string,
+  ) {
+    client.sendMessage(chatId, { message });
   }
 
   private async initTelegramChatbot(
     telegramChatbot: TelegramChatbot,
   ): Promise<void> {
     try {
-      this.logger.log(
+      this.logger.debug(
         `Initializing Telegram client for bot ID: ${telegramChatbot.telegramChatbotId}`,
       );
 
+      let stringSession: StringSession = new StringSession('');
+      const isStringSessionValid: boolean =
+        telegramChatbot?.stringSession &&
+        typeof telegramChatbot.stringSession === 'string' &&
+        telegramChatbot.stringSession.trim() !== '';
+
+      if (isStringSessionValid) {
+        try {
+          stringSession = new StringSession(telegramChatbot.stringSession);
+        } catch (error) {
+          this.logger.error(
+            `Invalid string session for bot ID: ${telegramChatbot.telegramChatbotId}. Creating a new one.`,
+          );
+
+          stringSession = new StringSession('');
+        }
+      }
+
       // Create the Telegram client
-      const stringSession: StringSession = new StringSession('');
       const client: TelegramClient = new TelegramClient(
         stringSession,
         Number(telegramChatbot.account.apiId),
@@ -216,7 +175,7 @@ export class TelegramService {
         },
       );
 
-      this.logger.log(
+      this.logger.debug(
         `Starting client for bot ID: ${telegramChatbot.telegramChatbotId}`,
       );
 
@@ -231,9 +190,14 @@ export class TelegramService {
         this.handleNewMessage.bind(this),
         new NewMessage({}),
       );
-      client.session.save();
 
-      this.logger.log(
+      // Save the session for not having to login again
+      const telegramStringSession: string = client.session.save() as any;
+      await this.telegramChatbotRepository.update(telegramChatbot.id, {
+        stringSession: telegramStringSession,
+      });
+
+      this.logger.debug(
         `Successfully started client for bot ID: ${telegramChatbot.telegramChatbotId}`,
       );
     } catch (error) {
@@ -271,7 +235,10 @@ export class TelegramService {
     }
 
     const telegramChatbot: TelegramChatbot =
-      await this.getTelegramChatbotByChatbotId(telegramChatbotId);
+      await this.telegramChatbotRepository.findOne({
+        where: { telegramChatbotId },
+        relations: ['account'],
+      });
 
     const telegramChatId = String(message.chatId);
     const sender = message._sender['firstName'];
@@ -299,79 +266,42 @@ export class TelegramService {
     );
   }
 
-  async sendTelegramMessageBack(
-    client: TelegramClient,
-    chatId: string,
-    message: string,
-  ) {
-    client.sendMessage(chatId, { message });
-  }
+  private async getOrCreateRunId(
+    telegramUserId: string,
+    telegramChatbotId: string,
+    telegramChatId: string,
+  ): Promise<TelegramParticipant> {
+    const telegramChatbot: TelegramChatbot =
+      await this.telegramChatbotRepository.findOne({
+        where: { telegramChatbotId },
+        relations: ['chatbot'],
+      });
 
-  async getAllTelegramAccounts(): Promise<TelegramAccount[]> {
-    return await this.telegramAccountRepository.find();
-  }
+    const telegramParticipant: TelegramParticipant =
+      await this.telegramParticipantRepository.findOne({
+        where: {
+          telegramChatId,
+          telegramChatbotId: telegramChatbot.id,
+        },
+      });
 
-  async createTelegramAccount(dto: TelegramInfoDto): Promise<TelegramAccount> {
-    const telegramAccountInput =
-      await this.telegramAccountRepository.create(dto);
-    return this.telegramAccountRepository.save(telegramAccountInput);
-  }
-
-  async updateTelegramAccount(
-    id: string,
-    dto: TelegramInfoDto,
-  ): Promise<boolean> {
-    const updated = await this.telegramAccountRepository.update(id, dto);
-
-    if (updated.affected === 0) {
-      return false;
+    if (telegramParticipant) {
+      return telegramParticipant;
     }
-    return true;
-  }
 
-  async deleteTelegramAccount(id: string): Promise<boolean> {
-    const deleted = await this.telegramAccountRepository.delete(id);
+    const agentRun = await this.aiService.createAgentRunSocialMedia(
+      telegramChatbot.chatbot.id,
+      telegramChatId,
+    );
 
-    if (deleted.affected === 0) {
-      return false;
-    }
-    return true;
-  }
+    const newParticipant: TelegramParticipant =
+      this.telegramParticipantRepository.create({
+        telegramChatId,
+        telegramChatbotId: telegramChatbot.id,
+        telegramUserId,
+        runId: agentRun.runId,
+      });
 
-  async getTelegramChatbot(): Promise<TelegramChatbot[]> {
-    return await this.telegramChatbotRepository.find();
-  }
-
-  async getTelegramChatbotById(id: string): Promise<TelegramChatbot> {
-    return await this.telegramChatbotRepository.findOneBy({ id });
-  }
-
-  async createTelegramChatbot(
-    dto: TelegramChatbotDto,
-  ): Promise<TelegramChatbot> {
-    const telegramChatbotInput =
-      await this.telegramChatbotRepository.create(dto);
-    return this.telegramChatbotRepository.save(telegramChatbotInput);
-  }
-
-  async updateTelegramChatbot(
-    id: string,
-    dto: TelegramChatbotDto,
-  ): Promise<boolean> {
-    const updated = await this.telegramChatbotRepository.update(id, dto);
-
-    if (updated.affected === 0) {
-      return false;
-    }
-    return true;
-  }
-
-  async deleteTelegramChatbot(id: string): Promise<boolean> {
-    const deleted = await this.telegramChatbotRepository.delete(id);
-
-    if (deleted.affected === 0) {
-      return false;
-    }
-    return true;
+    return this.telegramParticipantRepository.save(newParticipant);
   }
 }
