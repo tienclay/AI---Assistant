@@ -5,6 +5,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Patch,
   Post,
   UseGuards,
@@ -47,15 +48,18 @@ export class ScheduleJobController {
     );
   }
 
-  @Patch()
+  @Patch(':id')
   @Roles(UserRole.CLIENT)
-  async updateScheduleJob(id: string, dto: ScheduleJobDto): Promise<boolean> {
+  async updateScheduleJob(
+    @Body() dto: ScheduleJobDto,
+    @Param('id') id: string,
+  ): Promise<boolean> {
     return await this.scheduleJobService.updateScheduleJob(id, dto);
   }
 
-  @Delete()
+  @Delete(':id')
   @Roles(UserRole.CLIENT)
-  async deleteScheduleJob(id: string): Promise<boolean> {
+  async deleteScheduleJob(@Param('id') id: string): Promise<boolean> {
     return await this.scheduleJobService.deleteScheduleJob(id);
   }
 }
