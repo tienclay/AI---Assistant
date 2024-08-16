@@ -13,12 +13,14 @@ import {
   SCHEDULE_JOB_QUEUE_NAME,
   ScheduleJobData,
 } from './queue';
+import { TelegramManageChatbotService } from '../social-media/telegram/services/telegram-manage-chatbot.service';
 
 @Processor(SCHEDULE_JOB_QUEUE_NAME)
 export class ScheduleJobProcessor {
   constructor(
     private readonly telegramService: TelegramService,
     private readonly scheduleJobService: ScheduleJobService,
+    private readonly telegramManageChatbotService: TelegramManageChatbotService,
   ) {}
 
   @OnQueueCompleted()
@@ -47,10 +49,9 @@ export class ScheduleJobProcessor {
   async sendMessage(job: Job<ScheduleJobData>) {
     const scheduleJobData = job.data;
     const telegramData = scheduleJobData.data;
-    const telegramClient =
-      this.telegramService.getRunningTelegramChatbotByChatbotId(
-        telegramData.chatbotId,
-      );
+    const telegramClient = this.telegramManageChatbotService.clients.get(
+      telegramData.chatbotId,
+    );
 
     await this.telegramService.sendTelegramMessageBack(
       telegramClient,

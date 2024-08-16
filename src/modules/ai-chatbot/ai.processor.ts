@@ -18,6 +18,7 @@ import { TelegramService } from '../social-media/telegram/telegram.service';
 
 import { removePatternFromResponse } from 'src/common/utils/extract-response.util';
 import { AssistantChatDiscordInterface } from './interfaces/chat-discord.interface';
+import { TelegramManageChatbotService } from '../social-media/telegram/services/telegram-manage-chatbot.service';
 
 @Processor(AI_QUEUE_NAME)
 export class AiProcessor {
@@ -28,6 +29,7 @@ export class AiProcessor {
     private readonly chatGateway: ChatGateway,
     private readonly discordService: DiscordService,
     private readonly telegramService: TelegramService,
+    private readonly telegramManageChatbotService: TelegramManageChatbotService,
   ) {}
 
   @Process(AI_QUEUE_JOB.LOAD_KNOWLEDGE)
@@ -115,8 +117,7 @@ export class AiProcessor {
 
     // await this.messageService.createMessage(message);
 
-    const bot =
-      this.telegramService.getRunningTelegramChatbotByChatbotId(telegramBotId);
+    const bot = this.telegramManageChatbotService.clients.get(telegramBotId);
     await this.telegramService.sendTelegramMessageBack(
       bot,
       telegramChatId,

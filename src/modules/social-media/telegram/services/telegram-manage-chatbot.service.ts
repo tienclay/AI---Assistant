@@ -20,7 +20,7 @@ import { TelegramParticipant } from '@entities';
 @Injectable()
 export class TelegramManageChatbotService implements OnModuleInit {
   // Map <telegramChatbotId, TelegramClient>: This is used to store the Telegram clients for each chatbot
-  private clients: Map<string, TelegramClient> = new Map();
+  clients: Map<string, TelegramClient> = new Map();
   private logger = new Logger(TelegramManageChatbotService.name);
 
   constructor(

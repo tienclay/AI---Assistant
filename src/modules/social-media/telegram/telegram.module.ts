@@ -21,6 +21,6 @@ import { TelegramManageChatbotService } from './services/telegram-manage-chatbot
   ],
   controllers: [TelegramController],
   providers: [TelegramService, TelegramServiceV2, TelegramManageChatbotService],
-  exports: [TelegramService],
+  exports: [TelegramService, TelegramManageChatbotService],
 })
 export class TelegramModule {}
